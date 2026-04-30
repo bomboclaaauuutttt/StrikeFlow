@@ -1,0 +1,57 @@
+# 🎯 SIMPLEST INSTRUCTIONS EVER
+
+## You have 2 choices:
+
+### OPTION 1: ULTRA EASY (Recommended) ✅
+
+**Windows:**
+```
+Double-click:  OPEN_TIMER.bat
+```
+
+**Mac/Linux:**
+```
+Double-click:  OPEN_TIMER.sh
+```
+
+**Done!** Timer opens in browser.
+
+---
+
+### OPTION 2: SUPER EASY
+
+In the StrikeFlow folder, double-click:
+```
+timer.html
+```
+
+**Done!** Timer opens in browser.
+
+---
+
+## That's All!
+
+No terminal, no commands, no nothing.
+
+Just double-click and start training! 🥊
+
+---
+
+## First Time Using It?
+
+1. **Click START button** - Timer begins
+2. **Click ⚙️ icon** - Opens settings
+3. **Click presets** - Try "K1: 3x3min"
+4. **Click TASK SPAR MODE toggle** - Enable random tasks
+5. **Click SAVE & CLOSE** - Go back
+6. **Click START** - Training begins!
+
+---
+
+## Questions?
+
+See **EASIEST.md** for more details.
+
+---
+
+**Enjoy!** 🥊💪

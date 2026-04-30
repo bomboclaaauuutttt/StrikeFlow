@@ -1,0 +1,24 @@
+{
+  "name": "StrikeFlow",
+  "short_name": "StrikeFlow",
+  "description": "Muay Thai & Boxing Interval Timer",
+  "start_url": "./timer.html",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "icons": [
+    {
+      "src": "Strike Flow.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "Strike Flow.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

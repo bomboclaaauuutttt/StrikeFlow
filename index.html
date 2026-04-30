@@ -1,0 +1,2114 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>StrikeFlow - Muay Thai Timer</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0a0a0a">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <!-- iOS home screen -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="StrikeFlow">
+    <link rel="apple-touch-icon" href="Strike Flow.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        @keyframes timerPulse {
+            0%   { transform: scale(1); }
+            30%  { transform: scale(1.04); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes fadeScaleIn {
+            from { opacity: 0; transform: scale(0.85); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes countdownPop {
+            0%   { transform: scale(1.5); opacity: 0; }
+            40%  { transform: scale(1);   opacity: 1; }
+            100% { transform: scale(1);   opacity: 1; }
+        }
+
+        .app {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Background crossfade layers */
+        .bg-layer {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .bg-idle  { background: linear-gradient(135deg, #555 0%, #333 100%); opacity: 1; }
+        .bg-round { background: linear-gradient(135deg, #ff2b2b 0%, #e60000 100%); }
+        .bg-break { background: linear-gradient(135deg, #2bff4a 0%, #00cc00 100%); }
+
+        .app-content {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .app * { color: white; }
+        .app.break .app-content * { color: black; }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .settings-btn {
+            background: transparent;
+            border: none;
+            font-size: 36px;
+            cursor: pointer;
+            padding: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .settings-btn:hover {
+            transform: rotate(60deg);
+        }
+
+        .timer-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .timer-ring-wrap {
+            position: relative;
+            width: clamp(320px, 76vmin, 660px);
+            height: clamp(320px, 76vmin, 660px);
+            display: grid;
+            place-items: center;
+            margin-bottom: 10px;
+        }
+
+        .timer-ring {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.25));
+        }
+
+        .ring-track,
+        .ring-progress {
+            fill: none;
+            stroke-width: 7;
+        }
+
+        .ring-track {
+            stroke: rgba(255, 255, 255, 0.2);
+        }
+
+        .ring-progress {
+            stroke: currentColor;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.06s linear, stroke 0.4s ease;
+        }
+
+        .ring-progress.warning {
+            stroke: #ffaa33;
+        }
+
+        .ring-progress.danger {
+            stroke: #ff3333;
+        }
+
+        .timer-display {
+            font-size: clamp(74px, 17vmin, 170px);
+            font-weight: 700;
+            line-height: 1;
+            font-family: 'Courier New', monospace;
+            letter-spacing: -4px;
+            transition: transform 0.1s ease;
+            white-space: nowrap;
+        }
+
+        .timer-display.pulse {
+            animation: timerPulse 0.3s ease;
+        }
+
+        .task-display {
+            font-size: 32px;
+            font-weight: 700;
+            margin-top: 30px;
+            text-align: center;
+            max-width: 80%;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .task-display.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .pre-round-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .pre-round-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .pre-round-box {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            color: #333;
+            transform: scale(0.85);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .pre-round-overlay.show .pre-round-box {
+            transform: scale(1);
+        }
+
+        .pre-round-label {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+
+        .pre-round-task {
+            font-size: 48px;
+            font-weight: 700;
+            color: #ff2b2b;
+            margin-bottom: 30px;
+        }
+
+        .pre-round-countdown {
+            font-size: 80px;
+            font-weight: 700;
+            color: #333;
+            animation: countdownPop 0.9s ease;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            padding: 0 20px 20px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 18px 30px;
+            font-size: 20px;
+            font-weight: 700;
+            border-radius: 12px;
+            border: 3px solid currentColor;
+            background: transparent;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: opacity 0.2s ease, transform 0.2s ease, max-width 0.35s ease, padding 0.35s ease, border-width 0.35s ease, flex 0.35s ease;
+            overflow: hidden;
+            white-space: nowrap;
+            max-width: 400px;
+        }
+
+        .btn:hover:not(:disabled) {
+            opacity: 0.8;
+            transform: scale(1.03);
+        }
+
+        .btn:active:not(:disabled) {
+            transform: scale(0.97);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-start {
+            flex: 1.2;
+            min-width: 120px;
+        }
+
+        .btn-reset {
+            flex: 1;
+            min-width: 100px;
+        }
+
+        .btn-reset.hidden,
+        .btn-continue.hidden,
+        .btn-start.hidden {
+            max-width: 0 !important;
+            min-width: 0 !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            border-left-width: 0 !important;
+            border-right-width: 0 !important;
+            opacity: 0;
+            pointer-events: none;
+            flex: 0 !important;
+        }
+
+        .btn-continue {
+            flex: 1;
+            min-width: 100px;
+        }
+
+        /* Settings Modal */
+        .modal {
+            display: flex;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: #1a1a1a;
+            padding: 30px;
+            border-radius: 20px;
+            max-height: 90vh;
+            overflow-y: auto;
+            width: 90%;
+            max-width: 500px;
+            color: white;
+            transform: scale(0.9) translateY(20px);
+            transition: transform 0.35s cubic-bezier(0.34, 1.3, 0.64, 1);
+        }
+
+        .modal.show .modal-content {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 15px;
+        }
+
+        .settings-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #333;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+
+        .current-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #ff2b2b;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .control-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            flex: 1;
+            min-width: 70px;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .control-btn:hover {
+            opacity: 0.8;
+        }
+
+        .minus-btn {
+            background: #ff2b2b;
+            color: white;
+        }
+
+        .plus-btn {
+            background: #2bff4a;
+            color: black;
+        }
+
+        .preset-btn {
+            width: 100%;
+            padding: 14px;
+            background: #333;
+            border: 2px solid #555;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+        }
+
+        .preset-btn:hover {
+            border-color: #2bff4a;
+        }
+
+        .preset-btn.active {
+            border-color: #2bff4a;
+            background: #1f3a1f;
+            color: #2bff4a;
+        }
+
+        .toggle-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .toggle {
+            width: 60px;
+            height: 34px;
+            background: #555;
+            border: none;
+            border-radius: 17px;
+            cursor: pointer;
+            position: relative;
+            transition: background 0.3s;
+        }
+
+        .toggle.active {
+            background: #2bff4a;
+        }
+
+        .toggle::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: left 0.3s;
+        }
+
+        .toggle.active::after {
+            left: 28px;
+        }
+
+        .task-description {
+            font-size: 14px;
+            color: #aaa;
+            font-style: italic;
+            margin-top: 5px;
+        }
+
+        .diff-btn {
+            flex: 1;
+            min-width: 60px;
+            padding: 10px 8px;
+            font-size: 13px;
+            font-weight: 700;
+            border-radius: 8px;
+            border: 2px solid #555;
+            background: #333;
+            color: white;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+        }
+
+        .diff-btn:hover { border-color: #aaa; }
+        .diff-btn.diff-easy   { }
+        .diff-btn.diff-medium { }
+        .diff-btn.diff-hard   { }
+        .diff-btn.diff-pro    { }
+
+        .diff-btn.active             { background: #2a4a2a; border-color: #2bff4a; color: #2bff4a; }
+        .diff-btn.active.diff-easy   { background: #2a7a2a; border-color: #2bff4a; color: #2bff4a; }
+        .diff-btn.active.diff-medium { background: #2a5c7a; border-color: #4ac8ff; color: #4ac8ff; }
+        .diff-btn.active.diff-hard   { background: #7a4a1a; border-color: #ffaa33; color: #ffaa33; }
+        .diff-btn.active.diff-pro    { background: #7a1a1a; border-color: #ff4444; color: #ff4444; }
+
+        .swipe-hint {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding-bottom: 8px;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+
+        .swipe-hint.visible {
+            opacity: 0.7;
+        }
+
+        .swipe-hint.triggered {
+            opacity: 1;
+            animation: swipeFlyUp 0.45s cubic-bezier(0.2, 0.8, 0.4, 1) forwards;
+        }
+
+        .swipe-hint-arrow {
+            font-size: 28px;
+            animation: swipeArrowBounce 1.2s ease-in-out infinite;
+        }
+
+        .swipe-hint.triggered .swipe-hint-arrow {
+            animation: none;
+        }
+
+        .swipe-hint-label {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        @keyframes swipeArrowBounce {
+            0%, 100% { transform: translateY(0); }
+            50%       { transform: translateY(-8px); }
+        }
+
+        @keyframes swipeFlyUp {
+            0%   { opacity: 1;   transform: translateY(0)   scale(1); }
+            60%  { opacity: 1;   transform: translateY(-60px) scale(1.2); }
+            100% { opacity: 0;   transform: translateY(-120px) scale(0.8); }
+        }
+
+        .swipe-trail {
+            position: fixed;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.55);
+            pointer-events: none;
+            z-index: 9999;
+            animation: swipeTrailFade 0.5s ease forwards;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes swipeTrailFade {
+            0%   { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0;   transform: translate(-50%, -50%) scale(0.2); }
+        }
+
+        .swipe-flash {
+            position: fixed;
+            inset: 0;
+            background: rgba(255,255,255,0.22);
+            pointer-events: none;
+            z-index: 9998;
+            animation: swipeFlash 0.35s ease forwards;
+        }
+
+        @keyframes swipeFlash {
+            0%   { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .save-btn {
+            width: 100%;
+            padding: 16px;
+            background: #2bff4a;
+            color: black;
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+            letter-spacing: 1px;
+            transition: opacity 0.2s;
+        }
+
+        .save-btn:hover {
+            opacity: 0.8;
+        }
+
+        .finished-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .finished-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .finished-box {
+            text-align: center;
+            color: white;
+            animation: fadeScaleIn 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+        }
+
+        .finished-title {
+            font-size: 56px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .finished-subtitle {
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 600px) {
+            .timer-ring-wrap {
+                width: min(94vw, 420px);
+                height: min(94vw, 420px);
+            }
+
+            .ring-track,
+            .ring-progress {
+                stroke-width: 6;
+            }
+
+            .timer-display {
+                font-size: min(26vw, 110px);
+                letter-spacing: -3px;
+            }
+
+            .task-display {
+                font-size: 24px;
+            }
+
+            .pre-round-task {
+                font-size: 36px;
+            }
+
+            .pre-round-countdown {
+                font-size: 60px;
+            }
+
+            .btn {
+                padding: 16px 20px;
+                font-size: 16px;
+            }
+        }
+
+        /* ── Landscape phone layout ── */
+        @media (orientation: landscape) and (max-height: 520px) {
+            .top-bar {
+                position: absolute;
+                top: 0; left: 0; right: 0;
+                padding: 5px 14px;
+                font-size: 16px;
+                z-index: 5;
+            }
+
+            .settings-btn {
+                font-size: 26px;
+                padding: 4px 8px;
+            }
+
+            .app-content {
+                flex-direction: row;
+                padding-top: 36px;
+                align-items: stretch;
+            }
+
+            .timer-section {
+                flex: 0 0 auto;
+                padding: 4px 6px 4px 10px;
+                justify-content: center;
+            }
+
+            .timer-ring-wrap {
+                width: min(56vh, 270px);
+                height: min(56vh, 270px);
+                margin-bottom: 0;
+            }
+
+            .ring-track,
+            .ring-progress {
+                stroke-width: 5;
+            }
+
+            .timer-display {
+                font-size: min(15vh, 68px);
+                letter-spacing: -2px;
+            }
+
+            .task-display {
+                font-size: 13px;
+                margin-top: 6px;
+                max-width: 220px;
+            }
+
+            /* Controls column on the right */
+            .controls {
+                flex: 1;
+                flex-direction: column;
+                padding: 10px 16px 10px 8px;
+                justify-content: center;
+                gap: 10px;
+            }
+
+            .btn {
+                padding: 12px 18px;
+                font-size: 15px;
+                flex: none;
+                width: 100%;
+                max-width: none;
+            }
+
+            /* Replace slide-width animation with height-based for column layout */
+            .btn-reset.hidden,
+            .btn-continue.hidden,
+            .btn-start.hidden {
+                max-width: none !important;
+                min-width: 0 !important;
+                max-height: 0 !important;
+                padding-top: 0 !important;
+                padding-bottom: 0 !important;
+                border-top-width: 0 !important;
+                border-bottom-width: 0 !important;
+                margin: 0 !important;
+            }
+
+            .swipe-hint {
+                padding-bottom: 0;
+                padding-right: 8px;
+                align-self: flex-end;
+            }
+        }
+
+        /* ===== TUTORIAL ===== */
+        .tut-welcome {
+            position: fixed;
+            inset: 0;
+            z-index: 9000;
+            background: rgba(0,0,0,0.82);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: tutFadeIn 0.35s ease;
+        }
+        .tut-welcome-box {
+            background: #1a1a1a;
+            border: 2px solid #2bff4a;
+            border-radius: 20px;
+            padding: 36px 32px 28px;
+            max-width: 340px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(43,255,74,0.18);
+        }
+        .tut-welcome-icon { font-size: 52px; margin-bottom: 12px; }
+        .tut-welcome-title {
+            font-size: 22px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: #2bff4a;
+            margin-bottom: 10px;
+        }
+        .tut-welcome-text {
+            font-size: 14px;
+            color: #ccc;
+            line-height: 1.6;
+            margin-bottom: 28px;
+        }
+        .tut-welcome-btns {
+            display: flex;
+            gap: 12px;
+        }
+        .tut-btn-yes, .tut-btn-no {
+            flex: 1;
+            padding: 12px 0;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform 0.1s, filter 0.1s;
+        }
+        .tut-btn-yes:active, .tut-btn-no:active { transform: scale(0.96); }
+        .tut-btn-yes {
+            background: #2bff4a;
+            color: #000;
+        }
+        .tut-btn-no {
+            background: transparent;
+            border-color: #555;
+            color: #999;
+        }
+        /* Spotlight overlay */
+        .tut-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 8900;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .tut-overlay.active { pointer-events: all; }
+        /* Tooltip */
+        .tut-tooltip {
+            position: fixed;
+            z-index: 9100;
+            background: #1a1a1a;
+            border: 2px solid #2bff4a;
+            border-radius: 16px;
+            padding: 18px 20px 14px;
+            max-width: 300px;
+            width: calc(100vw - 40px);
+            box-shadow: 0 0 30px rgba(43,255,74,0.2);
+        }
+        .tut-tooltip.anim-in-fwd {
+            animation: tutSlideInFwd 0.24s cubic-bezier(0.2,0.8,0.3,1) forwards;
+        }
+        .tut-tooltip.anim-in-back {
+            animation: tutSlideInBack 0.24s cubic-bezier(0.2,0.8,0.3,1) forwards;
+        }
+        .tut-tooltip.anim-out-fwd {
+            animation: tutSlideOutFwd 0.17s ease-in forwards;
+            pointer-events: none;
+        }
+        .tut-tooltip.anim-out-back {
+            animation: tutSlideOutBack 0.17s ease-in forwards;
+            pointer-events: none;
+        }
+        @keyframes tutSlideInFwd {
+            from { opacity: 0; transform: translateX(36px) scale(0.96); }
+            to   { opacity: 1; transform: translateX(0)    scale(1); }
+        }
+        @keyframes tutSlideInBack {
+            from { opacity: 0; transform: translateX(-36px) scale(0.96); }
+            to   { opacity: 1; transform: translateX(0)     scale(1); }
+        }
+        @keyframes tutSlideOutFwd {
+            from { opacity: 1; transform: translateX(0)     scale(1); }
+            to   { opacity: 0; transform: translateX(-36px) scale(0.96); }
+        }
+        @keyframes tutSlideOutBack {
+            from { opacity: 1; transform: translateX(0)    scale(1); }
+            to   { opacity: 0; transform: translateX(36px) scale(0.96); }
+        }
+        .tut-step-num {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #2bff4a;
+            margin-bottom: 6px;
+        }
+        .tut-tooltip-title {
+            font-size: 16px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+        .tut-tooltip-text {
+            font-size: 13px;
+            color: #bbb;
+            line-height: 1.55;
+            margin-bottom: 16px;
+        }
+        .tut-tooltip-nav {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .tut-nav-btn {
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform 0.1s;
+        }
+        .tut-nav-btn:active { transform: scale(0.95); }
+        .tut-nav-next {
+            background: #2bff4a;
+            color: #000;
+            flex: 1;
+        }
+        .tut-nav-prev {
+            background: transparent;
+            border-color: #444;
+            color: #888;
+        }
+        .tut-nav-skip {
+            background: transparent;
+            border-color: transparent;
+            color: #555;
+            font-size: 12px;
+            padding: 8px 10px;
+            margin-left: auto;
+        }
+        .tut-dots {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            margin: 0 4px;
+        }
+        .tut-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #333;
+            transition: background 0.2s;
+        }
+        .tut-dot.active { background: #2bff4a; }
+        @keyframes tutFadeIn {
+            from { opacity: 0; transform: scale(0.94); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+        @keyframes tutDotBounce {
+            0%   { transform: scale(1); }
+            40%  { transform: scale(1.5); }
+            100% { transform: scale(1); }
+        }
+        .tut-dot.active { animation: tutDotBounce 0.3s ease; }
+        .tut-highlight-pulse {
+            position: fixed;
+            border-radius: 16px;
+            border: 2.5px solid #2bff4a;
+            z-index: 8950;
+            pointer-events: none;
+            animation: tutPulse 1.4s ease-in-out infinite;
+            box-shadow: 0 0 18px rgba(43,255,74,0.35);
+        }
+        @keyframes tutPulse {
+            0%, 100% { box-shadow: 0 0 12px rgba(43,255,74,0.3); }
+            50%       { box-shadow: 0 0 28px rgba(43,255,74,0.7); }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <div class="bg-layer bg-idle"  id="bgIdle"></div>
+        <div class="bg-layer bg-round" id="bgRound"></div>
+        <div class="bg-layer bg-break" id="bgBreak"></div>
+
+        <div class="app-content">
+            <div class="top-bar">
+                <div class="phase-label" id="phaseLabel">ROUND 1/5</div>
+                <button class="settings-btn" onclick="openSettings()">⚙️</button>
+            </div>
+            <div class="timer-section">
+                <div class="timer-ring-wrap">
+                    <svg class="timer-ring" viewBox="0 0 100 100" aria-hidden="true">
+                        <circle class="ring-track" cx="50" cy="50" r="46"></circle>
+                        <circle class="ring-progress" id="progressCircle" cx="50" cy="50" r="46"></circle>
+                    </svg>
+                    <div class="timer-display" id="timerDisplay">00:03</div>
+                </div>
+                <div class="task-display" id="taskDisplay"></div>
+            </div>
+
+            <div class="swipe-hint" id="swipeHint">
+                <div class="swipe-hint-arrow">↑</div>
+                <div class="swipe-hint-label">SKIP BREAK</div>
+            </div>
+            <div class="controls">
+                <button class="btn btn-start" id="startBtn" onclick="toggleTimer()">START</button>
+                <button class="btn btn-reset hidden" id="resetBtn" onclick="resetTimer()">RESET</button>
+                <button class="btn btn-continue hidden" id="continueBtn" onclick="continueTimer()">CONTINUE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tutorial Welcome -->
+    <div class="tut-welcome" id="tutWelcome" style="display:none">
+        <div class="tut-welcome-box">
+            <div class="tut-welcome-icon">🥊</div>
+            <div class="tut-welcome-title">WELCOME TO STRIKEFLOW</div>
+            <div class="tut-welcome-text">Your boxing interval timer.<br>Would you like a quick tour of the app?</div>
+            <div class="tut-welcome-btns">
+                <button class="tut-btn-yes" onclick="startTutorial()">YES, SHOW ME</button>
+                <button class="tut-btn-no" onclick="skipTutorial()">SKIP</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tutorial Spotlight Overlay -->
+    <canvas class="tut-overlay" id="tutOverlay"></canvas>
+    <div class="tut-highlight-pulse" id="tutHighlight" style="display:none"></div>
+    <div class="tut-tooltip" id="tutTooltip" style="display:none">
+        <div class="tut-step-num" id="tutStepNum">STEP 1/5</div>
+        <div class="tut-tooltip-title" id="tutTitle"></div>
+        <div class="tut-tooltip-text" id="tutText"></div>
+        <div class="tut-tooltip-nav">
+            <button class="tut-nav-btn tut-nav-prev" id="tutPrevBtn" onclick="tutPrev()">←</button>
+            <div class="tut-dots" id="tutDots"></div>
+            <button class="tut-nav-btn tut-nav-next" id="tutNextBtn" onclick="tutNext()">NEXT</button>
+            <button class="tut-nav-btn tut-nav-skip" onclick="skipTutorial()">SKIP</button>
+        </div>
+    </div>
+
+    <!-- Pre-round Overlay -->
+    <div class="pre-round-overlay" id="preRoundOverlay">
+        <div class="pre-round-box">
+            <div class="pre-round-label">GET READY!</div>
+            <div class="pre-round-task" id="preRoundTask"></div>
+            <div class="pre-round-countdown" id="preRoundCountdown">3</div>
+        </div>
+    </div>
+
+    <!-- Finished Overlay -->
+    <div class="finished-overlay" id="finishedOverlay">
+        <div class="finished-box">
+            <div class="finished-title">SESSION COMPLETE! 🏆</div>
+            <div class="finished-subtitle">Great workout!</div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+
+            <!-- MAIN VIEW -->
+            <div id="settingsMain">
+                <div class="modal-title">SETTINGS</div>
+
+                <!-- Presets -->
+                <div class="settings-section">
+                    <div class="section-title">QUICK PRESETS</div>
+                    <button class="preset-btn" id="preset-k1" onclick="applyPreset(180, 60, 3, 'k1')">K1: 3x3min</button>
+                    <button class="preset-btn" id="preset-muaythai" onclick="applyPreset(180, 60, 5, 'muaythai')">Muay Thai: 5x3min</button>
+                    <button class="preset-btn" id="preset-conditioning" onclick="applyPreset(60, 30, 10, 'conditioning')">Conditioning: 10x1min</button>
+                    <button class="preset-btn" id="preset-custom" onclick="openCustomView()">✏️ Custom</button>
+                </div>
+
+                <!-- Task Spar Toggle -->
+                <div class="settings-section">
+                    <div class="toggle-container">
+                        <div class="section-title">TASK SPAR MODE</div>
+                        <button class="toggle" id="taskSparToggle" onclick="toggleTaskSpar()"></button>
+                    </div>
+                    <div class="task-description" id="taskSparDesc">Disabled - timer only mode</div>
+
+                    <!-- Difficulty & Notation selector -->
+                    <div id="difficultySection" style="margin-top:16px; display:none;">
+                        <div class="section-title" style="margin-bottom:10px;">DIFFICULTY</div>
+                        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                            <button class="diff-btn" id="diff-easy"  onclick="setDifficulty('easy')">EASY</button>
+                            <button class="diff-btn" id="diff-medium" onclick="setDifficulty('medium')">MEDIUM</button>
+                            <button class="diff-btn" id="diff-hard"  onclick="setDifficulty('hard')">HARD</button>
+                            <button class="diff-btn" id="diff-pro"   onclick="setDifficulty('pro')">PRO</button>
+                        </div>
+                        <div class="section-title" style="margin-bottom:10px; margin-top:16px;">NOTATION</div>
+                        <div style="display:flex; gap:8px;">
+                            <button class="diff-btn" id="notation-text"    onclick="setNotation('text')"    style="flex:1">TEXT</button>
+                            <button class="diff-btn" id="notation-numbers" onclick="setNotation('numbers')" style="flex:1">NUMBERS</button>
+                        </div>
+                        <div style="font-size:12px; color:#888; margin-top:8px; font-style:italic;">1=jab &nbsp; 2=cross &nbsp; 3=hook &nbsp; 4=rear hook &nbsp; 6=uppercut</div>
+                    </div>
+                </div>
+
+                <button class="save-btn" onclick="closeSettings()">SAVE & CLOSE</button>
+            </div>
+
+            <!-- CUSTOM VIEW -->
+            <div id="settingsCustom" style="display:none">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
+                    <button onclick="closeCustomView()" style="background:transparent;border:2px solid #555;color:white;font-size:20px;font-weight:700;padding:8px 16px;border-radius:8px;cursor:pointer;">← Back</button>
+                    <div class="modal-title" style="margin:0;border:none;padding:0;">CUSTOM</div>
+                </div>
+
+                <!-- Round Time -->
+                <div class="settings-section">
+                    <div class="section-title">ROUND TIME</div>
+                    <div class="current-value" id="roundTimeDisplay">3:00</div>
+                    <div class="control-row">
+                        <button class="control-btn minus-btn" onclick="adjustRoundTime(-30)">-30s</button>
+                        <button class="control-btn minus-btn" onclick="adjustRoundTime(-5)">-5s</button>
+                        <button class="control-btn plus-btn" onclick="adjustRoundTime(5)">+5s</button>
+                        <button class="control-btn plus-btn" onclick="adjustRoundTime(30)">+30s</button>
+                    </div>
+                </div>
+
+                <!-- Break Time -->
+                <div class="settings-section">
+                    <div class="section-title">BREAK TIME</div>
+                    <div class="current-value" id="breakTimeDisplay">1:00</div>
+                    <div class="control-row">
+                        <button class="control-btn minus-btn" onclick="adjustBreakTime(-15)">-15s</button>
+                        <button class="control-btn minus-btn" onclick="adjustBreakTime(-5)">-5s</button>
+                        <button class="control-btn plus-btn" onclick="adjustBreakTime(5)">+5s</button>
+                        <button class="control-btn plus-btn" onclick="adjustBreakTime(15)">+15s</button>
+                    </div>
+                </div>
+
+                <!-- Number of Rounds -->
+                <div class="settings-section">
+                    <div class="section-title">NUMBER OF ROUNDS</div>
+                    <div class="current-value" id="roundsDisplay">5</div>
+                    <div class="control-row">
+                        <button class="control-btn minus-btn" onclick="adjustRounds(-1)">-1</button>
+                        <button class="control-btn minus-btn" onclick="adjustRounds(-5)">-5</button>
+                        <button class="control-btn plus-btn" onclick="adjustRounds(5)">+5</button>
+                        <button class="control-btn plus-btn" onclick="adjustRounds(1)">+1</button>
+                    </div>
+                </div>
+
+                <button class="save-btn" onclick="closeSettings()">SAVE & CLOSE</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Training tasks by difficulty
+        const TASKS = {
+            easy: [
+                "Land 5x jabs",
+                "Land 3x crosses",
+                "Land 3x low kicks",
+                "Land 5x body kicks",
+                "Land 3x teeps",
+                "Land 5x jabs to the body",
+                "Dodge 5x punches",
+                "Block 5x kicks",
+                "Land 3x lead hooks",
+                "Land 5x straights",
+                "Land 3x rear hooks",
+                "Land 5x body shots"
+            ],
+            medium: [
+                "Land 5x low kicks",
+                "Land 3x knees",
+                "Land 8x jabs",
+                "Land 5x 1-2 combos",
+                "Land 3x teep, jab combos",
+                "Land 5x body kick combos",
+                "Land 3x uppercuts",
+                "Dodge 8x punches",
+                "Land 3x 1-2 combos",
+                "Land 5x counter punches",
+                "Land 5x cross, hook combos",
+                "Land 3x jab, low kick combos"
+            ],
+            hard: [
+                "Land 5x jab, hook, low kick",
+                "Land 5x 1-2-3 combos",
+                "Land 10x 1-2 high kick",
+                "Land 3x knee, punch combos",
+                "Land 5x jab, cross, hook",
+                "Slip 10x punches and counter",
+                "Land 3x 1-2-3-2 combos",
+                "Land 5x teep, follow-up combo",
+                "Land 5x body, head combos",
+                "Land 3x kick, punch, kick combos",
+                "Land 5x 1-2 body then head",
+                "Land 3x jab, cross, low kick"
+            ],
+            pro: [
+                "Land 20x jabs",
+                "Land 10x 1-1-2-3 low kick",
+                "Land 5x 1-2-3-2-3 combos",
+                "Land 15x crosses",
+                "Land 10x 1-2-hook-body-head",
+                "Land 20x low kicks",
+                "Land 10x 1-2-3 low kick combos",
+                "Dodge 15x punches",
+                "Land 5x 4-punch + kick combos",
+                "Land 10x 1-2-1 high kick combos",
+                "Land 5x 1-2-hook-uppercut",
+                "Land 15x knees in clinch"
+            ]
+        };
+
+        // Legacy fallback
+        const TRAINING_TASKS = [
+            "Land 15x jabs",
+            "Land 10x crosses",
+            "Land 5x 1-2 combinations",
+            "Land 5x 1-2-3 combinations",
+            "Land 5x 1-2-3-2 combinations",
+            "Land 10x low kicks",
+            "Land 10x body kicks",
+            "Land 5x teeps",
+            "Land 5x lead hooks",
+            "Land 5x rear hooks",
+            "Land 5x body shots",
+            "Land 5x uppercuts",
+            "Dodge 10x punches",
+            "Block 10x kicks",
+            "Slip 8x punches",
+            "Land 3x jab-teep combos",
+            "Land 3x kick-punch combos",
+            "Land 5x counter punches",
+            "Land 3x clinch knees",
+            "Land 10x jabs to the body"
+        ];
+
+        // Settings
+        let settings = {
+            roundTime: 180,
+            breakTime: 60,
+            numberOfRounds: 5,
+            taskSparEnabled: false,
+            difficulty: 'medium',
+            notation: 'text'
+        };
+
+        let selectedPreset = 'muaythai';
+
+        // State
+        let timerState = {
+            timeLeft: 180,
+            isRound: true,
+            currentRound: 1,
+            isRunning: false,
+            isFinished: false
+        };
+
+        let taskState = {
+            currentTask: "",
+            previousTask: "",
+            showingPreRound: false,
+            preRoundCountdown: 3
+        };
+
+        let intervalId = null;
+        let lastTickMs = null;
+        let lastWholeSecond = null;
+        let audioCtx = null;
+        let wakeLock = null;
+
+        async function requestWakeLock() {
+            if (!('wakeLock' in navigator)) return;
+            try {
+                wakeLock = await navigator.wakeLock.request('screen');
+            } catch (e) {}
+        }
+
+        function releaseWakeLock() {
+            if (wakeLock) {
+                wakeLock.release().catch(() => {});
+                wakeLock = null;
+            }
+        }
+
+        // Re-acquire wake lock if page becomes visible again while running
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && timerState.isRunning) {
+                requestWakeLock();
+            }
+        });
+
+        // DOM Elements
+        const app = document.querySelector('.app');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const taskDisplay = document.getElementById('taskDisplay');
+        const phaseLabel = document.getElementById('phaseLabel');
+        const startBtn = document.getElementById('startBtn');
+        const continueBtn = document.getElementById('continueBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const progressCircle = document.getElementById('progressCircle');
+        const preRoundOverlay = document.getElementById('preRoundOverlay');
+        const preRoundTask = document.getElementById('preRoundTask');
+        const preRoundCountdown = document.getElementById('preRoundCountdown');
+        const finishedOverlay = document.getElementById('finishedOverlay');
+        const bgIdle  = document.getElementById('bgIdle');
+        const bgRound = document.getElementById('bgRound');
+        const bgBreak = document.getElementById('bgBreak');
+
+        const progressRadius = Number(progressCircle.getAttribute('r'));
+        const progressCircumference = 2 * Math.PI * progressRadius;
+        progressCircle.style.strokeDasharray = `${progressCircumference}`;
+        progressCircle.style.strokeDashoffset = '0';
+
+        function setBg(state) {
+            bgIdle.style.opacity  = state === 'idle'  ? '1' : '0';
+            bgRound.style.opacity = state === 'round' ? '1' : '0';
+            bgBreak.style.opacity = state === 'break' ? '1' : '0';
+            app.classList.toggle('break', state === 'break');
+        }
+
+        function updateRingWarning() {
+            if (!timerState.isRunning || timerState.isFinished || !timerState.isRound) {
+                progressCircle.classList.remove('warning', 'danger');
+                return;
+            }
+            const t = timerState.timeLeft;
+            progressCircle.classList.toggle('danger',  t <= 5 && t > 0);
+            progressCircle.classList.toggle('warning', t <= 10 && t > 5);
+        }
+
+        function ensureAudioReady() {
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                return audioCtx;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // Format time as MM:SS
+        function formatTime(seconds) {
+            const total = Math.max(0, Math.ceil(seconds));
+            const mins = Math.floor(total / 60);
+            const secs = total % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Update UI
+        function updateUI() {
+            timerDisplay.textContent = formatTime(timerState.timeLeft);
+
+            const swipeHint = document.getElementById('swipeHint');
+            swipeHint.classList.toggle('visible',
+                timerState.isRunning && !timerState.isRound && !timerState.isFinished);
+
+            const maxTime = timerState.isRound ? settings.roundTime : settings.breakTime;
+            const progress = Math.max(0, timerState.timeLeft / maxTime);
+            const offset = progressCircumference * (1 - progress);
+            progressCircle.style.strokeDashoffset = `${offset}`;
+
+            phaseLabel.textContent = timerState.isRound 
+                ? `ROUND ${timerState.currentRound}/${settings.numberOfRounds}`
+                : 'BREAK';
+
+            // Background crossfade
+            const isIdle = !timerState.isRunning && timerState.timeLeft === settings.roundTime && timerState.currentRound === 1;
+            if (timerState.isFinished || isIdle) {
+                setBg('idle');
+            } else {
+                setBg(timerState.isRound ? 'round' : 'break');
+            }
+
+            startBtn.textContent = timerState.isRunning ? 'STOP' : 'START';
+            startBtn.disabled = timerState.isFinished;
+
+            // Show/hide buttons with animation
+            if (timerState.isFinished) {
+                startBtn.classList.add('hidden');
+                resetBtn.classList.remove('hidden');
+                continueBtn.classList.add('hidden');
+            } else if (timerState.isRunning) {
+                startBtn.classList.remove('hidden');
+                resetBtn.classList.add('hidden');
+                continueBtn.classList.add('hidden');
+            } else if (timerState.timeLeft < settings.roundTime || timerState.currentRound > 1) {
+                startBtn.classList.add('hidden');
+                resetBtn.classList.remove('hidden');
+                continueBtn.classList.remove('hidden');
+            } else {
+                startBtn.classList.remove('hidden');
+                resetBtn.classList.add('hidden');
+                continueBtn.classList.add('hidden');
+            }
+
+            // Task display with fade animation
+            const showTask = settings.taskSparEnabled && timerState.isRound && taskState.currentTask && !taskState.showingPreRound;
+            taskDisplay.classList.toggle('visible', showTask);
+            if (showTask) taskDisplay.textContent = formatTaskForNotation(taskState.currentTask);
+
+            // Initialize task for round 1 if not already set
+            if (settings.taskSparEnabled && timerState.isRound && timerState.currentRound === 1 && !taskState.currentTask && !taskState.showingPreRound) {
+                const newTask = getRandomTask();
+                taskState.currentTask = newTask;
+                taskState.previousTask = newTask;
+            }
+        }
+
+        // Convert task text to number notation
+        function toNumbers(task) {
+            return task
+                .replace(/\bjab-jab\b/gi, '1-1')
+                .replace(/\bjabs? to the body\b/gi, '1 body')
+                .replace(/\bjabs?\b/gi, '1')
+                .replace(/\bcrosses? to the body\b/gi, '2 body')
+                .replace(/\bcross(es)?\b/gi, '2')
+                .replace(/\blead hooks?\b/gi, '3')
+                .replace(/\brear hooks?\b/gi, '4')
+                .replace(/\bhooks?\b/gi, '3')
+                .replace(/\blead uppercuts?\b/gi, '5')
+                .replace(/\buppercuts?\b/gi, '6')
+                .replace(/\bstraights?\b/gi, '2');
+        }
+
+        // Convert number notation back to text notation (best-effort)
+        function toText(task) {
+            return task
+                .replace(/\b1-1\b/gi, 'jab-jab')
+                .replace(/\b1\b(?!-punch)/gi, 'jab')
+                .replace(/\b2\b(?!-punch)/gi, 'cross')
+                .replace(/\b3\b(?!-punch)/gi, 'hook')
+                .replace(/\b4\b(?!-punch)/gi, 'rear hook')
+                .replace(/\b5\b(?!-punch)/gi, 'lead uppercut')
+                .replace(/\b6\b(?!-punch)/gi, 'uppercut');
+        }
+
+        function formatTaskForNotation(task) {
+            const baseText = toText(task);
+            return settings.notation === 'numbers' ? toNumbers(baseText) : baseText;
+        }
+
+        // Get random task
+        function getRandomTask(exclude = null) {
+            let pool = TASKS[settings.difficulty] || TASKS.medium;
+            let available = exclude ? pool.filter(t => t !== exclude) : pool;
+            if (available.length === 0) available = pool;
+            return available[Math.floor(Math.random() * available.length)];
+        }
+
+        // Timer tick
+        function tick() {
+            if (!timerState.isRunning || timerState.isFinished) return;
+
+            const now = performance.now();
+            if (lastTickMs === null) {
+                lastTickMs = now;
+                return;
+            }
+
+            const deltaSeconds = (now - lastTickMs) / 1000;
+            lastTickMs = now;
+            timerState.timeLeft = Math.max(0, timerState.timeLeft - deltaSeconds);
+
+            const wholeSeconds = Math.ceil(timerState.timeLeft);
+            if (wholeSeconds !== lastWholeSecond) {
+                lastWholeSecond = wholeSeconds;
+
+                // Pulse animation on each visible second change
+                timerDisplay.classList.remove('pulse');
+                void timerDisplay.offsetWidth; // reflow to restart animation
+                timerDisplay.classList.add('pulse');
+            }
+
+            updateUI();
+            updateRingWarning();
+
+            // 10-second warning beep
+            if (wholeSeconds === 10 && timerState.isRound) {
+                playWarning();
+                if (navigator.vibrate) navigator.vibrate(200);
+            }
+
+            if (timerState.timeLeft <= 0) {
+                timerState.timeLeft = 0;
+                handleTransition();
+                lastTickMs = performance.now();
+                lastWholeSecond = Math.ceil(timerState.timeLeft);
+            }
+        }
+
+        // Handle transition between round/break
+        function skipBreak() {
+            if (!timerState.isRunning || timerState.isRound || timerState.isFinished) return;
+            timerState.timeLeft = 0;
+            handleTransition();
+            lastTickMs = performance.now();
+            lastWholeSecond = Math.ceil(timerState.timeLeft);
+        }
+
+        function handleTransition() {
+            if (timerState.isRound) {
+                // Round ending
+                playRoundEnd();
+                if (timerState.currentRound >= settings.numberOfRounds) {
+                    timerState.isFinished = true;
+                    timerState.isRunning = false;
+                    releaseWakeLock();
+                    finishedOverlay.classList.add('show');
+                    updateUI();
+                    return;
+                }
+                timerState.isRound = false;
+                timerState.timeLeft = settings.breakTime;
+                progressCircle.classList.remove('warning', 'danger');
+            } else {
+                // Break ending, new round starting
+                playRoundStart();
+                timerState.isRound = true;
+                timerState.currentRound++;
+                timerState.timeLeft = settings.roundTime;
+                
+                if (settings.taskSparEnabled) {
+                    startPreRound();
+                }
+            }
+            updateUI();
+        }
+
+        // Start pre-round display
+        function startPreRound() {
+            const newTask = getRandomTask(taskState.previousTask);
+            taskState.currentTask = newTask;
+            taskState.previousTask = newTask;
+            taskState.showingPreRound = true;
+            taskState.preRoundCountdown = 3;
+            
+            preRoundTask.textContent = formatTaskForNotation(newTask);
+            preRoundCountdown.textContent = 3;
+            preRoundOverlay.classList.add('show');
+            
+            const countdownInterval = setInterval(() => {
+                taskState.preRoundCountdown--;
+                if (taskState.preRoundCountdown >= 0) {
+                    // Restart animation by removing and re-adding class
+                    preRoundCountdown.style.animation = 'none';
+                    void preRoundCountdown.offsetWidth;
+                    preRoundCountdown.style.animation = '';
+                    preRoundCountdown.textContent = taskState.preRoundCountdown;
+                }
+                if (taskState.preRoundCountdown < 0) {
+                    clearInterval(countdownInterval);
+                    taskState.showingPreRound = false;
+                    preRoundOverlay.classList.remove('show');
+                    updateUI();
+                }
+            }, 1000);
+        }
+
+        // Toggle timer (START/STOP)
+        function toggleTimer() {
+            if (timerState.isFinished) return;
+            timerState.isRunning = !timerState.isRunning;
+            updateUI();
+
+            if (timerState.isRunning) {
+                ensureAudioReady();
+                requestWakeLock();
+                const isInitialRoundStart = timerState.isRound && timerState.currentRound === 1 && timerState.timeLeft === settings.roundTime;
+                if (isInitialRoundStart) playRoundStart();
+                lastTickMs = performance.now();
+                lastWholeSecond = Math.ceil(timerState.timeLeft);
+                intervalId = setInterval(tick, 50);
+            } else {
+                clearInterval(intervalId);
+                lastTickMs = null;
+                releaseWakeLock();
+            }
+        }
+
+        // Continue timer (same as start but button only shows when paused)
+        function continueTimer() {
+            if (timerState.isFinished || timerState.isRunning) return;
+            timerState.isRunning = true;
+            ensureAudioReady();
+            requestWakeLock();
+            lastTickMs = performance.now();
+            lastWholeSecond = Math.ceil(timerState.timeLeft);
+            intervalId = setInterval(tick, 50);
+            updateUI();
+        }
+
+        // Reset timer
+        function resetTimer() {
+            clearInterval(intervalId);
+            timerState = {
+                timeLeft: settings.roundTime,
+                isRound: true,
+                currentRound: 1,
+                isRunning: false,
+                isFinished: false
+            };
+            lastTickMs = null;
+            lastWholeSecond = Math.ceil(settings.roundTime);
+            taskState = {
+                currentTask: "",
+                previousTask: "",
+                showingPreRound: false,
+                preRoundCountdown: 3
+            };
+            finishedOverlay.classList.remove('show');
+            preRoundOverlay.classList.remove('show');
+            updateUI();
+            
+            // Generate first task if Task Spar is enabled
+            if (settings.taskSparEnabled) {
+                const firstTask = getRandomTask();
+                taskState.currentTask = firstTask;
+                taskState.previousTask = firstTask;
+                updateUI();
+            }
+        }
+
+        // Settings
+        function openSettings() {
+            document.getElementById('settingsModal').classList.add('show');
+        }
+
+        function closeSettings() {
+            document.getElementById('settingsModal').classList.remove('show');
+            document.getElementById('settingsCustom').style.display = 'none';
+            document.getElementById('settingsMain').style.display = 'block';
+            updateSettingsUI();
+            resetTimer();
+        }
+
+        function updateSettingsUI() {
+            document.getElementById('roundTimeDisplay').textContent = formatTime(settings.roundTime);
+            document.getElementById('breakTimeDisplay').textContent = formatTime(settings.breakTime);
+            document.getElementById('roundsDisplay').textContent = settings.numberOfRounds;
+            
+            const toggle = document.getElementById('taskSparToggle');
+            toggle.classList.toggle('active', settings.taskSparEnabled);
+            
+            const desc = document.getElementById('taskSparDesc');
+            desc.textContent = settings.taskSparEnabled 
+                ? 'Random tasks will appear each round'
+                : 'Disabled - timer only mode';
+
+            // Show/hide difficulty section
+            document.getElementById('difficultySection').style.display = settings.taskSparEnabled ? 'block' : 'none';
+
+            // Highlight active difficulty button
+            ['easy', 'medium', 'hard', 'pro'].forEach(d => {
+                const btn = document.getElementById('diff-' + d);
+                if (btn) {
+                    btn.classList.toggle('active', settings.difficulty === d);
+                    btn.classList.toggle('diff-' + d, true);
+                }
+            });
+
+            // Highlight active preset button
+                        // Highlight active notation button
+                        ['text', 'numbers'].forEach(n => {
+                            const btn = document.getElementById('notation-' + n);
+                            if (btn) btn.classList.toggle('active', settings.notation === n);
+                        });
+
+                        // Highlight active preset button
+            ['k1', 'muaythai', 'conditioning', 'custom'].forEach(id => {
+                const btn = document.getElementById('preset-' + id);
+                if (btn) btn.classList.toggle('active', selectedPreset === id);
+            });
+        }
+
+        function setDifficulty(d) {
+            settings.difficulty = d;
+            updateSettingsUI();
+        }
+
+        function setNotation(n) {
+            settings.notation = n;
+            if (taskState.currentTask) {
+                taskDisplay.textContent = formatTaskForNotation(taskState.currentTask);
+            }
+            if (taskState.showingPreRound && taskState.currentTask) {
+                preRoundTask.textContent = formatTaskForNotation(taskState.currentTask);
+            }
+            updateSettingsUI();
+            updateUI();
+        }
+
+        function adjustRoundTime(delta) {
+            settings.roundTime = Math.max(10, Math.min(600, settings.roundTime + delta));
+            selectedPreset = 'custom';
+            updateSettingsUI();
+        }
+
+        function adjustBreakTime(delta) {
+            settings.breakTime = Math.max(5, Math.min(300, settings.breakTime + delta));
+            selectedPreset = 'custom';
+            updateSettingsUI();
+        }
+
+        function adjustRounds(delta) {
+            settings.numberOfRounds = Math.max(1, Math.min(20, settings.numberOfRounds + delta));
+            selectedPreset = 'custom';
+            updateSettingsUI();
+        }
+
+        function toggleTaskSpar() {
+            settings.taskSparEnabled = !settings.taskSparEnabled;
+            updateSettingsUI();
+        }
+
+        function applyPreset(round, brk, rounds, name) {
+            settings.roundTime = round;
+            settings.breakTime = brk;
+            settings.numberOfRounds = rounds;
+            selectedPreset = name;
+            updateSettingsUI();
+        }
+
+        function selectCustomPreset() {
+            selectedPreset = 'custom';
+            updateSettingsUI();
+        }
+
+        function openCustomView() {
+            selectedPreset = 'custom';
+            document.getElementById('settingsMain').style.display = 'none';
+            document.getElementById('settingsCustom').style.display = 'block';
+            updateSettingsUI();
+        }
+
+        function closeCustomView() {
+            document.getElementById('settingsCustom').style.display = 'none';
+            document.getElementById('settingsMain').style.display = 'block';
+            updateSettingsUI();
+        }
+
+        // Round START sound - 3 quick ascending beeps (boxing bell)
+        function playWarning() {
+            try {
+                const ac = ensureAudioReady();
+                if (!ac) return;
+                const osc = ac.createOscillator();
+                const gain = ac.createGain();
+                osc.connect(gain);
+                gain.connect(ac.destination);
+                osc.frequency.value = 960;
+                osc.type = 'sine';
+                gain.gain.setValueAtTime(0.6, ac.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ac.currentTime + 0.3);
+                osc.start(ac.currentTime);
+                osc.stop(ac.currentTime + 0.3);
+            } catch (e) {}
+        }
+
+        function playRoundStart() {
+            try {
+                const ac = ensureAudioReady();
+                if (!ac) return;
+                [0, 0.18, 0.36].forEach((delay, i) => {
+                    const osc = ac.createOscillator();
+                    const gain = ac.createGain();
+                    osc.connect(gain);
+                    gain.connect(ac.destination);
+                    osc.frequency.value = 820 + i * 140;
+                    osc.type = 'triangle';
+                    gain.gain.setValueAtTime(0.7, ac.currentTime + delay);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ac.currentTime + delay + 0.45);
+                    osc.start(ac.currentTime + delay);
+                    osc.stop(ac.currentTime + delay + 0.45);
+                });
+                if (navigator.vibrate) navigator.vibrate([150, 80, 150]);
+            } catch (e) {}
+        }
+
+        // Round END sound - long descending bell
+        function playRoundEnd() {
+            try {
+                const ac = ensureAudioReady();
+                if (!ac) return;
+                [0, 0.12, 0.24].forEach(delay => {
+                    const osc = ac.createOscillator();
+                    const gain = ac.createGain();
+                    osc.connect(gain);
+                    gain.connect(ac.destination);
+                    osc.frequency.value = 620;
+                    osc.type = 'square';
+                    gain.gain.setValueAtTime(0.75, ac.currentTime + delay);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ac.currentTime + delay + 1.1);
+                    osc.start(ac.currentTime + delay);
+                    osc.stop(ac.currentTime + delay + 1.1);
+                });
+                if (navigator.vibrate) navigator.vibrate([300, 100, 300, 100, 300]);
+            } catch (e) {}
+        }
+
+        // Swipe up to skip break
+        let swipeTouchStartY = null;
+        let swipeActive = false;
+        let swipeTriggered = false;
+        let lastTrailTime = 0;
+
+        document.addEventListener('touchstart', e => {
+            swipeTouchStartY = e.touches[0].clientY;
+            swipeActive = !timerState.isRound && timerState.isRunning && !timerState.isFinished;
+            swipeTriggered = false;
+        }, { passive: true });
+
+        document.addEventListener('touchmove', e => {
+            if (!swipeActive || swipeTriggered) return;
+            const touch = e.touches[0];
+            const dy = swipeTouchStartY - touch.clientY;
+            if (dy < 10) return;
+
+            // Throttle trail dots to max 1 per 40ms
+            const now = Date.now();
+            if (now - lastTrailTime > 40) {
+                lastTrailTime = now;
+                const dot = document.createElement('div');
+                dot.className = 'swipe-trail';
+                dot.style.left = touch.clientX + 'px';
+                dot.style.top  = touch.clientY + 'px';
+                document.body.appendChild(dot);
+                setTimeout(() => dot.remove(), 500);
+            }
+
+            // Show hint flying up once threshold crossed
+            if (dy > 60 && !swipeTriggered) {
+                swipeTriggered = true;
+                const hint = document.getElementById('swipeHint');
+                hint.classList.remove('visible');
+                hint.classList.add('triggered');
+                hint.addEventListener('animationend', () => {
+                    hint.classList.remove('triggered');
+                }, { once: true });
+            }
+        }, { passive: true });
+
+        document.addEventListener('touchend', e => {
+            if (swipeTouchStartY === null) return;
+            const dy = swipeTouchStartY - e.changedTouches[0].clientY;
+            swipeTouchStartY = null;
+            if (dy > 60 && swipeActive) {
+                // Screen flash
+                const flash = document.createElement('div');
+                flash.className = 'swipe-flash';
+                document.body.appendChild(flash);
+                setTimeout(() => flash.remove(), 400);
+                skipBreak();
+            }
+            swipeActive = false;
+        }, { passive: true });
+
+        // Close modal on background click
+        document.getElementById('settingsModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeSettings();
+            }
+        });
+
+        // Initialize
+        updateUI();
+        updateSettingsUI();
+
+        // ===== TUTORIAL =====
+        const TUT_KEY = 'strikeflow_tutorial_done';
+        let tutStep = 0;
+        let tutActive = false;
+        let tutAnimFrame = null;
+        let tutDir = 1; // 1=forward, -1=backward
+        let tutSpotFrom = null;  // {left,top,width,height} lerp start
+        let tutSpotStart = null; // performance.now() when lerp started
+        const TUT_LERP_MS = 280;
+
+        const TUT_STEPS = [
+            {
+                selector: '.timer-ring-wrap',
+                title: 'TIMER',
+                text: 'The circular ring shows how much time is left in the current round or break. The number in the middle is the countdown.'
+            },
+            {
+                selector: '.controls',
+                title: 'CONTROLS',
+                text: 'START begins the session. During the session it becomes STOP. After a round you can CONTINUE or RESET back to the beginning.'
+            },
+            {
+                selector: '.top-bar',
+                title: 'ROUND COUNTER',
+                text: 'Shows which round you are on and the total number of rounds. The phase (ROUND / BREAK) is displayed here too.'
+            },
+            {
+                selector: '.settings-btn',
+                title: 'SETTINGS ⚙️',
+                text: 'Tap the gear to open settings. Choose a quick preset (K1, Muay Thai, Conditioning) or build a custom session with your own round/break times and number of rounds.'
+            },
+            {
+                selector: '.settings-btn',
+                title: 'TASK SPAR MODE',
+                text: 'Inside settings you can enable Task Spar Mode. Each round you will get a random combination to practice — choose difficulty and number or text notation.'
+            }
+        ];
+
+        function checkTutorial() {
+            if (!localStorage.getItem(TUT_KEY)) {
+                document.getElementById('tutWelcome').style.display = 'flex';
+            }
+        }
+
+        function skipTutorial() {
+            localStorage.setItem(TUT_KEY, '1');
+            document.getElementById('tutWelcome').style.display = 'none';
+            closeTutorialStep();
+        }
+
+        function startTutorial() {
+            localStorage.setItem(TUT_KEY, '1');
+            document.getElementById('tutWelcome').style.display = 'none';
+            tutStep = 0;
+            tutDir = 1;
+            tutActive = true;
+            tutSpotFrom = null;
+            showTutStep(true);
+        }
+
+        function lerp(a, b, t) { return a + (b - a) * t; }
+        function easeInOut(t) { return t < 0.5 ? 2*t*t : -1+(4-2*t)*t; }
+
+        function showTutStep(isFirst) {
+            if (tutStep >= TUT_STEPS.length) { closeTutorialStep(); return; }
+            const step = TUT_STEPS[tutStep];
+            const el = document.querySelector(step.selector);
+            const targetRect = el.getBoundingClientRect();
+            const pad = 12;
+
+            // Capture current spotlight rect as lerp start
+            if (tutSpotFrom === null || isFirst) {
+                tutSpotFrom = { left: targetRect.left - pad, top: targetRect.top - pad,
+                                width: targetRect.width + pad*2, height: targetRect.height + pad*2 };
+            }
+            tutSpotStart = performance.now();
+
+            // Update tooltip content
+            document.getElementById('tutStepNum').textContent = 'STEP ' + (tutStep + 1) + '/' + TUT_STEPS.length;
+            document.getElementById('tutTitle').textContent = step.title;
+            document.getElementById('tutText').textContent = step.text;
+
+            // Dots
+            const dotsEl = document.getElementById('tutDots');
+            dotsEl.innerHTML = '';
+            for (let i = 0; i < TUT_STEPS.length; i++) {
+                const d = document.createElement('div');
+                d.className = 'tut-dot' + (i === tutStep ? ' active' : '');
+                dotsEl.appendChild(d);
+            }
+
+            // Prev button
+            document.getElementById('tutPrevBtn').style.display = tutStep === 0 ? 'none' : '';
+
+            // Next button text
+            document.getElementById('tutNextBtn').textContent = tutStep === TUT_STEPS.length - 1 ? 'DONE ✓' : 'NEXT';
+
+            // Show tooltip & apply slide-in animation
+            const tooltip = document.getElementById('tutTooltip');
+            tooltip.style.display = 'block';
+            tooltip.classList.remove('anim-in-fwd','anim-in-back','anim-out-fwd','anim-out-back');
+            if (!isFirst) {
+                void tooltip.offsetWidth; // force reflow
+                tooltip.classList.add(tutDir >= 0 ? 'anim-in-fwd' : 'anim-in-back');
+            }
+
+            document.getElementById('tutOverlay').style.display = 'block';
+            positionTutorial(el);
+
+            // Animate spotlight with rAF + lerp
+            if (tutAnimFrame) cancelAnimationFrame(tutAnimFrame);
+            const canvas = document.getElementById('tutOverlay');
+            function drawSpotlight() {
+                if (!tutActive) return;
+                const now = performance.now();
+                const t = easeInOut(Math.min(1, (now - tutSpotStart) / TUT_LERP_MS));
+                const tr = targetRect;
+
+                const bx = lerp(tutSpotFrom.left,   tr.left - pad,           t);
+                const by = lerp(tutSpotFrom.top,    tr.top  - pad,           t);
+                const bw = lerp(tutSpotFrom.width,  tr.width  + pad*2,       t);
+                const bh = lerp(tutSpotFrom.height, tr.height + pad*2,       t);
+                const brad = 16;
+
+                // Once lerp finishes, lock from to current for next transition
+                if (t >= 1) {
+                    tutSpotFrom = { left: bx, top: by, width: bw, height: bh };
+                }
+
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                const ctx2 = canvas.getContext('2d');
+                ctx2.clearRect(0, 0, canvas.width, canvas.height);
+                ctx2.fillStyle = 'rgba(0,0,0,0.72)';
+                ctx2.fillRect(0, 0, canvas.width, canvas.height);
+                ctx2.globalCompositeOperation = 'destination-out';
+                ctx2.beginPath();
+                ctx2.moveTo(bx + brad, by);
+                ctx2.lineTo(bx + bw - brad, by);
+                ctx2.quadraticCurveTo(bx + bw, by, bx + bw, by + brad);
+                ctx2.lineTo(bx + bw, by + bh - brad);
+                ctx2.quadraticCurveTo(bx + bw, by + bh, bx + bw - brad, by + bh);
+                ctx2.lineTo(bx + brad, by + bh);
+                ctx2.quadraticCurveTo(bx, by + bh, bx, by + bh - brad);
+                ctx2.lineTo(bx, by + brad);
+                ctx2.quadraticCurveTo(bx, by, bx + brad, by);
+                ctx2.closePath();
+                ctx2.fill();
+                ctx2.globalCompositeOperation = 'source-over';
+
+                const hl = document.getElementById('tutHighlight');
+                hl.style.display = 'block';
+                hl.style.left   = bx + 'px';
+                hl.style.top    = by + 'px';
+                hl.style.width  = bw + 'px';
+                hl.style.height = bh + 'px';
+
+                tutAnimFrame = requestAnimationFrame(drawSpotlight);
+            }
+            drawSpotlight();
+        }
+
+        function positionTutorial(el) {
+            const tooltip = document.getElementById('tutTooltip');
+            // Reset position and make invisible to measure real size
+            tooltip.style.left = '-9999px';
+            tooltip.style.top  = '0';
+            tooltip.style.bottom = '';
+            tooltip.style.right  = '';
+            tooltip.style.transform = '';
+            tooltip.style.visibility = 'hidden';
+            tooltip.style.display = 'block';
+
+            const rect = el.getBoundingClientRect();
+            const tw = tooltip.offsetWidth;
+            const th = tooltip.offsetHeight;
+            tooltip.style.visibility = '';
+
+            const margin = 16;
+            const pad = 18;
+
+            const centerX = Math.max(margin, Math.min(window.innerWidth - tw - margin, rect.left + rect.width / 2 - tw / 2));
+
+            // Try above first (avoids covering bottom buttons), then below, then centered
+            if (rect.top - th - pad - margin > 0) {
+                // Above element
+                tooltip.style.top  = (rect.top - th - pad) + 'px';
+                tooltip.style.left = centerX + 'px';
+            } else if (rect.bottom + th + pad + margin < window.innerHeight) {
+                // Below element
+                tooltip.style.top  = (rect.bottom + pad) + 'px';
+                tooltip.style.left = centerX + 'px';
+            } else {
+                // Center-screen fallback
+                tooltip.style.top  = Math.max(margin, (window.innerHeight - th) / 2) + 'px';
+                tooltip.style.left = margin + 'px';
+                tooltip.style.right = margin + 'px';
+            }
+        }
+
+        function tutTransition(newStep) {
+            const tooltip = document.getElementById('tutTooltip');
+            const outClass = tutDir >= 0 ? 'anim-out-fwd' : 'anim-out-back';
+            tooltip.classList.remove('anim-in-fwd','anim-in-back','anim-out-fwd','anim-out-back');
+            void tooltip.offsetWidth;
+            tooltip.classList.add(outClass);
+            setTimeout(() => {
+                tutStep = newStep;
+                if (tutStep >= TUT_STEPS.length) { closeTutorialStep(); return; }
+                showTutStep(false);
+            }, 170);
+        }
+
+        function tutNext() {
+            tutDir = 1;
+            const next = tutStep + 1;
+            if (next >= TUT_STEPS.length) {
+                tutTransition(next);
+            } else {
+                tutTransition(next);
+            }
+        }
+
+        function tutPrev() {
+            if (tutStep > 0) { tutDir = -1; tutTransition(tutStep - 1); }
+        }
+
+        function closeTutorialStep() {
+            tutActive = false;
+            if (tutAnimFrame) { cancelAnimationFrame(tutAnimFrame); tutAnimFrame = null; }
+            document.getElementById('tutTooltip').style.display = 'none';
+            document.getElementById('tutHighlight').style.display = 'none';
+            const canvas = document.getElementById('tutOverlay');
+            canvas.style.display = 'none';
+            const ctx2 = canvas.getContext('2d');
+            ctx2.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // Block clicks on overlay from passing through during tutorial
+        document.getElementById('tutOverlay').addEventListener('click', (e) => {
+            if (tutActive) e.stopPropagation();
+        });
+
+        // Show tutorial on load
+        checkTutorial();
+
+        // Register service worker for PWA/offline support
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>
