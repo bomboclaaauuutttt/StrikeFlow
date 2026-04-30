@@ -22,10 +22,17 @@
             box-sizing: border-box;
         }
 
+        html, body {
+            overscroll-behavior: none;
+            touch-action: none;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             overflow: hidden;
             height: 100vh;
+            position: fixed;
+            width: 100%;
         }
 
         @keyframes timerPulse {
@@ -1188,8 +1195,10 @@
                 "Land 20x jabs",
                 "Land 10x 1-1-2-3 low kick",
                 "Land 5x 1-2-3-2-3 combos",
+                "Sweep opponent 3x times",
                 "Land 15x crosses",
                 "Land 10x 1-2-hook-body-head",
+                "Catch 4x kicks",
                 "Land 20x low kicks",
                 "Land 10x 1-2-3 low kick combos",
                 "Dodge 15x punches",
@@ -1804,6 +1813,8 @@
         }, { passive: true });
 
         document.addEventListener('touchmove', e => {
+            // Lock browser panning/scrolling; app handles swipe gestures itself.
+            e.preventDefault();
             if (!swipeActive || swipeTriggered) return;
             const touch = e.touches[0];
             const dy = swipeTouchStartY - touch.clientY;
@@ -1831,7 +1842,7 @@
                     hint.classList.remove('triggered');
                 }, { once: true });
             }
-        }, { passive: true });
+        }, { passive: false });
 
         document.addEventListener('touchend', e => {
             if (swipeTouchStartY === null) return;
