@@ -1866,6 +1866,14 @@
             }
         });
 
+        // Extra fallback: some mobile browsers may still try to move viewport.
+        window.addEventListener('scroll', () => {
+            if (window.scrollY !== 0) {
+                window.scrollTo(0, 0);
+            }
+        }, { passive: true });
+        window.scrollTo(0, 0);
+
         // Initialize
         updateUI();
         updateSettingsUI();
