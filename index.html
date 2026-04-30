@@ -24,7 +24,7 @@
 
         html, body {
             overscroll-behavior: none;
-            touch-action: none;
+            touch-action: manipulation;
             height: 100%;
             min-height: -webkit-fill-available;
             background: #0a0a0a;
@@ -354,6 +354,9 @@
             border-radius: 20px;
             max-height: 90vh;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+            touch-action: pan-y;
             width: 90%;
             max-width: 500px;
             color: white;
@@ -738,14 +741,16 @@
             }
 
             .timer-section {
-                flex: 0 0 auto;
-                padding: 4px 6px 4px 10px;
+                flex: 1;
+                padding: 4px 0;
                 justify-content: center;
+                align-items: center;
+                margin-left: clamp(10px, 3vw, 32px);
             }
 
             .timer-ring-wrap {
-                width: min(56vh, 270px);
-                height: min(56vh, 270px);
+                width: min(68vh, 350px);
+                height: min(68vh, 350px);
                 margin-bottom: 0;
             }
 
@@ -767,19 +772,25 @@
 
             /* Controls column on the right */
             .controls {
-                flex: 1;
+                flex: 0 0 clamp(132px, 20vw, 170px);
                 flex-direction: column;
-                padding: 10px 16px 10px 8px;
+                padding: 10px 14px 10px 6px;
                 justify-content: center;
                 gap: 10px;
             }
 
             .btn {
-                padding: 12px 18px;
-                font-size: 15px;
+                padding: 12px 14px;
+                font-size: 14px;
                 flex: none;
                 width: 100%;
                 max-width: none;
+            }
+
+            .btn-start {
+                width: 82%;
+                align-self: center;
+                min-width: 0;
             }
 
             /* Replace slide-width animation with height-based for column layout */
@@ -1337,6 +1348,7 @@
         const preRoundTask = document.getElementById('preRoundTask');
         const preRoundCountdown = document.getElementById('preRoundCountdown');
         const finishedOverlay = document.getElementById('finishedOverlay');
+        const settingsModal = document.getElementById('settingsModal');
         const bgIdle  = document.getElementById('bgIdle');
         const bgRound = document.getElementById('bgRound');
         const bgBreak = document.getElementById('bgBreak');
@@ -1849,6 +1861,9 @@
         }, { passive: true });
 
         document.addEventListener('touchmove', e => {
+            // Allow native scrolling inside settings modal.
+            if (settingsModal.classList.contains('show')) return;
+
             // Lock browser panning/scrolling; app handles swipe gestures itself.
             e.preventDefault();
             if (!swipeActive || swipeTriggered) return;
@@ -1896,7 +1911,7 @@
         }, { passive: true });
 
         // Close modal on background click
-        document.getElementById('settingsModal').addEventListener('click', function(e) {
+        settingsModal.addEventListener('click', function(e) {
             if (e.target === this) {
                 closeSettings();
             }
