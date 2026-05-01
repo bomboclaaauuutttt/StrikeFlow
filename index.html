@@ -258,12 +258,15 @@
         }
 
         .timer-status {
-            font-size: 16px;
+            font-size: clamp(30px, 7.2vmin, 64px);
             font-weight: 800;
-            letter-spacing: 2.2px;
+            letter-spacing: 3px;
             text-transform: uppercase;
-            margin-bottom: 16px;
-            opacity: 0.88;
+            line-height: 0.95;
+            margin-bottom: 18px;
+            min-height: 1em;
+            opacity: 0.92;
+            text-align: center;
         }
 
         .timer-ring-wrap {
@@ -1829,7 +1832,10 @@
         // Update UI
         function updateUI() {
             timerDisplay.textContent = formatTime(timerState.timeLeft);
-            timerStatus.textContent = timerState.isRound ? 'ROUND ACTIVE' : 'BREAK';
+            const hasSessionStarted = !!sessionStats.startedAt || timerState.currentRound > 1 || timerState.timeLeft < settings.roundTime;
+            timerStatus.textContent = hasSessionStarted && !timerState.isFinished
+                ? (timerState.isRound ? 'ROUND ACTIVE' : 'BREAK')
+                : '';
 
             const swipeHint = document.getElementById('swipeHint');
             swipeHint.classList.toggle('visible',
