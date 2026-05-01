@@ -642,6 +642,28 @@
             color: #ffffff;
         }
 
+        .legal-section {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #333;
+        }
+
+        .legal-link {
+            display: inline-block;
+            color: #b8ffc3;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.6px;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+
+        .legal-note {
+            margin-top: 6px;
+            font-size: 12px;
+            color: #8d8d8d;
+        }
+
         .finished-overlay {
             position: fixed;
             top: 0;
@@ -1203,6 +1225,11 @@
                         <button class="toggle" id="vibrationToggle" onclick="toggleVibration()"></button>
                     </div>
                     <div class="task-description" id="vibrationDesc">Enabled</div>
+                </div>
+
+                <div class="legal-section">
+                    <a class="legal-link" href="privacy-policy.html" target="_blank" rel="noopener noreferrer">PRIVACY POLICY</a>
+                    <div class="legal-note">Required for Play Store and App Store submissions.</div>
                 </div>
 
                 <button class="secondary-btn" onclick="resetTutorial()">SHOW TUTORIAL AGAIN</button>

@@ -1,6 +1,7 @@
 const CACHE = 'strikeflow-v2';
 const ASSETS = [
   './index.html',
+  './privacy-policy.html',
   './manifest.json',
   './Strike Flow.png'
 ];
