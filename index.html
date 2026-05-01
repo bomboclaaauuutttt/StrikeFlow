@@ -1144,7 +1144,7 @@
         <div class="pre-round-box">
             <div class="pre-round-label">GET READY!</div>
             <div class="pre-round-task" id="preRoundTask"></div>
-            <div class="pre-round-countdown" id="preRoundCountdown">3</div>
+            <div class="pre-round-countdown" id="preRoundCountdown">5</div>
         </div>
     </div>
 
@@ -1386,6 +1386,7 @@
         };
 
         let selectedPreset = 'muaythai';
+        const PRE_ROUND_READ_SECONDS = 5;
 
         // State
         let timerState = {
@@ -1400,10 +1401,11 @@
             currentTask: "",
             previousTask: "",
             showingPreRound: false,
-            preRoundCountdown: 3
+            preRoundCountdown: PRE_ROUND_READ_SECONDS
         };
 
         let intervalId = null;
+        let preRoundIntervalId = null;
         let lastTickMs = null;
         let lastWholeSecond = null;
         let audioCtx = null;
@@ -1621,6 +1623,7 @@
         // Timer tick
         function tick() {
             if (!timerState.isRunning || timerState.isFinished) return;
+            if (taskState.showingPreRound) return;
 
             const now = performance.now();
             if (lastTickMs === null) {
@@ -1689,31 +1692,60 @@
                 progressCircle.classList.remove('warning', 'danger');
             } else {
                 // Break ending, new round starting
-                playRoundStart();
-                timerState.isRound = true;
-                timerState.currentRound++;
-                timerState.timeLeft = settings.roundTime;
-                
                 if (settings.taskSparEnabled) {
-                    startPreRound();
+                    startPreRound(() => {
+                        playRoundStart();
+                        timerState.isRound = true;
+                        timerState.currentRound++;
+                        timerState.timeLeft = settings.roundTime;
+                        updateUI();
+                    });
+                } else {
+                    playRoundStart();
+                    timerState.isRound = true;
+                    timerState.currentRound++;
+                    timerState.timeLeft = settings.roundTime;
                 }
             }
             updateUI();
         }
 
+        function stopPreRoundDisplay() {
+            if (preRoundIntervalId) {
+                clearInterval(preRoundIntervalId);
+                preRoundIntervalId = null;
+            }
+            taskState.showingPreRound = false;
+            preRoundOverlay.classList.remove('show');
+        }
+
+        function speakTaskCombo(task) {
+            if (!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') return;
+            const spokenTask = toText(task).replace(/(\d+)x/gi, '$1 times');
+            const utterance = new SpeechSynthesisUtterance(`Next combo. ${spokenTask}`);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.95;
+            utterance.pitch = 1;
+            utterance.volume = 1;
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(utterance);
+        }
+
         // Start pre-round display
-        function startPreRound() {
+        function startPreRound(onComplete = null) {
+            stopPreRoundDisplay();
             const newTask = getRandomTask(taskState.previousTask);
             taskState.currentTask = newTask;
             taskState.previousTask = newTask;
             taskState.showingPreRound = true;
-            taskState.preRoundCountdown = 3;
+            taskState.preRoundCountdown = PRE_ROUND_READ_SECONDS;
             
             preRoundTask.textContent = formatTaskForNotation(newTask);
-            preRoundCountdown.textContent = 3;
+            preRoundCountdown.textContent = PRE_ROUND_READ_SECONDS;
             preRoundOverlay.classList.add('show');
+            speakTaskCombo(newTask);
             
-            const countdownInterval = setInterval(() => {
+            preRoundIntervalId = setInterval(() => {
                 taskState.preRoundCountdown--;
                 if (taskState.preRoundCountdown >= 0) {
                     // Restart animation by removing and re-adding class
@@ -1723,9 +1755,8 @@
                     preRoundCountdown.textContent = taskState.preRoundCountdown;
                 }
                 if (taskState.preRoundCountdown < 0) {
-                    clearInterval(countdownInterval);
-                    taskState.showingPreRound = false;
-                    preRoundOverlay.classList.remove('show');
+                    stopPreRoundDisplay();
+                    if (typeof onComplete === 'function') onComplete();
                     updateUI();
                 }
             }, 1000);
@@ -1742,12 +1773,21 @@
                 ensureAudioReady();
                 requestWakeLock();
                 const isInitialRoundStart = timerState.isRound && timerState.currentRound === 1 && timerState.timeLeft === settings.roundTime;
-                if (isInitialRoundStart) playRoundStart();
+                if (isInitialRoundStart) {
+                    if (settings.taskSparEnabled) {
+                        startPreRound(() => {
+                            playRoundStart();
+                        });
+                    } else {
+                        playRoundStart();
+                    }
+                }
                 lastTickMs = performance.now();
                 lastWholeSecond = Math.ceil(timerState.timeLeft);
                 intervalId = setInterval(tick, 50);
             } else {
                 clearInterval(intervalId);
+                stopPreRoundDisplay();
                 lastTickMs = null;
                 releaseWakeLock();
             }
@@ -1769,6 +1809,7 @@
         // Reset timer
         function resetTimer() {
             clearInterval(intervalId);
+            stopPreRoundDisplay();
             timerState = {
                 timeLeft: settings.roundTime,
                 isRound: true,
@@ -1782,7 +1823,7 @@
                 currentTask: "",
                 previousTask: "",
                 showingPreRound: false,
-                preRoundCountdown: 3
+                preRoundCountdown: PRE_ROUND_READ_SECONDS
             };
             sessionStats = {
                 activeSeconds: 0,
@@ -1792,7 +1833,6 @@
                 startedAt: null
             };
             finishedOverlay.classList.remove('show');
-            preRoundOverlay.classList.remove('show');
             updateUI();
             
             // Generate first task if Task Spar is enabled
