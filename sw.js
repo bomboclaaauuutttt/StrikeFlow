@@ -1,9 +1,11 @@
-const CACHE = 'strikeflow-v2';
+const CACHE = 'strikeflow-v3';
 const ASSETS = [
   './index.html',
   './privacy-policy.html',
   './manifest.json',
-  './Strike Flow.png'
+  './Strike Flow.png',
+  './icon-192.png',
+  './icon-512.png'
 ];
 
 self.addEventListener('install', e => {
