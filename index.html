@@ -16,6 +16,131 @@
     <meta name="apple-mobile-web-app-title" content="StrikeFlow">
     <link rel="apple-touch-icon" href="Strike Flow.png">
     <style>
+        :root {
+            --app-bg: #0a0a0a;
+            --bg-idle: linear-gradient(135deg, #555 0%, #333 100%);
+            --bg-round: linear-gradient(135deg, #ff2b2b 0%, #e60000 100%);
+            --bg-break: linear-gradient(135deg, #2bff4a 0%, #00cc00 100%);
+            --ring-track: rgba(255, 255, 255, 0.2);
+            --ring-warning: #ffaa33;
+            --ring-danger: #ff3333;
+            --modal-bg: #1a1a1a;
+            --section-border: #333;
+            --accent-primary: #2bff4a;
+            --accent-secondary: #ff2b2b;
+            --text-on-accent-primary: #000;
+            --text-on-accent-secondary: #fff;
+            --btn-surface: #333;
+            --btn-surface-border: #555;
+            --btn-surface-hover: #aaa;
+            --preset-active-bg: #1f3a1f;
+            --preset-active-text: #2bff4a;
+            --secondary-border: #505050;
+            --secondary-text: #cfcfcf;
+            --legal-link: #b8ffc3;
+            --muted-text: #8d8d8d;
+        }
+
+        body.theme-ocean {
+            --app-bg: #071822;
+            --bg-idle: linear-gradient(135deg, #17405d 0%, #0d2433 100%);
+            --bg-round: linear-gradient(135deg, #1698d7 0%, #0a6fa8 100%);
+            --bg-break: linear-gradient(135deg, #44d2c8 0%, #1aa39a 100%);
+            --ring-track: rgba(140, 229, 255, 0.25);
+            --ring-warning: #ffd166;
+            --ring-danger: #ff6b6b;
+            --modal-bg: #0e2331;
+            --section-border: #2f4f63;
+            --accent-primary: #44d2c8;
+            --accent-secondary: #1698d7;
+            --text-on-accent-primary: #04202a;
+            --text-on-accent-secondary: #fff;
+            --btn-surface: #17364b;
+            --btn-surface-border: #2f5f7d;
+            --btn-surface-hover: #6bb1d5;
+            --preset-active-bg: #163a4b;
+            --preset-active-text: #7df5e8;
+            --secondary-border: #3a5f76;
+            --secondary-text: #d8eefb;
+            --legal-link: #8be3ff;
+            --muted-text: #9bc3d8;
+        }
+
+        body.theme-sunset {
+            --app-bg: #1d0f0a;
+            --bg-idle: linear-gradient(135deg, #5a2d20 0%, #2f140e 100%);
+            --bg-round: linear-gradient(135deg, #ff7a2f 0%, #e3471f 100%);
+            --bg-break: linear-gradient(135deg, #ffd166 0%, #ffb347 100%);
+            --ring-track: rgba(255, 211, 160, 0.28);
+            --ring-warning: #ffe066;
+            --ring-danger: #ff5a5f;
+            --modal-bg: #2a1711;
+            --section-border: #563327;
+            --accent-primary: #ffd166;
+            --accent-secondary: #ff7a2f;
+            --text-on-accent-primary: #2a1600;
+            --text-on-accent-secondary: #fff;
+            --btn-surface: #4b2b1f;
+            --btn-surface-border: #7a4c38;
+            --btn-surface-hover: #d08f6d;
+            --preset-active-bg: #5a341f;
+            --preset-active-text: #ffd166;
+            --secondary-border: #7a4d38;
+            --secondary-text: #ffe2d3;
+            --legal-link: #ffd7a8;
+            --muted-text: #d7b2a1;
+        }
+
+        body.theme-noir {
+            --app-bg: #050505;
+            --bg-idle: linear-gradient(135deg, #2a2a2a 0%, #111 100%);
+            --bg-round: linear-gradient(135deg, #5a5a5a 0%, #232323 100%);
+            --bg-break: linear-gradient(135deg, #8a8a8a 0%, #3a3a3a 100%);
+            --ring-track: rgba(230, 230, 230, 0.22);
+            --ring-warning: #e6c766;
+            --ring-danger: #d46f6f;
+            --modal-bg: #111;
+            --section-border: #2f2f2f;
+            --accent-primary: #e6e6e6;
+            --accent-secondary: #7a7a7a;
+            --text-on-accent-primary: #111;
+            --text-on-accent-secondary: #fff;
+            --btn-surface: #1d1d1d;
+            --btn-surface-border: #3a3a3a;
+            --btn-surface-hover: #7f7f7f;
+            --preset-active-bg: #2a2a2a;
+            --preset-active-text: #f2f2f2;
+            --secondary-border: #444;
+            --secondary-text: #d7d7d7;
+            --legal-link: #e8e8e8;
+            --muted-text: #ababab;
+        }
+
+        body.theme-neon {
+            --app-bg: #090017;
+            --bg-idle: radial-gradient(circle at 20% 20%, #2f0048 0%, #12001f 60%, #06000f 100%);
+            --bg-round: linear-gradient(135deg, #ff2a6d 0%, #d1004a 100%);
+            --bg-break: linear-gradient(135deg, #00f5d4 0%, #00c2a8 100%);
+            --ring-track: rgba(199, 130, 255, 0.3);
+            --ring-warning: #ffe45e;
+            --ring-danger: #ff4d6d;
+            --modal-bg: #19002f;
+            --section-border: #3a1d5f;
+            --accent-primary: #00f5d4;
+            --accent-secondary: #ff2a6d;
+            --text-on-accent-primary: #001f1a;
+            --text-on-accent-secondary: #fff;
+            --btn-surface: #2a1148;
+            --btn-surface-border: #5f2a97;
+            --btn-surface-hover: #c082ff;
+            --preset-active-bg: #2a1449;
+            --preset-active-text: #76ffe9;
+            --secondary-border: #5f2a97;
+            --secondary-text: #ead9ff;
+            --legal-link: #95fff1;
+            --muted-text: #c8b0e6;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -27,7 +152,7 @@
             touch-action: manipulation;
             height: 100%;
             min-height: -webkit-fill-available;
-            background: #0a0a0a;
+            background: var(--app-bg);
         }
 
         body {
@@ -39,7 +164,7 @@
             position: fixed;
             width: 100%;
             inset: 0;
-            background: #0a0a0a;
+            background: var(--app-bg);
         }
 
         @keyframes timerPulse {
@@ -73,7 +198,7 @@
             width: 100vw;
             position: relative;
             overflow: hidden;
-            background: #0a0a0a;
+            background: var(--app-bg);
         }
 
         /* Background crossfade layers */
@@ -85,9 +210,9 @@
             pointer-events: none;
             z-index: 0;
         }
-        .bg-idle  { background: linear-gradient(135deg, #555 0%, #333 100%); opacity: 1; }
-        .bg-round { background: linear-gradient(135deg, #ff2b2b 0%, #e60000 100%); }
-        .bg-break { background: linear-gradient(135deg, #2bff4a 0%, #00cc00 100%); }
+        .bg-idle  { background: var(--bg-idle); opacity: 1; }
+        .bg-round { background: var(--bg-round); }
+        .bg-break { background: var(--bg-break); }
 
         .app-content {
             display: flex;
@@ -157,7 +282,7 @@
         }
 
         .ring-track {
-            stroke: rgba(255, 255, 255, 0.2);
+            stroke: var(--ring-track);
         }
 
         .ring-progress {
@@ -167,11 +292,11 @@
         }
 
         .ring-progress.warning {
-            stroke: #ffaa33;
+            stroke: var(--ring-warning);
         }
 
         .ring-progress.danger {
-            stroke: #ff3333;
+            stroke: var(--ring-danger);
         }
 
         .timer-display {
@@ -349,7 +474,7 @@
         }
 
         .modal-content {
-            background: #1a1a1a;
+            background: var(--modal-bg);
             padding: 30px;
             border-radius: 20px;
             max-height: 90vh;
@@ -373,14 +498,14 @@
             font-weight: 700;
             margin-bottom: 30px;
             letter-spacing: 2px;
-            border-bottom: 2px solid #333;
+            border-bottom: 2px solid var(--section-border);
             padding-bottom: 15px;
         }
 
         .settings-section {
             margin-bottom: 30px;
             padding-bottom: 20px;
-            border-bottom: 1px solid #333;
+            border-bottom: 1px solid var(--section-border);
         }
 
         .section-title {
@@ -393,7 +518,7 @@
         .current-value {
             font-size: 36px;
             font-weight: 700;
-            color: #ff2b2b;
+            color: var(--accent-secondary);
             margin-bottom: 15px;
             letter-spacing: 1px;
         }
@@ -421,20 +546,20 @@
         }
 
         .minus-btn {
-            background: #ff2b2b;
-            color: white;
+            background: var(--accent-secondary);
+            color: var(--text-on-accent-secondary);
         }
 
         .plus-btn {
-            background: #2bff4a;
-            color: black;
+            background: var(--accent-primary);
+            color: var(--text-on-accent-primary);
         }
 
         .preset-btn {
             width: 100%;
             padding: 14px;
-            background: #333;
-            border: 2px solid #555;
+            background: var(--btn-surface);
+            border: 2px solid var(--btn-surface-border);
             color: white;
             font-size: 16px;
             font-weight: 700;
@@ -445,13 +570,13 @@
         }
 
         .preset-btn:hover {
-            border-color: #2bff4a;
+            border-color: var(--accent-primary);
         }
 
         .preset-btn.active {
-            border-color: #2bff4a;
-            background: #1f3a1f;
-            color: #2bff4a;
+            border-color: var(--accent-primary);
+            background: var(--preset-active-bg);
+            color: var(--preset-active-text);
         }
 
         .toggle-container {
@@ -472,7 +597,7 @@
         }
 
         .toggle.active {
-            background: #2bff4a;
+            background: var(--accent-primary);
         }
 
         .toggle::after {
@@ -505,15 +630,15 @@
             font-size: 13px;
             font-weight: 700;
             border-radius: 8px;
-            border: 2px solid #555;
-            background: #333;
+            border: 2px solid var(--btn-surface-border);
+            background: var(--btn-surface);
             color: white;
             cursor: pointer;
             letter-spacing: 1px;
             transition: all 0.2s;
         }
 
-        .diff-btn:hover { border-color: #aaa; }
+        .diff-btn:hover { border-color: var(--btn-surface-hover); }
         .diff-btn.diff-easy   { }
         .diff-btn.diff-medium { }
         .diff-btn.diff-hard   { }
@@ -605,8 +730,8 @@
         .save-btn {
             width: 100%;
             padding: 16px;
-            background: #2bff4a;
-            color: black;
+            background: var(--accent-primary);
+            color: var(--text-on-accent-primary);
             font-size: 18px;
             font-weight: 700;
             border-radius: 12px;
@@ -625,11 +750,11 @@
             width: 100%;
             padding: 14px;
             background: transparent;
-            color: #cfcfcf;
+            color: var(--secondary-text);
             font-size: 14px;
             font-weight: 700;
             border-radius: 12px;
-            border: 2px solid #505050;
+            border: 2px solid var(--secondary-border);
             cursor: pointer;
             margin-top: 12px;
             letter-spacing: 1px;
@@ -638,19 +763,19 @@
 
         .secondary-btn:hover {
             opacity: 0.9;
-            border-color: #7a7a7a;
+            border-color: var(--btn-surface-hover);
             color: #ffffff;
         }
 
         .legal-section {
             margin-top: 12px;
             padding-top: 12px;
-            border-top: 1px solid #333;
+            border-top: 1px solid var(--section-border);
         }
 
         .legal-link {
             display: inline-block;
-            color: #b8ffc3;
+            color: var(--legal-link);
             font-size: 13px;
             font-weight: 600;
             letter-spacing: 0.6px;
@@ -661,7 +786,7 @@
         .legal-note {
             margin-top: 6px;
             font-size: 12px;
-            color: #8d8d8d;
+            color: var(--muted-text);
         }
 
         .finished-overlay {
@@ -1181,6 +1306,18 @@
                     <button class="preset-btn" id="preset-custom" onclick="openCustomView()">✏️ Custom</button>
                 </div>
 
+                <div class="settings-section">
+                    <div class="section-title">DESIGN THEME</div>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <button class="diff-btn" id="theme-classic" onclick="setTheme('classic')">CLASSIC</button>
+                        <button class="diff-btn" id="theme-ocean" onclick="setTheme('ocean')">OCEAN</button>
+                        <button class="diff-btn" id="theme-sunset" onclick="setTheme('sunset')">SUNSET</button>
+                        <button class="diff-btn" id="theme-noir" onclick="setTheme('noir')">NOIR</button>
+                        <button class="diff-btn" id="theme-neon" onclick="setTheme('neon')">NEON</button>
+                    </div>
+                    <div class="task-description" id="themeDesc">Classic arena contrast</div>
+                </div>
+
                 <!-- Task Spar Toggle -->
                 <div class="settings-section">
                     <div class="toggle-container">
@@ -1393,6 +1530,7 @@
             roundTime: 180,
             breakTime: 60,
             numberOfRounds: 5,
+            theme: 'classic',
             taskSparEnabled: false,
             difficulty: 'medium',
             notation: 'text',
@@ -1899,6 +2037,22 @@
             document.getElementById('warningDesc').textContent = settings.warningVoiceEnabled ? 'Enabled' : 'Disabled';
             document.getElementById('vibrationDesc').textContent = settings.vibrationEnabled ? 'Enabled' : 'Disabled';
 
+            const themeNames = {
+                classic: 'Classic arena contrast',
+                ocean: 'Cool blue ocean gradients',
+                sunset: 'Warm sunset energy',
+                noir: 'Monochrome stealth style',
+                neon: 'High-energy neon glow'
+            };
+            ['classic', 'ocean', 'sunset', 'noir', 'neon'].forEach(t => {
+                const btn = document.getElementById('theme-' + t);
+                if (btn) btn.classList.toggle('active', settings.theme === t);
+            });
+            const themeDesc = document.getElementById('themeDesc');
+            if (themeDesc) themeDesc.textContent = themeNames[settings.theme] || themeNames.classic;
+
+            applyTheme();
+
             ['classic', 'bell', 'digital', 'soft'].forEach(s => {
                 const btn = document.getElementById('start-sound-' + s);
                 if (btn) btn.classList.toggle('active', settings.roundStartSound === s);
@@ -1971,6 +2125,27 @@
 
         function toggleTaskSpar() {
             settings.taskSparEnabled = !settings.taskSparEnabled;
+            updateSettingsUI();
+        }
+
+        function applyTheme() {
+            const themes = ['classic', 'ocean', 'sunset', 'noir', 'neon'];
+            document.body.classList.remove(...themes.map(t => 'theme-' + t));
+            document.body.classList.add('theme-' + settings.theme);
+
+            const themeColorByTheme = {
+                classic: '#0a0a0a',
+                ocean: '#071822',
+                sunset: '#1d0f0a',
+                noir: '#050505',
+                neon: '#090017'
+            };
+            const themeMeta = document.querySelector('meta[name="theme-color"]');
+            if (themeMeta) themeMeta.setAttribute('content', themeColorByTheme[settings.theme] || themeColorByTheme.classic);
+        }
+
+        function setTheme(theme) {
+            settings.theme = theme;
             updateSettingsUI();
         }
 
@@ -2470,6 +2645,9 @@
         document.getElementById('tutOverlay').addEventListener('click', (e) => {
             if (tutActive) e.stopPropagation();
         });
+
+        // Apply initial theme
+        applyTheme();
 
         // Show tutorial on load
         checkTutorial();
