@@ -257,6 +257,15 @@
             padding: 20px;
         }
 
+        .timer-status {
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: 2.2px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            opacity: 0.88;
+        }
+
         .timer-ring-wrap {
             position: relative;
             width: clamp(320px, 76vmin, 660px);
@@ -1303,6 +1312,7 @@
                 <button class="settings-btn" onclick="openSettings()">⚙️</button>
             </div>
             <div class="timer-section">
+                <div class="timer-status" id="timerStatus">ROUND ACTIVE</div>
                 <div class="timer-ring-wrap">
                     <svg class="timer-ring" viewBox="0 0 100 100" aria-hidden="true">
                         <circle class="ring-track" cx="50" cy="50" r="46"></circle>
@@ -1728,6 +1738,7 @@
         // DOM Elements
         const app = document.querySelector('.app');
         const timerDisplay = document.getElementById('timerDisplay');
+        const timerStatus = document.getElementById('timerStatus');
         const taskDisplay = document.getElementById('taskDisplay');
         const phaseLabel = document.getElementById('phaseLabel');
         const startBtn = document.getElementById('startBtn');
@@ -1808,6 +1819,7 @@
         // Update UI
         function updateUI() {
             timerDisplay.textContent = formatTime(timerState.timeLeft);
+            timerStatus.textContent = timerState.isRound ? 'ROUND ACTIVE' : 'BREAK';
 
             const swipeHint = document.getElementById('swipeHint');
             swipeHint.classList.toggle('visible',
