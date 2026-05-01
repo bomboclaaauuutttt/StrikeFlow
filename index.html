@@ -1214,6 +1214,22 @@
                     </div>
                     <div class="task-description" id="roundSoundsDesc">Enabled</div>
 
+                    <div class="section-title" style="margin-top:14px; margin-bottom:8px;">ROUND START SOUND</div>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <button class="diff-btn" id="start-sound-classic" onclick="setRoundStartSound('classic')">CLASSIC</button>
+                        <button class="diff-btn" id="start-sound-bell" onclick="setRoundStartSound('bell')">BELL</button>
+                        <button class="diff-btn" id="start-sound-digital" onclick="setRoundStartSound('digital')">DIGITAL</button>
+                        <button class="diff-btn" id="start-sound-soft" onclick="setRoundStartSound('soft')">SOFT</button>
+                    </div>
+
+                    <div class="section-title" style="margin-top:14px; margin-bottom:8px;">ROUND END SOUND</div>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <button class="diff-btn" id="end-sound-classic" onclick="setRoundEndSound('classic')">CLASSIC</button>
+                        <button class="diff-btn" id="end-sound-gong" onclick="setRoundEndSound('gong')">GONG</button>
+                        <button class="diff-btn" id="end-sound-digital" onclick="setRoundEndSound('digital')">DIGITAL</button>
+                        <button class="diff-btn" id="end-sound-soft" onclick="setRoundEndSound('soft')">SOFT</button>
+                    </div>
+
                     <div class="toggle-container" style="margin-top:14px;">
                         <div class="section-title" style="margin-bottom:0;">WARNING VOICE (10s)</div>
                         <button class="toggle" id="warningToggle" onclick="toggleWarningVoice()"></button>
@@ -1381,6 +1397,8 @@
             difficulty: 'medium',
             notation: 'text',
             roundSoundsEnabled: true,
+            roundStartSound: 'classic',
+            roundEndSound: 'classic',
             warningVoiceEnabled: true,
             vibrationEnabled: true
         };
@@ -1881,6 +1899,15 @@
             document.getElementById('warningDesc').textContent = settings.warningVoiceEnabled ? 'Enabled' : 'Disabled';
             document.getElementById('vibrationDesc').textContent = settings.vibrationEnabled ? 'Enabled' : 'Disabled';
 
+            ['classic', 'bell', 'digital', 'soft'].forEach(s => {
+                const btn = document.getElementById('start-sound-' + s);
+                if (btn) btn.classList.toggle('active', settings.roundStartSound === s);
+            });
+            ['classic', 'gong', 'digital', 'soft'].forEach(s => {
+                const btn = document.getElementById('end-sound-' + s);
+                if (btn) btn.classList.toggle('active', settings.roundEndSound === s);
+            });
+
             // Show/hide difficulty section
             document.getElementById('difficultySection').style.display = settings.taskSparEnabled ? 'block' : 'none';
 
@@ -1952,6 +1979,16 @@
             updateSettingsUI();
         }
 
+        function setRoundStartSound(sound) {
+            settings.roundStartSound = sound;
+            updateSettingsUI();
+        }
+
+        function setRoundEndSound(sound) {
+            settings.roundEndSound = sound;
+            updateSettingsUI();
+        }
+
         function toggleWarningVoice() {
             settings.warningVoiceEnabled = !settings.warningVoiceEnabled;
             updateSettingsUI();
@@ -2013,18 +2050,41 @@
                 if (settings.roundSoundsEnabled) {
                     const ac = ensureAudioReady();
                     if (ac) {
-                        [0, 0.18, 0.36].forEach((delay, i) => {
+                        const playTone = (frequency, type, delay, duration, gainValue) => {
                             const osc = ac.createOscillator();
                             const gain = ac.createGain();
                             osc.connect(gain);
                             gain.connect(ac.destination);
-                            osc.frequency.value = 820 + i * 140;
-                            osc.type = 'triangle';
-                            gain.gain.setValueAtTime(0.7, ac.currentTime + delay);
-                            gain.gain.exponentialRampToValueAtTime(0.01, ac.currentTime + delay + 0.45);
+                            osc.frequency.value = frequency;
+                            osc.type = type;
+                            gain.gain.setValueAtTime(gainValue, ac.currentTime + delay);
+                            gain.gain.exponentialRampToValueAtTime(0.01, ac.currentTime + delay + duration);
                             osc.start(ac.currentTime + delay);
-                            osc.stop(ac.currentTime + delay + 0.45);
-                        });
+                            osc.stop(ac.currentTime + delay + duration);
+                        };
+
+                        switch (settings.roundStartSound) {
+                            case 'bell':
+                                playTone(980, 'sine', 0, 0.65, 0.75);
+                                playTone(1230, 'sine', 0.14, 0.55, 0.55);
+                                break;
+                            case 'digital':
+                                [0, 0.11, 0.22, 0.33].forEach((delay, i) => {
+                                    playTone(900 + i * 120, 'square', delay, 0.12, 0.45);
+                                });
+                                break;
+                            case 'soft':
+                                [0, 0.22].forEach((delay, i) => {
+                                    playTone(680 + i * 110, 'sine', delay, 0.45, 0.35);
+                                });
+                                break;
+                            case 'classic':
+                            default:
+                                [0, 0.18, 0.36].forEach((delay, i) => {
+                                    playTone(820 + i * 140, 'triangle', delay, 0.45, 0.7);
+                                });
+                                break;
+                        }
                     }
                 }
                 if (settings.vibrationEnabled && navigator.vibrate) navigator.vibrate([150, 80, 150]);
@@ -2038,18 +2098,41 @@
                 if (settings.roundSoundsEnabled) {
                     const ac = ensureAudioReady();
                     if (ac) {
-                        [0, 0.12, 0.24].forEach(delay => {
+                        const playTone = (frequency, type, delay, duration, gainValue) => {
                             const osc = ac.createOscillator();
                             const gain = ac.createGain();
                             osc.connect(gain);
                             gain.connect(ac.destination);
-                            osc.frequency.value = 620;
-                            osc.type = 'square';
-                            gain.gain.setValueAtTime(0.75, ac.currentTime + delay);
-                            gain.gain.exponentialRampToValueAtTime(0.01, ac.currentTime + delay + 1.1);
+                            osc.frequency.value = frequency;
+                            osc.type = type;
+                            gain.gain.setValueAtTime(gainValue, ac.currentTime + delay);
+                            gain.gain.exponentialRampToValueAtTime(0.01, ac.currentTime + delay + duration);
                             osc.start(ac.currentTime + delay);
-                            osc.stop(ac.currentTime + delay + 1.1);
-                        });
+                            osc.stop(ac.currentTime + delay + duration);
+                        };
+
+                        switch (settings.roundEndSound) {
+                            case 'gong':
+                                playTone(420, 'triangle', 0, 1.5, 0.8);
+                                playTone(310, 'sine', 0.08, 1.4, 0.45);
+                                playTone(520, 'sine', 0.12, 1.2, 0.35);
+                                break;
+                            case 'digital':
+                                [0, 0.1, 0.2, 0.45].forEach((delay, i) => {
+                                    playTone(520 - i * 70, 'square', delay, 0.2, 0.5);
+                                });
+                                break;
+                            case 'soft':
+                                playTone(520, 'sine', 0, 0.95, 0.4);
+                                playTone(390, 'sine', 0.16, 0.95, 0.3);
+                                break;
+                            case 'classic':
+                            default:
+                                [0, 0.12, 0.24].forEach(delay => {
+                                    playTone(620, 'square', delay, 1.1, 0.75);
+                                });
+                                break;
+                        }
                     }
                 }
                 if (settings.vibrationEnabled && navigator.vibrate) navigator.vibrate([300, 100, 300, 100, 300]);
