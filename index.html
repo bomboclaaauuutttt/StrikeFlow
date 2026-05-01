@@ -1215,8 +1215,8 @@
                     <div class="task-description" id="roundSoundsDesc">Enabled</div>
 
                     <div class="toggle-container" style="margin-top:14px;">
-                        <div class="section-title" style="margin-bottom:0;">WARNING BEEP (10s)</div>
-                        <button class="toggle" id="warningToggle" onclick="toggleWarningBeep()"></button>
+                        <div class="section-title" style="margin-bottom:0;">WARNING VOICE (10s)</div>
+                        <button class="toggle" id="warningToggle" onclick="toggleWarningVoice()"></button>
                     </div>
                     <div class="task-description" id="warningDesc">Enabled</div>
 
@@ -1381,7 +1381,7 @@
             difficulty: 'medium',
             notation: 'text',
             roundSoundsEnabled: true,
-            warningBeepEnabled: true,
+            warningVoiceEnabled: true,
             vibrationEnabled: true
         };
 
@@ -1647,9 +1647,9 @@
             updateUI();
             updateRingWarning();
 
-            // 10-second warning beep
+            // 10-second warning voice
             if (wholeSeconds === 10 && timerState.isRound) {
-                playWarning();
+                playWarningVoice();
             }
 
             if (timerState.timeLeft <= 0) {
@@ -1834,11 +1834,11 @@
             const warningToggle = document.getElementById('warningToggle');
             const vibrationToggle = document.getElementById('vibrationToggle');
             roundSoundsToggle.classList.toggle('active', settings.roundSoundsEnabled);
-            warningToggle.classList.toggle('active', settings.warningBeepEnabled);
+            warningToggle.classList.toggle('active', settings.warningVoiceEnabled);
             vibrationToggle.classList.toggle('active', settings.vibrationEnabled);
 
             document.getElementById('roundSoundsDesc').textContent = settings.roundSoundsEnabled ? 'Enabled' : 'Disabled';
-            document.getElementById('warningDesc').textContent = settings.warningBeepEnabled ? 'Enabled' : 'Disabled';
+            document.getElementById('warningDesc').textContent = settings.warningVoiceEnabled ? 'Enabled' : 'Disabled';
             document.getElementById('vibrationDesc').textContent = settings.vibrationEnabled ? 'Enabled' : 'Disabled';
 
             // Show/hide difficulty section
@@ -1912,8 +1912,8 @@
             updateSettingsUI();
         }
 
-        function toggleWarningBeep() {
-            settings.warningBeepEnabled = !settings.warningBeepEnabled;
+        function toggleWarningVoice() {
+            settings.warningVoiceEnabled = !settings.warningVoiceEnabled;
             updateSettingsUI();
         }
 
@@ -1948,23 +1948,19 @@
             updateSettingsUI();
         }
 
-        // Round START sound - 3 quick ascending beeps (boxing bell)
-        function playWarning() {
-            if (!settings.warningBeepEnabled && !settings.vibrationEnabled) return;
+        // 10-second warning voice prompt
+        function playWarningVoice() {
+            if (!settings.warningVoiceEnabled && !settings.vibrationEnabled) return;
             try {
-                if (settings.warningBeepEnabled) {
-                    const ac = ensureAudioReady();
-                    if (ac) {
-                        const osc = ac.createOscillator();
-                        const gain = ac.createGain();
-                        osc.connect(gain);
-                        gain.connect(ac.destination);
-                        osc.frequency.value = 960;
-                        osc.type = 'sine';
-                        gain.gain.setValueAtTime(0.6, ac.currentTime);
-                        gain.gain.exponentialRampToValueAtTime(0.01, ac.currentTime + 0.3);
-                        osc.start(ac.currentTime);
-                        osc.stop(ac.currentTime + 0.3);
+                if (settings.warningVoiceEnabled && 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined') {
+                    const utterance = new SpeechSynthesisUtterance('10 seconds');
+                    utterance.lang = 'en-US';
+                    utterance.rate = 1;
+                    utterance.pitch = 1;
+                    utterance.volume = 1;
+
+                    window.speechSynthesis.cancel();
+                    window.speechSynthesis.speak(utterance);
                     }
                 }
                 if (settings.vibrationEnabled && navigator.vibrate) navigator.vibrate(200);
