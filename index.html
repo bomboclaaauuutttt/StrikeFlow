@@ -493,6 +493,95 @@
             transform: scale(1) translateY(0);
         }
 
+        .settings-tabs {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            margin: -6px 0 18px;
+            scrollbar-width: none;
+        }
+
+        .settings-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .settings-tab {
+            flex: 0 0 auto;
+            padding: 10px 14px;
+            border-radius: 999px;
+            border: 2px solid var(--btn-surface-border);
+            background: var(--btn-surface);
+            color: white;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .settings-tab.active {
+            border-color: var(--accent-primary);
+            background: var(--preset-active-bg);
+            color: var(--preset-active-text);
+        }
+
+        .settings-pane {
+            display: none;
+            animation: fadeScaleIn 0.22s ease;
+        }
+
+        .settings-pane.active {
+            display: block;
+        }
+
+        .settings-shortcuts {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .settings-card {
+            padding: 16px;
+            border-radius: 14px;
+            border: 1px solid var(--section-border);
+            background: rgba(255, 255, 255, 0.06);
+            cursor: pointer;
+            transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+            text-align: left;
+        }
+
+        .settings-card:hover {
+            transform: translateY(-1px);
+            border-color: var(--accent-primary);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .settings-card-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            letter-spacing: 0.8px;
+        }
+
+        .settings-card-text {
+            font-size: 12px;
+            color: var(--muted-text);
+            line-height: 1.45;
+        }
+
+        .settings-pane-footer {
+            display: flex;
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .settings-pane-footer .secondary-btn,
+        .settings-pane-footer .save-btn {
+            margin-top: 0;
+            flex: 1;
+        }
+
         .modal-title {
             font-size: 32px;
             font-weight: 700;
@@ -1293,57 +1382,125 @@
     <div class="modal" id="settingsModal">
         <div class="modal-content">
 
-            <!-- MAIN VIEW -->
-            <div id="settingsMain">
-                <div class="modal-title">SETTINGS</div>
+            <div class="modal-title">SETTINGS</div>
 
-                <!-- Presets -->
+            <div class="settings-tabs">
+                <button class="settings-tab" id="tab-overview" onclick="setSettingsTab('overview')">OVERVIEW</button>
+                <button class="settings-tab" id="tab-timing" onclick="setSettingsTab('timing')">ROUND TIME</button>
+                <button class="settings-tab" id="tab-task" onclick="setSettingsTab('task')">TASK SPAR</button>
+                <button class="settings-tab" id="tab-sound" onclick="setSettingsTab('sound')">SOUND EFFECTS</button>
+                <button class="settings-tab" id="tab-theme" onclick="setSettingsTab('theme')">THEME</button>
+            </div>
+
+            <div class="settings-pane" id="settingsPane-overview">
+                <div class="settings-section">
+                    <div class="section-title">QUICK ACCESS</div>
+                    <div class="settings-shortcuts">
+                        <button class="settings-card" onclick="setSettingsTab('timing')">
+                            <div class="settings-card-title">ROUND TIME</div>
+                            <div class="settings-card-text">Rounds, break time, total rounds and quick presets.</div>
+                        </button>
+                        <button class="settings-card" onclick="setSettingsTab('sound')">
+                            <div class="settings-card-title">SOUND EFFECTS</div>
+                            <div class="settings-card-text">Round start/end sounds, warning voice and vibration.</div>
+                        </button>
+                        <button class="settings-card" onclick="setSettingsTab('theme')">
+                            <div class="settings-card-title">THEME</div>
+                            <div class="settings-card-text">Colors, background style and overall design feel.</div>
+                        </button>
+                        <button class="settings-card" onclick="setSettingsTab('task')">
+                            <div class="settings-card-title">TASK SPAR</div>
+                            <div class="settings-card-text">Difficulty, notation and random combo practice mode.</div>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="legal-section">
+                    <a class="legal-link" href="privacy-policy.html" target="_blank" rel="noopener noreferrer">PRIVACY POLICY</a>
+                    <div class="legal-note">Required for Play Store and App Store submissions.</div>
+                </div>
+
+                <div class="settings-pane-footer">
+                    <button class="secondary-btn" onclick="resetTutorial()">SHOW TUTORIAL AGAIN</button>
+                    <button class="save-btn" onclick="closeSettings()">SAVE & CLOSE</button>
+                </div>
+            </div>
+
+            <div class="settings-pane" id="settingsPane-timing">
                 <div class="settings-section">
                     <div class="section-title">QUICK PRESETS</div>
                     <button class="preset-btn" id="preset-k1" onclick="applyPreset(180, 60, 3, 'k1')">K1: 3x3min</button>
                     <button class="preset-btn" id="preset-muaythai" onclick="applyPreset(180, 60, 5, 'muaythai')">Muay Thai: 5x3min</button>
                     <button class="preset-btn" id="preset-conditioning" onclick="applyPreset(60, 30, 10, 'conditioning')">Conditioning: 10x1min</button>
-                    <button class="preset-btn" id="preset-custom" onclick="openCustomView()">✏️ Custom</button>
+                    <button class="preset-btn" id="preset-custom" onclick="selectCustomPreset()">CUSTOM</button>
                 </div>
 
                 <div class="settings-section">
-                    <div class="section-title">DESIGN THEME</div>
-                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                        <button class="diff-btn" id="theme-classic" onclick="setTheme('classic')">CLASSIC</button>
-                        <button class="diff-btn" id="theme-ocean" onclick="setTheme('ocean')">OCEAN</button>
-                        <button class="diff-btn" id="theme-sunset" onclick="setTheme('sunset')">SUNSET</button>
-                        <button class="diff-btn" id="theme-noir" onclick="setTheme('noir')">NOIR</button>
-                        <button class="diff-btn" id="theme-neon" onclick="setTheme('neon')">NEON</button>
+                    <div class="section-title">ROUND TIME</div>
+                    <div class="current-value" id="roundTimeDisplay">3:00</div>
+                    <div class="control-row">
+                        <button class="control-btn minus-btn" onclick="adjustRoundTime(-30)">-30s</button>
+                        <button class="control-btn minus-btn" onclick="adjustRoundTime(-5)">-5s</button>
+                        <button class="control-btn plus-btn" onclick="adjustRoundTime(5)">+5s</button>
+                        <button class="control-btn plus-btn" onclick="adjustRoundTime(30)">+30s</button>
                     </div>
-                    <div class="task-description" id="themeDesc">Classic arena contrast</div>
                 </div>
 
-                <!-- Task Spar Toggle -->
+                <div class="settings-section">
+                    <div class="section-title">BREAK TIME</div>
+                    <div class="current-value" id="breakTimeDisplay">1:00</div>
+                    <div class="control-row">
+                        <button class="control-btn minus-btn" onclick="adjustBreakTime(-15)">-15s</button>
+                        <button class="control-btn minus-btn" onclick="adjustBreakTime(-5)">-5s</button>
+                        <button class="control-btn plus-btn" onclick="adjustBreakTime(5)">+5s</button>
+                        <button class="control-btn plus-btn" onclick="adjustBreakTime(15)">+15s</button>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <div class="section-title">NUMBER OF ROUNDS</div>
+                    <div class="current-value" id="roundsDisplay">5</div>
+                    <div class="control-row">
+                        <button class="control-btn minus-btn" onclick="adjustRounds(-1)">-1</button>
+                        <button class="control-btn minus-btn" onclick="adjustRounds(-5)">-5</button>
+                        <button class="control-btn plus-btn" onclick="adjustRounds(5)">+5</button>
+                        <button class="control-btn plus-btn" onclick="adjustRounds(1)">+1</button>
+                    </div>
+                </div>
+
+                <button class="save-btn" onclick="closeSettings()">SAVE & CLOSE</button>
+            </div>
+
+            <div class="settings-pane" id="settingsPane-task">
                 <div class="settings-section">
                     <div class="toggle-container">
                         <div class="section-title">TASK SPAR MODE</div>
                         <button class="toggle" id="taskSparToggle" onclick="toggleTaskSpar()"></button>
                     </div>
                     <div class="task-description" id="taskSparDesc">Disabled - timer only mode</div>
-
-                    <!-- Difficulty & Notation selector -->
-                    <div id="difficultySection" style="margin-top:16px; display:none;">
-                        <div class="section-title" style="margin-bottom:10px;">DIFFICULTY</div>
-                        <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                            <button class="diff-btn" id="diff-easy"  onclick="setDifficulty('easy')">EASY</button>
-                            <button class="diff-btn" id="diff-medium" onclick="setDifficulty('medium')">MEDIUM</button>
-                            <button class="diff-btn" id="diff-hard"  onclick="setDifficulty('hard')">HARD</button>
-                            <button class="diff-btn" id="diff-pro"   onclick="setDifficulty('pro')">PRO</button>
-                        </div>
-                        <div class="section-title" style="margin-bottom:10px; margin-top:16px;">NOTATION</div>
-                        <div style="display:flex; gap:8px;">
-                            <button class="diff-btn" id="notation-text"    onclick="setNotation('text')"    style="flex:1">TEXT</button>
-                            <button class="diff-btn" id="notation-numbers" onclick="setNotation('numbers')" style="flex:1">NUMBERS</button>
-                        </div>
-                        <div style="font-size:12px; color:#888; margin-top:8px; font-style:italic;">1=jab &nbsp; 2=cross &nbsp; 3=hook &nbsp; 4=rear hook &nbsp; 6=uppercut</div>
-                    </div>
                 </div>
 
+                <div class="settings-section" id="difficultySection" style="display:none;">
+                    <div class="section-title" style="margin-bottom:10px;">DIFFICULTY</div>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <button class="diff-btn" id="diff-easy" onclick="setDifficulty('easy')">EASY</button>
+                        <button class="diff-btn" id="diff-medium" onclick="setDifficulty('medium')">MEDIUM</button>
+                        <button class="diff-btn" id="diff-hard" onclick="setDifficulty('hard')">HARD</button>
+                        <button class="diff-btn" id="diff-pro" onclick="setDifficulty('pro')">PRO</button>
+                    </div>
+
+                    <div class="section-title" style="margin-bottom:10px; margin-top:16px;">NOTATION</div>
+                    <div style="display:flex; gap:8px;">
+                        <button class="diff-btn" id="notation-text" onclick="setNotation('text')" style="flex:1">TEXT</button>
+                        <button class="diff-btn" id="notation-numbers" onclick="setNotation('numbers')" style="flex:1">NUMBERS</button>
+                    </div>
+                    <div style="font-size:12px; color:#888; margin-top:8px; font-style:italic;">1=jab &nbsp; 2=cross &nbsp; 3=hook &nbsp; 4=rear hook &nbsp; 6=uppercut</div>
+                </div>
+
+                <button class="save-btn" onclick="closeSettings()">SAVE & CLOSE</button>
+            </div>
+
+            <div class="settings-pane" id="settingsPane-sound">
                 <div class="settings-section">
                     <div class="toggle-container">
                         <div class="section-title">ROUND START/END SOUNDS</div>
@@ -1380,56 +1537,20 @@
                     <div class="task-description" id="vibrationDesc">Enabled</div>
                 </div>
 
-                <div class="legal-section">
-                    <a class="legal-link" href="privacy-policy.html" target="_blank" rel="noopener noreferrer">PRIVACY POLICY</a>
-                    <div class="legal-note">Required for Play Store and App Store submissions.</div>
-                </div>
-
-                <button class="secondary-btn" onclick="resetTutorial()">SHOW TUTORIAL AGAIN</button>
                 <button class="save-btn" onclick="closeSettings()">SAVE & CLOSE</button>
             </div>
 
-            <!-- CUSTOM VIEW -->
-            <div id="settingsCustom" style="display:none">
-                <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
-                    <button onclick="closeCustomView()" style="background:transparent;border:2px solid #555;color:white;font-size:20px;font-weight:700;padding:8px 16px;border-radius:8px;cursor:pointer;">← Back</button>
-                    <div class="modal-title" style="margin:0;border:none;padding:0;">CUSTOM</div>
-                </div>
-
-                <!-- Round Time -->
+            <div class="settings-pane" id="settingsPane-theme">
                 <div class="settings-section">
-                    <div class="section-title">ROUND TIME</div>
-                    <div class="current-value" id="roundTimeDisplay">3:00</div>
-                    <div class="control-row">
-                        <button class="control-btn minus-btn" onclick="adjustRoundTime(-30)">-30s</button>
-                        <button class="control-btn minus-btn" onclick="adjustRoundTime(-5)">-5s</button>
-                        <button class="control-btn plus-btn" onclick="adjustRoundTime(5)">+5s</button>
-                        <button class="control-btn plus-btn" onclick="adjustRoundTime(30)">+30s</button>
+                    <div class="section-title">DESIGN THEME</div>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <button class="diff-btn" id="theme-classic" onclick="setTheme('classic')">CLASSIC</button>
+                        <button class="diff-btn" id="theme-ocean" onclick="setTheme('ocean')">OCEAN</button>
+                        <button class="diff-btn" id="theme-sunset" onclick="setTheme('sunset')">SUNSET</button>
+                        <button class="diff-btn" id="theme-noir" onclick="setTheme('noir')">NOIR</button>
+                        <button class="diff-btn" id="theme-neon" onclick="setTheme('neon')">NEON</button>
                     </div>
-                </div>
-
-                <!-- Break Time -->
-                <div class="settings-section">
-                    <div class="section-title">BREAK TIME</div>
-                    <div class="current-value" id="breakTimeDisplay">1:00</div>
-                    <div class="control-row">
-                        <button class="control-btn minus-btn" onclick="adjustBreakTime(-15)">-15s</button>
-                        <button class="control-btn minus-btn" onclick="adjustBreakTime(-5)">-5s</button>
-                        <button class="control-btn plus-btn" onclick="adjustBreakTime(5)">+5s</button>
-                        <button class="control-btn plus-btn" onclick="adjustBreakTime(15)">+15s</button>
-                    </div>
-                </div>
-
-                <!-- Number of Rounds -->
-                <div class="settings-section">
-                    <div class="section-title">NUMBER OF ROUNDS</div>
-                    <div class="current-value" id="roundsDisplay">5</div>
-                    <div class="control-row">
-                        <button class="control-btn minus-btn" onclick="adjustRounds(-1)">-1</button>
-                        <button class="control-btn minus-btn" onclick="adjustRounds(-5)">-5</button>
-                        <button class="control-btn plus-btn" onclick="adjustRounds(5)">+5</button>
-                        <button class="control-btn plus-btn" onclick="adjustRounds(1)">+1</button>
-                    </div>
+                    <div class="task-description" id="themeDesc">Classic arena contrast</div>
                 </div>
 
                 <button class="save-btn" onclick="closeSettings()">SAVE & CLOSE</button>
@@ -1544,6 +1665,7 @@
         let selectedPreset = 'muaythai';
         const PRE_ROUND_READ_SECONDS = 5;
         const THEME_KEY = 'strikeflow_theme';
+        let activeSettingsTab = 'overview';
 
         // State
         let timerState = {
@@ -2010,21 +2132,34 @@
 
         // Settings
         function openSettings() {
+            activeSettingsTab = 'overview';
             document.getElementById('settingsModal').classList.add('show');
+            updateSettingsUI();
         }
 
         function closeSettings() {
             document.getElementById('settingsModal').classList.remove('show');
-            document.getElementById('settingsCustom').style.display = 'none';
-            document.getElementById('settingsMain').style.display = 'block';
+            activeSettingsTab = 'overview';
             updateSettingsUI();
             resetTimer();
+        }
+
+        function setSettingsTab(tab) {
+            activeSettingsTab = tab;
+            updateSettingsUI();
         }
 
         function updateSettingsUI() {
             document.getElementById('roundTimeDisplay').textContent = formatTime(settings.roundTime);
             document.getElementById('breakTimeDisplay').textContent = formatTime(settings.breakTime);
             document.getElementById('roundsDisplay').textContent = settings.numberOfRounds;
+
+            ['overview', 'timing', 'task', 'sound', 'theme'].forEach(tab => {
+                const tabBtn = document.getElementById('tab-' + tab);
+                const pane = document.getElementById('settingsPane-' + tab);
+                if (tabBtn) tabBtn.classList.toggle('active', activeSettingsTab === tab);
+                if (pane) pane.classList.toggle('active', activeSettingsTab === tab);
+            });
             
             const toggle = document.getElementById('taskSparToggle');
             toggle.classList.toggle('active', settings.taskSparEnabled);
@@ -2198,15 +2333,11 @@
 
         function openCustomView() {
             selectedPreset = 'custom';
-            document.getElementById('settingsMain').style.display = 'none';
-            document.getElementById('settingsCustom').style.display = 'block';
-            updateSettingsUI();
+            setSettingsTab('timing');
         }
 
         function closeCustomView() {
-            document.getElementById('settingsCustom').style.display = 'none';
-            document.getElementById('settingsMain').style.display = 'block';
-            updateSettingsUI();
+            setSettingsTab('overview');
         }
 
         // 10-second warning voice prompt
