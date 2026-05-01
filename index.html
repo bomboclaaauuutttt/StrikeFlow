@@ -1543,6 +1543,7 @@
 
         let selectedPreset = 'muaythai';
         const PRE_ROUND_READ_SECONDS = 5;
+        const THEME_KEY = 'strikeflow_theme';
 
         // State
         let timerState = {
@@ -1573,6 +1574,13 @@
             skippedBreaks: 0,
             startedAt: null
         };
+
+        try {
+            const savedTheme = localStorage.getItem(THEME_KEY);
+            if (savedTheme && ['classic', 'ocean', 'sunset', 'noir', 'neon'].includes(savedTheme)) {
+                settings.theme = savedTheme;
+            }
+        } catch (e) {}
 
         async function requestWakeLock() {
             if (!('wakeLock' in navigator)) return;
@@ -2146,6 +2154,7 @@
 
         function setTheme(theme) {
             settings.theme = theme;
+            try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
             updateSettingsUI();
         }
 
