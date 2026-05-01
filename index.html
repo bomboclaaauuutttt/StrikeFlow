@@ -1781,14 +1781,24 @@
             progressCircle.classList.toggle('warning', t <= 10 && t > 5);
         }
 
-        function ensureAudioReady() {
+        function ensureAudioReady(forceFresh = false) {
             try {
-                if (!audioCtx) {
-                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const AudioCtor = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtor) return null;
+
+                if (forceFresh && audioCtx && audioCtx.state !== 'closed' && typeof audioCtx.close === 'function') {
+                    audioCtx.close().catch(() => {});
+                    audioCtx = null;
                 }
-                if (audioCtx.state === 'suspended') {
-                    audioCtx.resume();
+
+                if (!audioCtx || audioCtx.state === 'closed') {
+                    audioCtx = new AudioCtor();
                 }
+
+                if (audioCtx.state === 'suspended' || audioCtx.state === 'interrupted') {
+                    audioCtx.resume().catch(() => {});
+                }
+
                 return audioCtx;
             } catch (e) {
                 return null;
@@ -2106,6 +2116,7 @@
 
         // Reset timer
         function resetTimer() {
+            const wasFinishedSession = timerState.isFinished || sessionStats.completedRounds >= settings.numberOfRounds;
             clearInterval(intervalId);
             stopPreRoundDisplay();
             timerState = {
@@ -2131,6 +2142,12 @@
                 startedAt: null
             };
             finishedOverlay.classList.remove('show');
+
+            if (wasFinishedSession) {
+                ensureAudioReady(true);
+                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            }
+
             updateUI();
             
             // Generate first task if Task Spar is enabled
