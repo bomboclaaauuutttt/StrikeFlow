@@ -169,7 +169,7 @@
 
         @keyframes timerPulse {
             0%   { transform: scale(1); }
-            30%  { transform: scale(1.04); }
+            30%  { transform: scale(1.015); }
             100% { transform: scale(1); }
         }
 
@@ -313,10 +313,13 @@
 
         .timer-display {
             font-size: clamp(74px, 17vmin, 170px);
-            font-weight: 700;
+            font-weight: 900;
             line-height: 1;
-            font-family: 'Courier New', monospace;
-            letter-spacing: -4px;
+            font-family: 'Consolas', 'Lucida Console', 'Courier New', monospace;
+            font-variant-numeric: tabular-nums lining-nums;
+            text-rendering: geometricPrecision;
+            -webkit-font-smoothing: subpixel-antialiased;
+            letter-spacing: -2px;
             transition: transform 0.1s ease;
             white-space: nowrap;
         }
