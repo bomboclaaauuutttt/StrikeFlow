@@ -505,37 +505,36 @@
             transform: scale(1) translateY(0);
         }
 
-        .settings-tabs {
+        .settings-nav {
             display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding-bottom: 10px;
-            margin: -6px 0 18px;
-            scrollbar-width: none;
-        }
-
-        .settings-tabs::-webkit-scrollbar {
-            display: none;
+            flex-direction: column;
+            gap: 10px;
         }
 
         .settings-tab {
-            flex: 0 0 auto;
-            padding: 10px 14px;
-            border-radius: 999px;
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
             border: 2px solid var(--btn-surface-border);
             background: var(--btn-surface);
             color: white;
-            font-size: 13px;
+            font-size: 15px;
             font-weight: 700;
-            letter-spacing: 0.8px;
+            letter-spacing: 1px;
             cursor: pointer;
             transition: all 0.2s ease;
+            text-align: left;
         }
 
         .settings-tab.active {
             border-color: var(--accent-primary);
             background: var(--preset-active-bg);
             color: var(--preset-active-text);
+        }
+
+        .settings-back-btn {
+            margin-top: 0;
+            margin-bottom: 14px;
         }
 
         .settings-pane {
@@ -545,41 +544,6 @@
 
         .settings-pane.active {
             display: block;
-        }
-
-        .settings-shortcuts {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 12px;
-        }
-
-        .settings-card {
-            padding: 16px;
-            border-radius: 14px;
-            border: 1px solid var(--section-border);
-            background: rgba(255, 255, 255, 0.06);
-            cursor: pointer;
-            transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-            text-align: left;
-        }
-
-        .settings-card:hover {
-            transform: translateY(-1px);
-            border-color: var(--accent-primary);
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .settings-card-title {
-            font-size: 15px;
-            font-weight: 700;
-            margin-bottom: 6px;
-            letter-spacing: 0.8px;
-        }
-
-        .settings-card-text {
-            font-size: 12px;
-            color: var(--muted-text);
-            line-height: 1.45;
         }
 
         .settings-pane-footer {
@@ -1397,34 +1361,14 @@
 
             <div class="modal-title">SETTINGS</div>
 
-            <div class="settings-tabs">
-                <button class="settings-tab" id="tab-overview" onclick="setSettingsTab('overview')">OVERVIEW</button>
-                <button class="settings-tab" id="tab-timing" onclick="setSettingsTab('timing')">ROUND TIME</button>
-                <button class="settings-tab" id="tab-task" onclick="setSettingsTab('task')">TASK SPAR</button>
-                <button class="settings-tab" id="tab-sound" onclick="setSettingsTab('sound')">SOUND EFFECTS</button>
-                <button class="settings-tab" id="tab-theme" onclick="setSettingsTab('theme')">THEME</button>
-            </div>
-
-            <div class="settings-pane" id="settingsPane-overview">
+            <div class="settings-pane" id="settingsPane-main">
                 <div class="settings-section">
-                    <div class="section-title">QUICK ACCESS</div>
-                    <div class="settings-shortcuts">
-                        <button class="settings-card" onclick="setSettingsTab('timing')">
-                            <div class="settings-card-title">ROUND TIME</div>
-                            <div class="settings-card-text">Rounds, break time, total rounds and quick presets.</div>
-                        </button>
-                        <button class="settings-card" onclick="setSettingsTab('sound')">
-                            <div class="settings-card-title">SOUND EFFECTS</div>
-                            <div class="settings-card-text">Round start/end sounds, warning voice and vibration.</div>
-                        </button>
-                        <button class="settings-card" onclick="setSettingsTab('theme')">
-                            <div class="settings-card-title">THEME</div>
-                            <div class="settings-card-text">Colors, background style and overall design feel.</div>
-                        </button>
-                        <button class="settings-card" onclick="setSettingsTab('task')">
-                            <div class="settings-card-title">TASK SPAR</div>
-                            <div class="settings-card-text">Difficulty, notation and random combo practice mode.</div>
-                        </button>
+                    <div class="section-title">SETTINGS</div>
+                    <div class="settings-nav">
+                        <button class="settings-tab" id="nav-timing" onclick="setSettingsTab('timing')">ROUND TIME</button>
+                        <button class="settings-tab" id="nav-task" onclick="setSettingsTab('task')">TASK SPAR</button>
+                        <button class="settings-tab" id="nav-sound" onclick="setSettingsTab('sound')">SOUND EFFECTS</button>
+                        <button class="settings-tab" id="nav-theme" onclick="setSettingsTab('theme')">THEME</button>
                     </div>
                 </div>
 
@@ -1440,6 +1384,7 @@
             </div>
 
             <div class="settings-pane" id="settingsPane-timing">
+                <button class="secondary-btn settings-back-btn" onclick="setSettingsTab('main')">← BACK</button>
                 <div class="settings-section">
                     <div class="section-title">QUICK PRESETS</div>
                     <button class="preset-btn" id="preset-k1" onclick="applyPreset(180, 60, 3, 'k1')">K1: 3x3min</button>
@@ -1485,6 +1430,7 @@
             </div>
 
             <div class="settings-pane" id="settingsPane-task">
+                <button class="secondary-btn settings-back-btn" onclick="setSettingsTab('main')">← BACK</button>
                 <div class="settings-section">
                     <div class="toggle-container">
                         <div class="section-title">TASK SPAR MODE</div>
@@ -1514,6 +1460,7 @@
             </div>
 
             <div class="settings-pane" id="settingsPane-sound">
+                <button class="secondary-btn settings-back-btn" onclick="setSettingsTab('main')">← BACK</button>
                 <div class="settings-section">
                     <div class="toggle-container">
                         <div class="section-title">ROUND START/END SOUNDS</div>
@@ -1554,6 +1501,7 @@
             </div>
 
             <div class="settings-pane" id="settingsPane-theme">
+                <button class="secondary-btn settings-back-btn" onclick="setSettingsTab('main')">← BACK</button>
                 <div class="settings-section">
                     <div class="section-title">DESIGN THEME</div>
                     <div style="display:flex; gap:8px; flex-wrap:wrap;">
@@ -1678,7 +1626,7 @@
         let selectedPreset = 'muaythai';
         const PRE_ROUND_READ_SECONDS = 5;
         const THEME_KEY = 'strikeflow_theme';
-        let activeSettingsTab = 'overview';
+        let activeSettingsTab = 'main';
 
         // State
         let timerState = {
@@ -2167,14 +2115,14 @@
 
         // Settings
         function openSettings() {
-            activeSettingsTab = 'overview';
+            activeSettingsTab = 'main';
             document.getElementById('settingsModal').classList.add('show');
             updateSettingsUI();
         }
 
         function closeSettings() {
             document.getElementById('settingsModal').classList.remove('show');
-            activeSettingsTab = 'overview';
+            activeSettingsTab = 'main';
             updateSettingsUI();
             resetTimer();
         }
@@ -2189,11 +2137,14 @@
             document.getElementById('breakTimeDisplay').textContent = formatTime(settings.breakTime);
             document.getElementById('roundsDisplay').textContent = settings.numberOfRounds;
 
-            ['overview', 'timing', 'task', 'sound', 'theme'].forEach(tab => {
-                const tabBtn = document.getElementById('tab-' + tab);
+            ['main', 'timing', 'task', 'sound', 'theme'].forEach(tab => {
                 const pane = document.getElementById('settingsPane-' + tab);
-                if (tabBtn) tabBtn.classList.toggle('active', activeSettingsTab === tab);
                 if (pane) pane.classList.toggle('active', activeSettingsTab === tab);
+            });
+
+            ['timing', 'task', 'sound', 'theme'].forEach(tab => {
+                const navBtn = document.getElementById('nav-' + tab);
+                if (navBtn) navBtn.classList.toggle('active', activeSettingsTab === tab);
             });
             
             const toggle = document.getElementById('taskSparToggle');
@@ -2372,7 +2323,7 @@
         }
 
         function closeCustomView() {
-            setSettingsTab('overview');
+            setSettingsTab('main');
         }
 
         // 10-second warning voice prompt
