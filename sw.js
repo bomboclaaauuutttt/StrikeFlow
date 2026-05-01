@@ -1,4 +1,4 @@
-const CACHE = 'strikeflow-v3';
+const CACHE = 'strikeflow-v4';
 const ASSETS = [
   './index.html',
   './privacy-policy.html',
