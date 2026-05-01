@@ -532,6 +532,11 @@
             color: var(--preset-active-text);
         }
 
+        .settings-tab:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-1px);
+        }
+
         .settings-back-btn {
             margin-top: 0;
             margin-bottom: 14px;
@@ -663,6 +668,10 @@
 
         .toggle.active {
             background: var(--accent-primary);
+        }
+
+        .toggle:hover {
+            filter: brightness(1.08);
         }
 
         .toggle::after {
@@ -830,6 +839,24 @@
             opacity: 0.9;
             border-color: var(--btn-surface-hover);
             color: #ffffff;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .btn:hover:not(:disabled),
+            .save-btn:hover,
+            .secondary-btn:hover,
+            .preset-btn:hover,
+            .control-btn:hover,
+            .diff-btn:hover,
+            .settings-tab:hover,
+            .settings-btn:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
+            }
+
+            .toggle:hover {
+                box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.12);
+            }
         }
 
         .legal-section {
