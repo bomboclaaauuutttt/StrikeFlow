@@ -15,6 +15,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="StrikeFlow">
     <link rel="apple-touch-icon" href="Strike Flow.png">
+    <link rel="preload" href="click soundeffect.mp3" as="audio">
     <style>
         :root {
             --app-bg: #060606;
@@ -145,6 +146,32 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            scrollbar-width: thin;
+            scrollbar-color: #2bff4a #151515;
+        }
+
+        *::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        *::-webkit-scrollbar-track {
+            background: #151515;
+            border-radius: 999px;
+        }
+
+        *::-webkit-scrollbar-thumb {
+            background: #2bff4a;
+            border: 2px solid #151515;
+            border-radius: 999px;
+        }
+
+        *::-webkit-scrollbar-thumb:hover {
+            background: #50ff68;
+        }
+
+        *::-webkit-scrollbar-corner {
+            background: #151515;
         }
 
         html, body {
@@ -279,16 +306,63 @@
             padding: 20px;
         }
 
+        .phase-banner {
+            width: min(88vw, 620px);
+            min-height: 74px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 15px 18px;
+            margin-bottom: 22px;
+            border: 1px solid rgba(43, 255, 74, 0.48);
+            border-left: 8px solid var(--accent-primary);
+            border-radius: 8px;
+            background: #171717;
+            box-shadow: 0 0 0 1px rgba(43, 255, 74, 0.08);
+            transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
+        }
+
+        .app.break .phase-banner {
+            border-color: rgba(255, 191, 71, 0.58);
+            border-left-color: #ffbf47;
+            background: #1f1b13;
+        }
+
+        .app.paused .phase-banner {
+            border-color: rgba(255, 255, 255, 0.28);
+            border-left-color: #d8d8d8;
+            background: #181818;
+        }
+
         .timer-status {
-            font-size: clamp(16px, 2.4vmin, 24px);
+            font-size: clamp(24px, 4vmin, 42px);
             font-weight: 900;
-            letter-spacing: 2px;
+            letter-spacing: 1.2px;
             text-transform: uppercase;
             line-height: 1;
-            margin-bottom: 22px;
             min-height: 1em;
-            opacity: 0.7;
-            text-align: center;
+            opacity: 1;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .phase-hint {
+            color: #cfcfcf;
+            font-size: clamp(12px, 1.8vmin, 15px);
+            font-weight: 850;
+            letter-spacing: 0.8px;
+            line-height: 1.25;
+            text-align: right;
+            text-transform: uppercase;
+        }
+
+        .app.break .phase-hint {
+            color: #ffda90;
+        }
+
+        .app.paused .phase-hint {
+            color: #e8e8e8;
         }
 
         .timer-ring-wrap {
@@ -368,6 +442,71 @@
         .task-display.visible {
             opacity: 1;
             transform: translateY(0);
+        }
+
+        .task-display.training-guide {
+            width: min(88vw, 620px);
+            max-width: min(88vw, 620px);
+            margin-top: 22px;
+            text-align: left;
+        }
+
+        .guide-card {
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-left: 5px solid var(--accent-primary);
+            border-radius: 8px;
+            background: #181818;
+            padding: 16px 16px 14px;
+            box-shadow: 0 18px 42px rgba(0, 0, 0, 0.24);
+        }
+
+        .guide-meta {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            color: var(--accent-primary);
+            font-size: 12px;
+            font-weight: 950;
+            letter-spacing: 0.8px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .guide-title {
+            color: #fff;
+            font-size: clamp(18px, 3vmin, 28px);
+            font-weight: 950;
+            letter-spacing: 0.5px;
+            margin-bottom: 7px;
+            text-transform: uppercase;
+        }
+
+        .guide-note {
+            color: #d0d0d0;
+            font-size: clamp(13px, 2vmin, 16px);
+            font-weight: 650;
+            line-height: 1.38;
+        }
+
+        .guide-next {
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            color: #9f9f9f;
+            font-size: 12px;
+            font-weight: 850;
+            letter-spacing: 0.4px;
+        }
+
+        @keyframes guideFadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .pre-round-overlay {
@@ -552,24 +691,66 @@
 
         .mode-panel,
         .training-panel {
-            width: min(92vw, 620px);
+            width: min(92vw, 680px);
             animation: fadeScaleIn 0.28s ease both;
             position: relative;
             z-index: 1;
         }
 
         .mode-panel {
-            position: relative;
+            width: min(92vw, 780px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
         }
 
         .mode-panel::before {
+            display: none;
+        }
+
+        .mode-choice::before {
+            background-image: url('StrikeFlow logo.png');
+            background-repeat: no-repeat;
+            background-position: center 16%;
+            background-size: min(88vw, 580px);
+            -webkit-mask-image: none;
+            mask-image: none;
+            opacity: 0.075;
+        }
+
+        .mode-lockup {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            color: var(--accent-primary);
+            font-size: 12px;
+            font-weight: 950;
+            letter-spacing: 3px;
+            margin-bottom: 18px;
+            text-transform: uppercase;
+        }
+
+        .mode-lockup::before {
             content: "";
-            position: absolute;
-            left: 0;
-            top: -28px;
-            width: 74px;
-            height: 3px;
+            width: 42px;
+            height: 2px;
             background: var(--accent-primary);
+        }
+
+        .mode-lockup::after {
+            content: "";
+            width: 42px;
+            height: 2px;
+            background: var(--accent-primary);
+        }
+
+        .mode-logo {
+            width: min(48vw, 220px);
+            height: auto;
+            margin-bottom: 18px;
+            filter: drop-shadow(0 18px 42px rgba(0, 0, 0, 0.62));
         }
 
         .mode-kicker,
@@ -592,6 +773,12 @@
             text-transform: uppercase;
         }
 
+        .mode-title {
+            font-size: clamp(34px, 7vw, 64px);
+            max-width: 760px;
+            margin-bottom: 12px;
+        }
+
         .mode-subtitle,
         .training-subtitle {
             color: #cfcfcf;
@@ -601,9 +788,22 @@
             max-width: 520px;
         }
 
+        .mode-subtitle {
+            max-width: 620px;
+            margin-bottom: 30px;
+            color: #d6d6d6;
+        }
+
         .mode-actions,
         .training-grid {
             display: grid;
+            gap: 12px;
+        }
+
+        .mode-actions {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr;
             gap: 12px;
         }
 
@@ -611,10 +811,260 @@
             gap: 14px;
         }
 
+        .sparring-setup {
+            position: fixed;
+            inset: 0;
+            z-index: 9600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: calc(22px + env(safe-area-inset-top)) 18px calc(22px + env(safe-area-inset-bottom));
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 36%),
+                #060606;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .sparring-setup.hidden {
+            display: none;
+        }
+
+        .sparring-setup::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(circle at 50% 18%, rgba(43, 255, 74, 0.08), transparent 32%),
+                linear-gradient(90deg, rgba(43, 255, 74, 0.045) 1px, transparent 1px),
+                linear-gradient(180deg, rgba(255, 255, 255, 0.026) 1px, transparent 1px);
+            background-size: auto, 88px 88px, 88px 88px;
+            opacity: 0.7;
+        }
+
+        .sparring-setup::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background:
+                linear-gradient(90deg, rgba(255, 255, 255, 0.04), transparent 22%, transparent 78%, rgba(43, 255, 74, 0.05)),
+                linear-gradient(180deg, rgba(0, 0, 0, 0.12), transparent 30%, rgba(0, 0, 0, 0.55));
+        }
+
+        .sparring-setup-panel {
+            width: min(92vw, 620px);
+            position: relative;
+            z-index: 1;
+            animation: fadeScaleIn 0.24s ease both;
+        }
+
+        .setup-kicker {
+            color: var(--accent-primary);
+            font-size: 12px;
+            font-weight: 950;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .setup-title {
+            color: #fff;
+            font-size: clamp(34px, 7vw, 58px);
+            font-weight: 950;
+            line-height: 0.95;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .setup-subtitle {
+            color: #cfcfcf;
+            font-size: 15px;
+            line-height: 1.45;
+            margin-bottom: 20px;
+        }
+
+        .setup-progress {
+            display: flex;
+            gap: 7px;
+            margin-bottom: 20px;
+        }
+
+        .setup-dot {
+            height: 5px;
+            flex: 1;
+            border-radius: 999px;
+            background: #2b2b2b;
+        }
+
+        .setup-dot.active {
+            background: var(--accent-primary);
+        }
+
+        .setup-options {
+            display: grid;
+            gap: 10px;
+        }
+
+        .setup-option {
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-left: 5px solid rgba(255, 255, 255, 0.24);
+            border-radius: 8px;
+            background: #181818;
+            color: #fff;
+            cursor: pointer;
+            padding: 16px 18px;
+            text-align: left;
+            transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+        }
+
+        .setup-option:active {
+            transform: translateY(1px) scale(0.992);
+        }
+
+        .setup-option:hover,
+        .setup-option.selected {
+            border-color: var(--accent-primary);
+            border-left-color: var(--accent-primary);
+            background: #202020;
+            transform: translateY(-1px);
+        }
+
+        .setup-option.chosen {
+            animation: setupPunch 0.22s ease both;
+        }
+
+        @keyframes setupPunch {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 rgba(43, 255, 74, 0);
+            }
+            45% {
+                transform: scale(1.018);
+                box-shadow: 0 0 0 4px rgba(43, 255, 74, 0.16);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 rgba(43, 255, 74, 0);
+            }
+        }
+
+        .setup-option-title {
+            font-size: 22px;
+            font-weight: 950;
+            letter-spacing: 0.7px;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .setup-option-desc {
+            color: #bdbdbd;
+            font-size: 13px;
+            line-height: 1.35;
+        }
+
+        .setup-custom {
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-left: 5px solid rgba(43, 255, 74, 0.55);
+            border-radius: 8px;
+            background: #151515;
+            color: #fff;
+            cursor: pointer;
+            margin-top: 4px;
+            padding: 16px 18px;
+            text-align: left;
+            text-transform: uppercase;
+            transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+        }
+
+        .setup-custom:hover,
+        .setup-custom.active {
+            border-color: var(--accent-primary);
+            border-left-color: var(--accent-primary);
+            background: #202020;
+            transform: translateY(-1px);
+        }
+
+        .setup-custom-title {
+            font-size: 22px;
+            font-weight: 950;
+            letter-spacing: 0.7px;
+        }
+
+        .setup-custom-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .setup-custom-input {
+            flex: 1;
+            min-width: 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: #0c0c0c;
+            color: #fff;
+            font-size: 22px;
+            font-weight: 950;
+            letter-spacing: 0.7px;
+            padding: 12px 14px;
+            text-transform: uppercase;
+            outline: none;
+        }
+
+        .setup-custom-input:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(43, 255, 74, 0.12);
+        }
+
+        .setup-custom.chosen {
+            animation: setupPunch 0.22s ease both;
+        }
+
+        .setup-custom-input.invalid {
+            border-color: #ff4545;
+            animation: setupShake 0.22s ease both;
+        }
+
+        @keyframes setupShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .setup-footer {
+            display: flex;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .setup-footer button {
+            flex: 1;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 950;
+            letter-spacing: 1px;
+            padding: 14px 16px;
+            text-transform: uppercase;
+        }
+
+        .setup-secondary {
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            background: #181818;
+            color: #fff;
+        }
+
+        .setup-primary {
+            border: 1px solid var(--accent-primary);
+            background: var(--accent-primary);
+            color: #000;
+        }
+
         .mode-card,
         .training-card {
             width: 100%;
-            border: 1px solid rgba(255, 255, 255, 0.16);
+            border: 1px solid rgba(255, 255, 255, 0.24);
             border-radius: 8px;
             background: #181818;
             padding: 18px 18px 16px;
@@ -623,6 +1073,15 @@
             position: relative;
             overflow: hidden;
             transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+        }
+
+        .mode-card {
+            min-height: 128px;
+            padding: 24px 24px 20px;
+            background: #1d1d1d;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .mode-card::before,
@@ -646,8 +1105,8 @@
         .training-card:hover {
             transform: translateY(-2px);
             border-color: var(--accent-primary);
-            background: #202020;
-            box-shadow: 0 18px 42px rgba(0, 0, 0, 0.36);
+            background: #242424;
+            box-shadow: none;
         }
 
         .mode-card:active,
@@ -672,6 +1131,34 @@
             align-items: flex-start;
         }
 
+        .mode-card .mode-card-top {
+            flex: 1;
+            align-items: flex-start;
+        }
+
+        .mode-card-main {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+        }
+
+        .mode-card-number {
+            color: var(--accent-primary);
+            font-size: 13px;
+            font-weight: 950;
+            letter-spacing: 1.5px;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+        }
+
+        .mode-card .mode-card-title {
+            font-size: clamp(28px, 5vw, 42px);
+            line-height: 0.95;
+            margin-bottom: 8px;
+        }
+
         .mode-card-label {
             flex: 0 0 auto;
             border: 1px solid rgba(255, 255, 255, 0.25);
@@ -685,6 +1172,29 @@
             white-space: nowrap;
         }
 
+        .mode-card-cta {
+            align-self: center;
+            flex: 0 0 auto;
+            border: 1px solid var(--accent-primary);
+            border-radius: 6px;
+            color: var(--accent-primary);
+            font-size: 12px;
+            font-weight: 950;
+            letter-spacing: 1px;
+            line-height: 1;
+            margin-top: 0;
+            padding: 11px 13px;
+            text-transform: uppercase;
+            transition: transform 0.18s ease, color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+        }
+
+        .mode-card:hover .mode-card-cta {
+            border-color: var(--accent-primary);
+            background: var(--accent-primary);
+            color: #000;
+            transform: translateX(2px);
+        }
+
         .mode-card-desc,
         .training-card-desc {
             color: #bdbdbd;
@@ -696,13 +1206,13 @@
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-            margin-top: 14px;
+            margin-top: 16px;
         }
 
         .mode-pill {
             border-radius: 6px;
-            background: #2b2b2b;
-            color: #e8e8e8;
+            background: #343434;
+            color: #f2f2f2;
             font-size: 12px;
             font-weight: 800;
             letter-spacing: 0.4px;
@@ -1040,22 +1550,6 @@
             transform: rotate(180deg);
         }
 
-        .training-detail {
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-            transition: max-height 0.38s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.22s ease, padding-top 0.28s ease;
-        }
-
-        .training-card.expanded .training-detail {
-            max-height: min(62vh, 680px);
-            opacity: 1;
-            padding-top: 16px;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-            overscroll-behavior: contain;
-        }
-
         .training-detail-inner {
             display: grid;
             gap: 12px;
@@ -1075,6 +1569,97 @@
                 opacity: 1;
                 transform: translateY(0);
             }
+        }
+
+        .workout-preview {
+            position: fixed;
+            inset: 0;
+            z-index: 9800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: calc(18px + env(safe-area-inset-top)) 16px calc(18px + env(safe-area-inset-bottom));
+            background: rgba(0, 0, 0, 0.72);
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.24s ease;
+        }
+
+        .workout-preview.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .workout-preview-panel {
+            width: min(92vw, 680px);
+            max-height: min(86vh, 820px);
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 8px;
+            background: #121212;
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
+            transform: translateY(12px) scale(0.98);
+            transition: transform 0.24s ease;
+            overflow: hidden;
+        }
+
+        .workout-preview.show .workout-preview-panel {
+            transform: translateY(0) scale(1);
+        }
+
+        .workout-preview-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 18px 18px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .workout-preview-kicker {
+            color: var(--accent-primary);
+            font-size: 12px;
+            font-weight: 950;
+            letter-spacing: 1.4px;
+            margin-bottom: 7px;
+            text-transform: uppercase;
+        }
+
+        .workout-preview-title {
+            color: #fff;
+            font-size: clamp(28px, 5vw, 46px);
+            font-weight: 950;
+            line-height: 0.95;
+            text-transform: uppercase;
+        }
+
+        .workout-preview-subtitle {
+            color: #cfcfcf;
+            font-size: 14px;
+            line-height: 1.4;
+            margin-top: 10px;
+        }
+
+        .workout-preview-close {
+            flex: 0 0 auto;
+            width: 38px;
+            height: 38px;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 8px;
+            background: #1d1d1d;
+            color: #fff;
+            cursor: pointer;
+            font-size: 24px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .workout-preview-body {
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+            padding: 16px 18px 18px;
         }
 
         /* Settings Modal */
@@ -1572,6 +2157,28 @@
         }
 
         @media (max-width: 600px) {
+            .phase-banner {
+                width: min(88vw, 430px);
+                min-height: 78px;
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 7px;
+                padding: 14px 15px;
+            }
+
+            .timer-status {
+                font-size: clamp(26px, 8vw, 38px);
+            }
+
+            .phase-hint {
+                text-align: left;
+                font-size: 12px;
+            }
+
+            .setup-custom-row {
+                flex-direction: column;
+            }
+
             .timer-ring-wrap {
                 width: min(84vw, 390px);
                 height: min(84vw, 390px);
@@ -1591,13 +2198,12 @@
                 font-size: 24px;
             }
 
-            .mode-card-top,
             .training-header {
                 flex-direction: column;
             }
 
-            .mode-card-label {
-                align-self: flex-start;
+            .mode-card-cta {
+                align-self: center;
             }
 
             .workout-overview {
@@ -1649,6 +2255,22 @@
                 justify-content: center;
                 align-items: center;
                 margin-left: clamp(10px, 3vw, 32px);
+            }
+
+            .phase-banner {
+                width: min(46vw, 360px);
+                min-height: 50px;
+                margin-bottom: 8px;
+                padding: 9px 12px;
+                border-left-width: 6px;
+            }
+
+            .timer-status {
+                font-size: min(6vh, 28px);
+            }
+
+            .phase-hint {
+                font-size: 10px;
             }
 
             .timer-ring-wrap {
@@ -1936,7 +2558,10 @@
                 </div>
             </div>
             <div class="timer-section">
-                <div class="timer-status" id="timerStatus">ROUND ACTIVE</div>
+                <div class="phase-banner" id="phaseBanner">
+                    <div class="timer-status" id="timerStatus">READY</div>
+                    <div class="phase-hint" id="phaseHint">Tap start</div>
+                </div>
                 <div class="timer-ring-wrap">
                     <svg class="timer-ring" viewBox="0 0 100 100" aria-hidden="true">
                         <circle class="ring-track" cx="50" cy="50" r="46"></circle>
@@ -1962,17 +2587,19 @@
     <!-- Daily Mode Choice -->
     <div class="mode-choice" id="modeChoice">
         <div class="mode-panel">
-            <div class="mode-kicker">STRIKEFLOW</div>
-            <div class="mode-title">Choose today's work</div>
-            <div class="mode-subtitle">Pick live rounds for sparring, or follow guided training with drills, combos and session instructions.</div>
+            <img class="mode-logo" src="StrikeFlow logo.png" alt="StrikeFlow">
+            <div class="mode-lockup">StrikeFlow</div>
+            <div class="mode-title">Train. Fight. Improve.</div>
+            <div class="mode-subtitle">Choose your session and get to work.</div>
             <div class="mode-actions">
                 <button class="mode-card spar-card" onclick="chooseSparMode()">
                     <div class="mode-card-top">
-                        <div>
+                        <div class="mode-card-main">
+                            <div class="mode-card-number">Fight rounds</div>
                             <div class="mode-card-title">Sparring</div>
-                            <div class="mode-card-desc">Run clean fight rounds with bells, breaks and optional Task Spar prompts between rounds.</div>
+                            <div class="mode-card-desc">Rounds, bells and breaks.</div>
                         </div>
-                        <div class="mode-card-label">Fight timer</div>
+                        <div class="mode-card-cta">Open timer</div>
                     </div>
                     <div class="mode-card-meta">
                         <span class="mode-pill">Live rounds</span>
@@ -1982,11 +2609,12 @@
                 </button>
                 <button class="mode-card training-card-entry" onclick="openTrainingSection()">
                     <div class="mode-card-top">
-                        <div>
+                        <div class="mode-card-main">
+                            <div class="mode-card-number">Guided work</div>
                             <div class="mode-card-title">Training</div>
-                            <div class="mode-card-desc">Follow structured workouts with combo lists, drill notes and round-by-round guidance.</div>
+                            <div class="mode-card-desc">Workouts, combos and instructions.</div>
                         </div>
-                        <div class="mode-card-label">Session block</div>
+                        <div class="mode-card-cta">Choose plan</div>
                     </div>
                     <div class="mode-card-meta">
                         <span class="mode-pill">Combos</span>
@@ -1994,6 +2622,21 @@
                         <span class="mode-pill">Instructions</span>
                     </div>
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sparring Setup -->
+    <div class="sparring-setup hidden" id="sparringSetup">
+        <div class="sparring-setup-panel">
+            <div class="setup-kicker" id="setupKicker">Sparring setup</div>
+            <div class="setup-title" id="setupTitle"></div>
+            <div class="setup-subtitle" id="setupSubtitle"></div>
+            <div class="setup-progress" id="setupProgress"></div>
+            <div class="setup-options" id="setupOptions"></div>
+            <div class="setup-footer">
+                <button class="setup-secondary" onclick="setupBack()">Back</button>
+                <button class="setup-primary" id="setupNextBtn" onclick="setupNext()">Next</button>
             </div>
         </div>
     </div>
@@ -2037,6 +2680,21 @@
             <div class="training-step hidden" id="trainingOptionsStep">
                 <div class="training-grid" id="trainingOptionsGrid"></div>
             </div>
+        </div>
+    </div>
+
+    <!-- Workout Preview Modal -->
+    <div class="workout-preview" id="workoutPreview">
+        <div class="workout-preview-panel">
+            <div class="workout-preview-header">
+                <div>
+                    <div class="workout-preview-kicker" id="workoutPreviewKicker">Workout</div>
+                    <div class="workout-preview-title" id="workoutPreviewTitle"></div>
+                    <div class="workout-preview-subtitle" id="workoutPreviewSubtitle"></div>
+                </div>
+                <button class="workout-preview-close" onclick="closeWorkoutPreview()">×</button>
+            </div>
+            <div class="workout-preview-body" id="workoutPreviewBody"></div>
         </div>
     </div>
 
@@ -2212,6 +2870,7 @@
                         <button class="diff-btn" id="start-sound-bell" onclick="setRoundStartSound('bell')">BELL</button>
                         <button class="diff-btn" id="start-sound-digital" onclick="setRoundStartSound('digital')">DIGITAL</button>
                         <button class="diff-btn" id="start-sound-soft" onclick="setRoundStartSound('soft')">SOFT</button>
+                        <button class="diff-btn" id="start-sound-sharp" onclick="setRoundStartSound('sharp')">SHARP</button>
                     </div>
 
                     <div class="section-title" style="margin-top:14px; margin-bottom:8px;">ROUND END SOUND</div>
@@ -2220,7 +2879,20 @@
                         <button class="diff-btn" id="end-sound-gong" onclick="setRoundEndSound('gong')">GONG</button>
                         <button class="diff-btn" id="end-sound-digital" onclick="setRoundEndSound('digital')">DIGITAL</button>
                         <button class="diff-btn" id="end-sound-soft" onclick="setRoundEndSound('soft')">SOFT</button>
+                        <button class="diff-btn" id="end-sound-heavy" onclick="setRoundEndSound('heavy')">HEAVY</button>
                     </div>
+
+                    <div class="toggle-container" style="margin-top:14px;">
+                        <div class="section-title" style="margin-bottom:0;">ROUND VOICE</div>
+                        <button class="toggle" id="roundVoiceToggle" onclick="toggleRoundVoice()"></button>
+                    </div>
+                    <div class="task-description" id="roundVoiceDesc">Enabled</div>
+
+                    <div class="toggle-container" style="margin-top:14px;">
+                        <div class="section-title" style="margin-bottom:0;">BUTTON CLICKS</div>
+                        <button class="toggle" id="uiClicksToggle" onclick="toggleUiClicks()"></button>
+                    </div>
+                    <div class="task-description" id="uiClicksDesc">Enabled</div>
 
                     <div class="toggle-container" style="margin-top:14px;">
                         <div class="section-title" style="margin-bottom:0;">WARNING VOICE (10s)</div>
@@ -2357,6 +3029,8 @@
             roundSoundsEnabled: true,
             roundStartSound: 'classic',
             roundEndSound: 'classic',
+            roundVoiceEnabled: true,
+            uiClickSoundsEnabled: true,
             warningVoiceEnabled: true,
             vibrationEnabled: true
         };
@@ -2389,6 +3063,14 @@
         let lastTickMs = null;
         let lastWholeSecond = null;
         let audioCtx = null;
+        const UI_CLICK_SOUND_SRC = 'click soundeffect.mp3';
+        const uiClickAudioPool = Array.from({ length: 4 }, () => {
+            const audio = new Audio(UI_CLICK_SOUND_SRC);
+            audio.preload = 'auto';
+            audio.volume = 1;
+            return audio;
+        });
+        let uiClickAudioIndex = 0;
         let wakeLock = null;
         let sessionStats = {
             activeSeconds: 0,
@@ -2430,6 +3112,7 @@
         const app = document.querySelector('.app');
         const timerDisplay = document.getElementById('timerDisplay');
         const timerStatus = document.getElementById('timerStatus');
+        const phaseHint = document.getElementById('phaseHint');
         const taskDisplay = document.getElementById('taskDisplay');
         const phaseLabel = document.getElementById('phaseLabel');
         const startBtn = document.getElementById('startBtn');
@@ -2448,6 +3131,17 @@
         const settingsModal = document.getElementById('settingsModal');
         const modeChoice = document.getElementById('modeChoice');
         const trainingSection = document.getElementById('trainingSection');
+        const sparringSetup = document.getElementById('sparringSetup');
+        const setupTitle = document.getElementById('setupTitle');
+        const setupSubtitle = document.getElementById('setupSubtitle');
+        const setupProgress = document.getElementById('setupProgress');
+        const setupOptions = document.getElementById('setupOptions');
+        const setupNextBtn = document.getElementById('setupNextBtn');
+        const workoutPreview = document.getElementById('workoutPreview');
+        const workoutPreviewKicker = document.getElementById('workoutPreviewKicker');
+        const workoutPreviewTitle = document.getElementById('workoutPreviewTitle');
+        const workoutPreviewSubtitle = document.getElementById('workoutPreviewSubtitle');
+        const workoutPreviewBody = document.getElementById('workoutPreviewBody');
         const bgIdle  = document.getElementById('bgIdle');
         const bgRound = document.getElementById('bgRound');
         const bgBreak = document.getElementById('bgBreak');
@@ -2461,6 +3155,7 @@
             bgIdle.style.opacity  = state === 'idle'  ? '1' : '0';
             bgRound.style.opacity = state === 'round' ? '1' : '0';
             bgBreak.style.opacity = state === 'break' ? '1' : '0';
+            app.classList.toggle('round', state === 'round');
             app.classList.toggle('break', state === 'break');
         }
 
@@ -2498,6 +3193,63 @@
             }
         }
 
+        function playUiClick() {
+            if (!settings.uiClickSoundsEnabled) return;
+            try {
+                const clickAudio = uiClickAudioPool[uiClickAudioIndex];
+                uiClickAudioIndex = (uiClickAudioIndex + 1) % uiClickAudioPool.length;
+                clickAudio.currentTime = 0;
+                clickAudio.volume = 1;
+                const playPromise = clickAudio.play();
+                if (playPromise && typeof playPromise.catch === 'function') {
+                    playPromise.catch(() => playSyntheticUiClick());
+                }
+            } catch (e) {
+                playSyntheticUiClick();
+            }
+        }
+
+        function playSyntheticUiClick() {
+            try {
+                const ac = ensureAudioReady();
+                if (!ac) return;
+
+                const osc = ac.createOscillator();
+                const osc2 = ac.createOscillator();
+                const gain = ac.createGain();
+                osc.connect(gain);
+                osc2.connect(gain);
+                gain.connect(ac.destination);
+                osc.frequency.setValueAtTime(1120, ac.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(620, ac.currentTime + 0.08);
+                osc2.frequency.setValueAtTime(560, ac.currentTime);
+                osc2.frequency.exponentialRampToValueAtTime(420, ac.currentTime + 0.08);
+                osc.type = 'square';
+                osc2.type = 'triangle';
+                gain.gain.setValueAtTime(0.34, ac.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ac.currentTime + 0.11);
+                osc.start(ac.currentTime);
+                osc2.start(ac.currentTime);
+                osc.stop(ac.currentTime + 0.115);
+                osc2.stop(ac.currentTime + 0.115);
+            } catch (e) {}
+        }
+
+        function speakCue(text, options = {}) {
+            if (!settings.roundVoiceEnabled) return;
+            if (!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') return;
+            try {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                utterance.rate = options.rate || 0.92;
+                utterance.pitch = options.pitch || 0.9;
+                utterance.volume = options.volume || 1;
+
+                window.speechSynthesis.cancel();
+                window.speechSynthesis.speak(utterance);
+            } catch (e) {}
+        }
+
         // Format time as MM:SS
         function formatTime(seconds) {
             const total = Math.max(0, Math.ceil(seconds));
@@ -2521,20 +3273,49 @@
 
         // Update UI
         function updateUI() {
-            timerDisplay.textContent = formatTime(timerState.timeLeft);
+            const guideStep = appMode === 'training' ? getCurrentGuideStep() : null;
+            const trainingElapsed = appMode === 'training'
+                ? Math.max(0, settings.roundTime - timerState.timeLeft)
+                : 0;
+            const guideRemaining = guideStep
+                ? Math.max(0, guideStep.end - trainingElapsed)
+                : timerState.timeLeft;
+            const displayTime = appMode === 'training' && guideStep ? guideRemaining : timerState.timeLeft;
+            timerDisplay.textContent = formatTime(displayTime);
             const hasSessionStarted = !!sessionStats.startedAt || timerState.currentRound > 1 || timerState.timeLeft < settings.roundTime;
-            timerStatus.textContent = appMode === 'training'
-                ? (timerState.isFinished ? '' : 'TRAINING')
-                : (hasSessionStarted && !timerState.isFinished
-                    ? (timerState.isRound ? 'ROUND ACTIVE' : 'BREAK')
-                    : '');
+            const isPaused = hasSessionStarted && !timerState.isRunning && !timerState.isFinished;
+            app.classList.toggle('paused', isPaused);
+
+            if (timerState.isFinished) {
+                timerStatus.textContent = 'FINISHED';
+                phaseHint.textContent = 'Session complete';
+            } else if (isPaused) {
+                timerStatus.textContent = 'PAUSED';
+                phaseHint.textContent = 'Resume when ready';
+            } else if (appMode === 'training') {
+                timerStatus.textContent = timerState.isRunning ? 'TRAINING' : 'READY';
+                phaseHint.textContent = guideStep ? guideStep.title : 'Tap start';
+            } else if (hasSessionStarted && timerState.isRound) {
+                timerStatus.textContent = 'ROUND';
+                phaseHint.textContent = `Work now · ${timerState.currentRound}/${settings.numberOfRounds}`;
+            } else if (hasSessionStarted && !timerState.isRound) {
+                timerStatus.textContent = 'BREAK TIME';
+                phaseHint.textContent = timerState.currentRound < settings.numberOfRounds
+                    ? `Recover · next round ${timerState.currentRound + 1}/${settings.numberOfRounds}`
+                    : 'Recover';
+            } else {
+                timerStatus.textContent = 'READY';
+                phaseHint.textContent = 'Tap start';
+            }
 
             const swipeHint = document.getElementById('swipeHint');
             swipeHint.classList.toggle('visible',
                 timerState.isRunning && !timerState.isRound && !timerState.isFinished);
 
-            const maxTime = timerState.isRound ? settings.roundTime : settings.breakTime;
-            const progress = Math.max(0, timerState.timeLeft / maxTime);
+            const maxTime = appMode === 'training' && guideStep
+                ? Math.max(1, guideStep.end - guideStep.start)
+                : (timerState.isRound ? settings.roundTime : settings.breakTime);
+            const progress = Math.max(0, displayTime / maxTime);
             const offset = progressCircumference * (1 - progress);
             progressCircle.style.strokeDashoffset = `${offset}`;
 
@@ -2574,10 +3355,19 @@
                 continueBtn.classList.add('hidden');
             }
 
-            // Task display with fade animation
-            const showTask = settings.taskSparEnabled && timerState.isRound && taskState.currentTask && !taskState.showingPreRound;
-            taskDisplay.classList.toggle('visible', showTask);
-            if (showTask) taskDisplay.textContent = formatTaskForNotation(taskState.currentTask);
+            // Task / guided training display with fade animation
+            const showTrainingGuide = appMode === 'training' && activeTrainingWorkout && !timerState.isFinished;
+            if (showTrainingGuide) {
+                taskDisplay.classList.add('training-guide');
+                taskDisplay.innerHTML = renderTrainingGuide();
+                taskDisplay.classList.add('visible');
+            } else {
+                taskDisplay.classList.remove('training-guide');
+                const showTask = settings.taskSparEnabled && timerState.isRound && taskState.currentTask && !taskState.showingPreRound;
+                taskDisplay.classList.toggle('visible', showTask);
+                if (showTask) taskDisplay.textContent = formatTaskForNotation(taskState.currentTask);
+                if (!showTask) taskDisplay.textContent = '';
+            }
 
             // Initialize task for round 1 if not already set
             if (settings.taskSparEnabled && timerState.isRound && timerState.currentRound === 1 && !taskState.currentTask && !taskState.showingPreRound) {
@@ -2692,17 +3482,20 @@
                     releaseWakeLock();
                     renderSessionSummary();
                     finishedOverlay.classList.add('show');
+                    speakCue('Session complete');
                     updateUI();
                     return;
                 }
                 timerState.isRound = false;
                 timerState.timeLeft = settings.breakTime;
                 progressCircle.classList.remove('warning', 'danger');
+                speakCue('Break');
             } else {
                 // Break ending, new round starting
                 if (settings.taskSparEnabled) {
                     startPreRound(() => {
                         playRoundStart();
+                        speakCue('Round started');
                         timerState.isRound = true;
                         timerState.currentRound++;
                         timerState.timeLeft = settings.roundTime;
@@ -2710,6 +3503,7 @@
                     });
                 } else {
                     playRoundStart();
+                    speakCue('Round started');
                     timerState.isRound = true;
                     timerState.currentRound++;
                     timerState.timeLeft = settings.roundTime;
@@ -2785,9 +3579,11 @@
                     if (settings.taskSparEnabled) {
                         startPreRound(() => {
                             playRoundStart();
+                            speakCue(appMode === 'training' ? 'Training started' : 'Round started');
                         });
                     } else {
                         playRoundStart();
+                        speakCue(appMode === 'training' ? 'Training started' : 'Round started');
                     }
                 }
                 lastTickMs = performance.now();
@@ -2834,6 +3630,11 @@
                 showingPreRound: false,
                 preRoundCountdown: PRE_ROUND_READ_SECONDS
             };
+            if (appMode !== 'training') {
+                activeTrainingWorkout = null;
+                trainingTimeline = [];
+                currentGuideIndex = -1;
+            }
             sessionStats = {
                 activeSeconds: 0,
                 breakSeconds: 0,
@@ -2861,6 +3662,62 @@
 
         let selectedTrainingDuration = null;
         let expandedTrainingWorkoutId = null;
+        let activeTrainingWorkout = null;
+        let trainingTimeline = [];
+        let currentGuideIndex = -1;
+        let setupStep = 0;
+        let setupCustomActive = false;
+        let sparringDraft = {
+            roundTime: 180,
+            breakTime: 60,
+            numberOfRounds: 5,
+            taskSparEnabled: false
+        };
+
+        const SPARRING_SETUP_STEPS = [
+            {
+                key: 'roundTime',
+                title: 'Round time',
+                subtitle: 'How long should each round be?',
+                custom: { type: 'time', label: 'Custom round time', placeholder: '1:30 or 90s', help: 'Use 1:30, 1.30min, 90s or 2min.' },
+                options: [
+                    { label: '2 min', desc: 'Fast technical rounds.', value: 120 },
+                    { label: '3 min', desc: 'Standard K1 / Muay Thai round.', value: 180 },
+                    { label: '5 min', desc: 'MMA-style longer rounds.', value: 300 }
+                ]
+            },
+            {
+                key: 'breakTime',
+                title: 'Break time',
+                subtitle: 'How much rest between rounds?',
+                custom: { type: 'time', label: 'Custom break time', placeholder: '45s or 1:15', help: 'Use seconds or minutes, for example 45s, 1:15 or 1.30min.' },
+                options: [
+                    { label: '30 sec', desc: 'Hard pace, short recovery.', value: 30 },
+                    { label: '1 min', desc: 'Classic fight rest.', value: 60 },
+                    { label: '90 sec', desc: 'More time to reset.', value: 90 }
+                ]
+            },
+            {
+                key: 'numberOfRounds',
+                title: 'Rounds',
+                subtitle: 'How many rounds are you doing?',
+                custom: { type: 'rounds', label: 'Custom rounds', placeholder: '7', help: 'Choose any amount from 1 to 99 rounds.' },
+                options: [
+                    { label: '3 rounds', desc: 'Sharp and focused.', value: 3 },
+                    { label: '5 rounds', desc: 'Championship rhythm.', value: 5 },
+                    { label: '10 rounds', desc: 'Conditioning grind.', value: 10 }
+                ]
+            },
+            {
+                key: 'taskSparEnabled',
+                title: 'Task Spar',
+                subtitle: 'Do you want random tasks between rounds?',
+                options: [
+                    { label: 'Off', desc: 'Clean timer only.', value: false },
+                    { label: 'On', desc: 'Get combinations and objectives each round.', value: true }
+                ]
+            }
+        ];
 
         const TRAINING_WORKOUTS = {
             30: [
@@ -3127,6 +3984,7 @@
         function showModeChoice() {
             modeChoice.classList.remove('hidden');
             trainingSection.classList.add('hidden');
+            sparringSetup.classList.add('hidden');
         }
 
         function openModeChoice() {
@@ -3139,16 +3997,205 @@
         }
 
         function chooseSparMode() {
+            setupStep = 0;
+            setupCustomActive = false;
+            sparringDraft = {
+                roundTime: settings.roundTime,
+                breakTime: settings.breakTime,
+                numberOfRounds: settings.numberOfRounds,
+                taskSparEnabled: settings.taskSparEnabled
+            };
+            modeChoice.classList.add('hidden');
+            trainingSection.classList.add('hidden');
+            sparringSetup.classList.remove('hidden');
+            renderSparringSetup();
+        }
+
+        function renderSparringSetup() {
+            const step = SPARRING_SETUP_STEPS[setupStep];
+            setupTitle.textContent = step.title;
+            setupSubtitle.textContent = step.subtitle;
+            setupNextBtn.textContent = setupStep === SPARRING_SETUP_STEPS.length - 1 ? 'Start sparring' : 'Next';
+            setupProgress.innerHTML = SPARRING_SETUP_STEPS.map((_, index) =>
+                `<span class="setup-dot ${index <= setupStep ? 'active' : ''}"></span>`
+            ).join('');
+            setupOptions.innerHTML = step.options.map(option => {
+                const selected = sparringDraft[step.key] === option.value;
+                return `
+                    <button class="setup-option ${selected ? 'selected' : ''}" onclick="selectSetupOption('${step.key}', ${JSON.stringify(option.value).replace(/"/g, '&quot;')}, this)">
+                        <div class="setup-option-title">${option.label}</div>
+                        <div class="setup-option-desc">${option.desc}</div>
+                    </button>
+                `;
+            }).join('') + renderSetupCustom(step);
+        }
+
+        function renderSetupCustom(step) {
+            if (!step.custom) return '';
+            if (!setupCustomActive) {
+                return `
+                    <div class="setup-custom" role="button" tabindex="0" onclick="activateSetupCustom()" onkeydown="handleSetupCustomActivateKey(event)">
+                        <div class="setup-custom-title">Custom</div>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="setup-custom active">
+                    <div class="setup-custom-row">
+                        <input class="setup-custom-input" id="setupCustomInput" type="text" inputmode="decimal" placeholder="${step.custom.placeholder}" onkeydown="handleSetupCustomKey(event)" onblur="applySetupCustomIfFilled()">
+                    </div>
+                </div>
+            `;
+        }
+
+        function activateSetupCustom() {
+            setupCustomActive = true;
+            renderSparringSetup();
+            setTimeout(() => {
+                const input = document.getElementById('setupCustomInput');
+                if (input) input.focus();
+            }, 0);
+        }
+
+        function handleSetupCustomActivateKey(event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                activateSetupCustom();
+            }
+        }
+
+        function selectSetupOption(key, value, element = null) {
+            sparringDraft[key] = value;
+            if (element) {
+                element.classList.add('selected', 'chosen');
+            }
+            if (setupStep < SPARRING_SETUP_STEPS.length - 1) {
+                setTimeout(() => {
+                    setupStep++;
+                    setupCustomActive = false;
+                    renderSparringSetup();
+                }, 210);
+            } else {
+                setTimeout(renderSparringSetup, 210);
+            }
+        }
+
+        function parseSetupTimeInput(value) {
+            const raw = String(value || '').trim().toLowerCase().replace(',', '.').replace(/\s+/g, '');
+            if (!raw) return null;
+
+            const secondsOnly = raw.match(/^(\d+(?:\.\d+)?)s(?:ec|econds?)?$/);
+            if (secondsOnly) return Math.round(parseFloat(secondsOnly[1]));
+
+            const minuteSecond = raw.match(/^(\d+)(?::(\d{1,2})|\.(\d{2}))(?:m|min|mins|minute|minutes)?$/);
+            if (minuteSecond) {
+                const minutes = parseInt(minuteSecond[1], 10);
+                const seconds = parseInt(minuteSecond[2] || minuteSecond[3], 10);
+                if (seconds >= 60) return null;
+                return minutes * 60 + seconds;
+            }
+
+            const minutesOnly = raw.match(/^(\d+(?:\.\d+)?)(?:m|min|mins|minute|minutes)?$/);
+            if (minutesOnly) return Math.round(parseFloat(minutesOnly[1]) * 60);
+
+            return null;
+        }
+
+        function parseSetupCustomValue(step, value) {
+            if (step.custom.type === 'time') {
+                const seconds = parseSetupTimeInput(value);
+                return seconds && seconds >= 5 && seconds <= 1800 ? seconds : null;
+            }
+
+            if (step.custom.type === 'rounds') {
+                const rounds = parseInt(String(value || '').trim(), 10);
+                return Number.isInteger(rounds) && rounds >= 1 && rounds <= 99 ? rounds : null;
+            }
+
+            return null;
+        }
+
+        function applySetupCustom() {
+            const step = SPARRING_SETUP_STEPS[setupStep];
+            const input = document.getElementById('setupCustomInput');
+            if (!step || !step.custom || !input) return;
+
+            const parsed = parseSetupCustomValue(step, input.value);
+            if (parsed === null) {
+                input.classList.remove('invalid');
+                void input.offsetWidth;
+                input.classList.add('invalid');
+                input.focus();
+                return;
+            }
+
+            input.classList.remove('invalid');
+            selectSetupOption(step.key, parsed, input.closest('.setup-custom'));
+        }
+
+        function applySetupCustomIfFilled() {
+            const input = document.getElementById('setupCustomInput');
+            if (input && input.value.trim()) applySetupCustom();
+        }
+
+        function handleSetupCustomKey(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                applySetupCustom();
+            }
+        }
+
+        function setupBack() {
+            if (setupStep > 0) {
+                setupStep--;
+                setupCustomActive = false;
+                renderSparringSetup();
+                return;
+            }
+            sparringSetup.classList.add('hidden');
+            showModeChoice();
+        }
+
+        function setupNext() {
+            const currentStep = SPARRING_SETUP_STEPS[setupStep];
+            const customInput = document.getElementById('setupCustomInput');
+            if (currentStep && currentStep.custom && customInput && customInput.value.trim()) {
+                const parsed = parseSetupCustomValue(currentStep, customInput.value);
+                if (parsed === null) {
+                    customInput.classList.remove('invalid');
+                    void customInput.offsetWidth;
+                    customInput.classList.add('invalid');
+                    customInput.focus();
+                    return;
+                }
+                sparringDraft[currentStep.key] = parsed;
+            }
+
+            if (setupStep < SPARRING_SETUP_STEPS.length - 1) {
+                setupStep++;
+                setupCustomActive = false;
+                renderSparringSetup();
+                return;
+            }
+
             appMode = 'spar';
             trainingPlanTitle = '';
             modeChoice.classList.add('hidden');
             trainingSection.classList.add('hidden');
+            sparringSetup.classList.add('hidden');
+            settings.roundTime = sparringDraft.roundTime;
+            settings.breakTime = sparringDraft.breakTime;
+            settings.numberOfRounds = sparringDraft.numberOfRounds;
+            settings.taskSparEnabled = sparringDraft.taskSparEnabled;
+            selectedPreset = 'custom';
             resetTimer();
             checkTutorial();
         }
 
         function openTrainingSection() {
             modeChoice.classList.add('hidden');
+            sparringSetup.classList.add('hidden');
             trainingSection.classList.remove('hidden');
             showTrainingDurationStep();
         }
@@ -3172,13 +4219,122 @@
             expandedTrainingWorkoutId = null;
             const workouts = TRAINING_WORKOUTS[minutes] || [];
             document.getElementById('trainingTitle').textContent = `${minutes} min training`;
-            document.getElementById('trainingSubtitle').textContent = 'Choose a workout. Tap a card to expand the full plan and scroll through the details.';
+            document.getElementById('trainingSubtitle').textContent = 'Choose a workout. Tap a card to preview the full plan before starting.';
             renderTrainingOptions(minutes);
             setTrainingStep('trainingOptionsStep');
         }
 
         function findTrainingWorkout(minutes, workoutId) {
             return (TRAINING_WORKOUTS[minutes] || []).find(workout => workout.id === workoutId);
+        }
+
+        function parseMinutesFromTitle(title, fallback = 3) {
+            const rangeMatch = title.match(/(\d+)\s*-\s*(\d+)\s*min/i);
+            if (rangeMatch) return Number(rangeMatch[1]) * 60;
+
+            const minuteMatch = title.match(/(\d+)\s*min/i);
+            if (minuteMatch) return Number(minuteMatch[1]) * 60;
+
+            return fallback * 60;
+        }
+
+        function buildTrainingTimeline(workout) {
+            const timeline = [];
+            let start = 0;
+
+            workout.sections.forEach(section => {
+                if (section.rounds) {
+                    const roundMatch = section.title.match(/(\d+)\s*x\s*(\d+)\s*min(?:,\s*(\d+)\s*s\s*rest)?/i);
+                    const totalRounds = roundMatch ? Number(roundMatch[1]) : section.rounds.length;
+                    const roundDuration = roundMatch ? Number(roundMatch[2]) * 60 : 180;
+                    const restDuration = roundMatch && roundMatch[3] ? Number(roundMatch[3]) : 0;
+                    const usesGroupedInstructions = totalRounds !== section.rounds.length;
+
+                    section.rounds.forEach((round, index) => {
+                        const groupedDuration = usesGroupedInstructions
+                            ? ((totalRounds * roundDuration) + ((totalRounds - 1) * restDuration)) / section.rounds.length
+                            : roundDuration;
+                        timeline.push({
+                            start,
+                            end: start + groupedDuration,
+                            title: round[0],
+                            note: round[1],
+                            label: section.title
+                        });
+                        start += groupedDuration;
+
+                        if (!usesGroupedInstructions && restDuration > 0 && index < section.rounds.length - 1) {
+                            timeline.push({
+                                start,
+                                end: start + restDuration,
+                                title: 'Rest',
+                                note: 'Breathe, reset your stance and get ready for the next round.',
+                                label: `${restDuration}s rest`
+                            });
+                            start += restDuration;
+                        }
+                    });
+                    return;
+                }
+
+                const sectionDuration = parseMinutesFromTitle(section.title, 3);
+                const note = section.items ? section.items.join(' ') : '';
+                timeline.push({
+                    start,
+                    end: start + sectionDuration,
+                    title: section.title,
+                    note,
+                    label: workout.title
+                });
+                start += sectionDuration;
+            });
+
+            return timeline;
+        }
+
+        function getCurrentGuideStep() {
+            if (!activeTrainingWorkout || trainingTimeline.length === 0) return null;
+            const elapsed = Math.max(0, settings.roundTime - timerState.timeLeft);
+            return trainingTimeline.find((step, index) => {
+                const isLast = index === trainingTimeline.length - 1;
+                return elapsed >= step.start && (elapsed < step.end || isLast);
+            }) || trainingTimeline[trainingTimeline.length - 1];
+        }
+
+        function renderTrainingGuide() {
+            const step = getCurrentGuideStep();
+            if (!step) return '';
+
+            const index = trainingTimeline.indexOf(step);
+            const next = trainingTimeline[index + 1];
+            const elapsed = Math.max(0, settings.roundTime - timerState.timeLeft);
+            const remaining = Math.max(0, step.end - elapsed);
+            const nextText = next ? `Next: ${next.title}` : 'Next: Finish strong';
+            const hasStarted = !!sessionStats.startedAt || timerState.timeLeft < settings.roundTime;
+            const isWaterBreak = hasStarted && !timerState.isRunning;
+            const guideTitle = isWaterBreak ? 'Water break' : step.title;
+            const guideNote = isWaterBreak
+                ? 'Drink water, breathe slowly and shake your arms out. Continue when you feel ready.'
+                : step.note;
+            const guideLabel = isWaterBreak ? 'Paused' : step.label;
+
+            if (index !== currentGuideIndex) {
+                currentGuideIndex = index;
+                taskDisplay.classList.remove('visible');
+                void taskDisplay.offsetWidth;
+            }
+
+            return `
+                <div class="guide-card">
+                    <div class="guide-meta">
+                        <span>${guideLabel}</span>
+                        <span>${formatTime(remaining)}</span>
+                    </div>
+                    <div class="guide-title">${guideTitle}</div>
+                    <div class="guide-note">${guideNote}</div>
+                    <div class="guide-next">${nextText}</div>
+                </div>
+            `;
         }
 
         function renderWorkoutDetails(workout, minutes) {
@@ -3220,7 +4376,7 @@
                 <div class="training-detail-inner">
                     <div class="workout-overview">${overview}</div>
                     ${sections}
-                    <button class="workout-start" onclick="event.stopPropagation(); startTrainingPlan(${minutes * 60}, '${minutes} MIN ${workout.title.toUpperCase()}')">Start ${minutes} min timer</button>
+                    <button class="workout-start" onclick="event.stopPropagation(); startTrainingPlan(${minutes * 60}, '${minutes} MIN ${workout.title.toUpperCase()}', ${minutes}, '${workout.id}')">Start guided workout</button>
                 </div>
             `;
         }
@@ -3228,12 +4384,11 @@
         function renderTrainingOptions(minutes) {
             const workouts = TRAINING_WORKOUTS[minutes] || [];
             document.getElementById('trainingOptionsGrid').innerHTML = workouts.map(workout => {
-                const isExpanded = expandedTrainingWorkoutId === workout.id;
                 const intensityBars = Array.from({ length: 5 }, (_, index) =>
                     `<span class="intensity-bar ${index < workout.intensity ? 'active' : ''}"></span>`
                 ).join('');
                 return `
-                    <div class="training-card ${isExpanded ? 'expanded' : ''}" role="button" tabindex="0" onclick="toggleTrainingWorkout(${minutes}, '${workout.id}')">
+                    <div class="training-card" role="button" tabindex="0" onclick="openWorkoutPreview(${minutes}, '${workout.id}')">
                         <div class="training-card-head">
                             <div>
                                 <div class="training-card-title">${workout.title}</div>
@@ -3251,19 +4406,26 @@
                                     <div class="intensity-bars">${intensityBars}</div>
                                 </div>
                             </div>
-                            <div class="training-card-chevron">⌄</div>
-                        </div>
-                        <div class="training-detail">
-                            ${isExpanded ? renderWorkoutDetails(workout, minutes) : ''}
+                            <div class="training-card-chevron">→</div>
                         </div>
                     </div>
                 `;
             }).join('');
         }
 
-        function toggleTrainingWorkout(minutes, workoutId) {
-            expandedTrainingWorkoutId = expandedTrainingWorkoutId === workoutId ? null : workoutId;
-            renderTrainingOptions(minutes);
+        function openWorkoutPreview(minutes, workoutId) {
+            const workout = findTrainingWorkout(minutes, workoutId);
+            if (!workout) return;
+
+            workoutPreviewKicker.textContent = `${workout.minutes} min · ${workout.type}`;
+            workoutPreviewTitle.textContent = workout.title;
+            workoutPreviewSubtitle.textContent = workout.subtitle;
+            workoutPreviewBody.innerHTML = renderWorkoutDetails(workout, minutes);
+            workoutPreview.classList.add('show');
+        }
+
+        function closeWorkoutPreview() {
+            workoutPreview.classList.remove('show');
         }
 
         function trainingBack() {
@@ -3276,9 +4438,12 @@
             showModeChoice();
         }
 
-        function startTrainingPlan(durationSeconds, title) {
+        function startTrainingPlan(durationSeconds, title, sourceMinutes = null, workoutId = null) {
             appMode = 'training';
             trainingPlanTitle = title;
+            activeTrainingWorkout = sourceMinutes && workoutId ? findTrainingWorkout(sourceMinutes, workoutId) : null;
+            trainingTimeline = activeTrainingWorkout ? buildTrainingTimeline(activeTrainingWorkout) : [];
+            currentGuideIndex = -1;
             settings.roundTime = durationSeconds;
             settings.breakTime = 60;
             settings.numberOfRounds = 1;
@@ -3286,6 +4451,7 @@
             selectedPreset = 'custom';
             modeChoice.classList.add('hidden');
             trainingSection.classList.add('hidden');
+            workoutPreview.classList.remove('show');
             resetTimer();
         }
 
@@ -3332,13 +4498,19 @@
                 : 'Disabled - timer only mode';
 
             const roundSoundsToggle = document.getElementById('roundSoundsToggle');
+            const roundVoiceToggle = document.getElementById('roundVoiceToggle');
+            const uiClicksToggle = document.getElementById('uiClicksToggle');
             const warningToggle = document.getElementById('warningToggle');
             const vibrationToggle = document.getElementById('vibrationToggle');
             roundSoundsToggle.classList.toggle('active', settings.roundSoundsEnabled);
+            roundVoiceToggle.classList.toggle('active', settings.roundVoiceEnabled);
+            uiClicksToggle.classList.toggle('active', settings.uiClickSoundsEnabled);
             warningToggle.classList.toggle('active', settings.warningVoiceEnabled);
             vibrationToggle.classList.toggle('active', settings.vibrationEnabled);
 
             document.getElementById('roundSoundsDesc').textContent = settings.roundSoundsEnabled ? 'Enabled' : 'Disabled';
+            document.getElementById('roundVoiceDesc').textContent = settings.roundVoiceEnabled ? 'Enabled' : 'Disabled';
+            document.getElementById('uiClicksDesc').textContent = settings.uiClickSoundsEnabled ? 'Enabled' : 'Disabled';
             document.getElementById('warningDesc').textContent = settings.warningVoiceEnabled ? 'Enabled' : 'Disabled';
             document.getElementById('vibrationDesc').textContent = settings.vibrationEnabled ? 'Enabled' : 'Disabled';
 
@@ -3358,11 +4530,11 @@
 
             applyTheme();
 
-            ['classic', 'bell', 'digital', 'soft'].forEach(s => {
+            ['classic', 'bell', 'digital', 'soft', 'sharp'].forEach(s => {
                 const btn = document.getElementById('start-sound-' + s);
                 if (btn) btn.classList.toggle('active', settings.roundStartSound === s);
             });
-            ['classic', 'gong', 'digital', 'soft'].forEach(s => {
+            ['classic', 'gong', 'digital', 'soft', 'heavy'].forEach(s => {
                 const btn = document.getElementById('end-sound-' + s);
                 if (btn) btn.classList.toggle('active', settings.roundEndSound === s);
             });
@@ -3475,6 +4647,16 @@
             updateSettingsUI();
         }
 
+        function toggleRoundVoice() {
+            settings.roundVoiceEnabled = !settings.roundVoiceEnabled;
+            updateSettingsUI();
+        }
+
+        function toggleUiClicks() {
+            settings.uiClickSoundsEnabled = !settings.uiClickSoundsEnabled;
+            updateSettingsUI();
+        }
+
         function toggleVibration() {
             settings.vibrationEnabled = !settings.vibrationEnabled;
             updateSettingsUI();
@@ -3533,7 +4715,7 @@
                             gain.connect(ac.destination);
                             osc.frequency.value = frequency;
                             osc.type = type;
-                            gain.gain.setValueAtTime(gainValue, ac.currentTime + delay);
+                            gain.gain.setValueAtTime(Math.min(1, gainValue * 1.25), ac.currentTime + delay);
                             gain.gain.exponentialRampToValueAtTime(0.01, ac.currentTime + delay + duration);
                             osc.start(ac.currentTime + delay);
                             osc.stop(ac.currentTime + delay + duration);
@@ -3553,6 +4735,12 @@
                                 [0, 0.22].forEach((delay, i) => {
                                     playTone(680 + i * 110, 'sine', delay, 0.45, 0.35);
                                 });
+                                break;
+                            case 'sharp':
+                                [0, 0.08, 0.16].forEach((delay, i) => {
+                                    playTone(1280 + i * 180, 'square', delay, 0.09, 0.42);
+                                });
+                                playTone(520, 'triangle', 0.02, 0.32, 0.24);
                                 break;
                             case 'classic':
                             default:
@@ -3581,7 +4769,7 @@
                             gain.connect(ac.destination);
                             osc.frequency.value = frequency;
                             osc.type = type;
-                            gain.gain.setValueAtTime(gainValue, ac.currentTime + delay);
+                            gain.gain.setValueAtTime(Math.min(1, gainValue * 1.25), ac.currentTime + delay);
                             gain.gain.exponentialRampToValueAtTime(0.01, ac.currentTime + delay + duration);
                             osc.start(ac.currentTime + delay);
                             osc.stop(ac.currentTime + delay + duration);
@@ -3601,6 +4789,11 @@
                             case 'soft':
                                 playTone(520, 'sine', 0, 0.95, 0.4);
                                 playTone(390, 'sine', 0.16, 0.95, 0.3);
+                                break;
+                            case 'heavy':
+                                playTone(260, 'sawtooth', 0, 0.9, 0.72);
+                                playTone(180, 'triangle', 0.08, 1.15, 0.52);
+                                playTone(92, 'sine', 0.02, 0.45, 0.38);
                                 break;
                             case 'classic':
                             default:
@@ -3683,6 +4876,18 @@
                 closeSettings();
             }
         });
+
+        workoutPreview.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeWorkoutPreview();
+            }
+        });
+
+        document.addEventListener('pointerdown', function(e) {
+            const clickable = e.target.closest('button, [role="button"], .training-card');
+            if (!clickable || clickable.disabled) return;
+            playUiClick();
+        }, { passive: true });
 
         // Extra fallback: some mobile browsers may still try to move viewport.
         window.addEventListener('scroll', () => {

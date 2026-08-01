@@ -2,9 +2,12 @@ node_modules/
 .expo/
 dist/
 build/
+www/
 *.log
 .DS_Store
 .env
 .env.local
 *.jks
 *.keystore
+keystore.properties
+android/keystore.properties

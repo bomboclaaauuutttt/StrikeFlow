@@ -1,0 +1,13 @@
+{
+  "appId": "com.strikeflow.app",
+  "appName": "StrikeFlow",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": false,
+    "captureInput": true
+  }
+}

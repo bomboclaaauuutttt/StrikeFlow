@@ -1,8 +1,10 @@
-const CACHE = 'strikeflow-v18';
+const CACHE = 'strikeflow-v38';
 const ASSETS = [
   './index.html',
   './privacy-policy.html',
   './manifest.json',
+  './StrikeFlow logo.png',
+  './click soundeffect.mp3',
   './Strike Flow.png',
   './icon-192.png',
   './icon-512.png'

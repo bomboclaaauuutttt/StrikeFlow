@@ -4,22 +4,30 @@
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
+    "expo:android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "eject": "expo eject"
+    "eject": "expo eject",
+    "prepare:android-web": "node scripts/prepare-capacitor-web.mjs",
+    "cap:sync": "npm run prepare:android-web && npx cap sync android",
+    "cap:open:android": "npm run cap:sync && npx cap open android",
+    "android:build:debug": "npm run cap:sync && cd android && gradlew.bat assembleDebug",
+    "android:build:release": "npm run cap:sync && cd android && gradlew.bat bundleRelease"
   },
   "dependencies": {
     "expo": "~50.0.0",
-    "expo-constants": "~15.0.0",
-    "expo-av": "~13.10.0",
-    "expo-haptics": "~12.8.0",
     "expo-app-loading": "~2.1.0",
+    "expo-av": "~13.10.0",
+    "expo-constants": "~15.0.0",
+    "expo-haptics": "~12.8.0",
     "react": "18.2.0",
     "react-native": "0.73.0",
     "react-native-screens": "~3.27.0"
   },
   "devDependencies": {
+    "@capacitor/android": "^8.5.0",
+    "@capacitor/cli": "^8.5.0",
+    "@capacitor/core": "^8.5.0",
     "@types/react": "~18.2.0",
     "@types/react-native": "~0.73.0",
     "typescript": "~5.1.0"
