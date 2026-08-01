@@ -248,6 +248,23 @@
             transform: translateY(-1px);
         }
 
+        .mode-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid currentColor;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: 1.2px;
+            padding: 8px 10px;
+            cursor: pointer;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+
+        .mode-btn:hover {
+            transform: translateY(-1px);
+            opacity: 0.86;
+        }
+
         .timer-section {
             flex: 1;
             display: flex;
@@ -464,6 +481,137 @@
         .btn-continue {
             flex: 1;
             min-width: 100px;
+        }
+
+        .mode-choice,
+        .training-section {
+            position: fixed;
+            inset: 0;
+            z-index: 9500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: calc(22px + env(safe-area-inset-top)) 18px calc(22px + env(safe-area-inset-bottom));
+            background:
+                radial-gradient(circle at 50% 0%, rgba(43, 255, 74, 0.16), transparent 34%),
+                linear-gradient(135deg, #101010 0%, #050505 100%);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .mode-choice.hidden,
+        .training-section.hidden {
+            display: none;
+        }
+
+        .mode-panel,
+        .training-panel {
+            width: min(92vw, 520px);
+            animation: fadeScaleIn 0.28s ease both;
+        }
+
+        .mode-kicker,
+        .training-kicker {
+            color: var(--accent-primary);
+            font-size: 13px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .mode-title,
+        .training-title {
+            color: #fff;
+            font-size: clamp(34px, 9vw, 58px);
+            font-weight: 950;
+            line-height: 0.95;
+            margin-bottom: 14px;
+            text-transform: uppercase;
+        }
+
+        .mode-subtitle,
+        .training-subtitle {
+            color: #cfcfcf;
+            font-size: 16px;
+            line-height: 1.45;
+            margin-bottom: 24px;
+        }
+
+        .mode-actions,
+        .training-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .mode-card,
+        .training-card {
+            width: 100%;
+            border: 2px solid rgba(255, 255, 255, 0.18);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 18px;
+            text-align: left;
+            cursor: pointer;
+            transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+        }
+
+        .mode-card:hover,
+        .training-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-primary);
+            background: rgba(43, 255, 74, 0.1);
+        }
+
+        .mode-card:active,
+        .training-card:active {
+            transform: scale(0.98);
+        }
+
+        .mode-card-title,
+        .training-card-title {
+            color: #fff;
+            font-size: 24px;
+            font-weight: 950;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .mode-card-desc,
+        .training-card-desc {
+            color: #bdbdbd;
+            font-size: 14px;
+            line-height: 1.42;
+        }
+
+        .training-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .training-back {
+            flex: 0 0 auto;
+            border: 2px solid rgba(255, 255, 255, 0.35);
+            border-radius: 10px;
+            background: transparent;
+            color: #fff;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 900;
+            padding: 10px 12px;
+        }
+
+        .training-meta {
+            color: var(--accent-primary);
+            font-size: 13px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            margin-top: 10px;
+            text-transform: uppercase;
         }
 
         /* Settings Modal */
@@ -1306,7 +1454,10 @@
         <div class="app-content">
             <div class="top-bar">
                 <div class="phase-label" id="phaseLabel">ROUND 1/5</div>
-                <button class="settings-btn" onclick="openSettings()">☰</button>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <button class="mode-btn" onclick="openModeChoice()">MODE</button>
+                    <button class="settings-btn" onclick="openSettings()">☰</button>
+                </div>
             </div>
             <div class="timer-section">
                 <div class="timer-status" id="timerStatus">ROUND ACTIVE</div>
@@ -1328,6 +1479,61 @@
                 <button class="btn btn-start" id="startBtn" onclick="toggleTimer()">START</button>
                 <button class="btn btn-reset hidden" id="resetBtn" onclick="resetTimer()">RESET</button>
                 <button class="btn btn-continue hidden" id="continueBtn" onclick="continueTimer()">CONTINUE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Daily Mode Choice -->
+    <div class="mode-choice" id="modeChoice">
+        <div class="mode-panel">
+            <div class="mode-kicker">STRIKEFLOW</div>
+            <div class="mode-title">Mitä tänään?</div>
+            <div class="mode-subtitle">Valitse sparri nykyiseen eräajastimeen tai treeni pidempään yhtenäiseen harjoitukseen.</div>
+            <div class="mode-actions">
+                <button class="mode-card" onclick="chooseSparMode()">
+                    <div class="mode-card-title">Sparrata</div>
+                    <div class="mode-card-desc">Erät, tauot, Task Spar ja ottelutyyliset intervallit.</div>
+                </button>
+                <button class="mode-card" onclick="openTrainingSection()">
+                    <div class="mode-card-title">Treenata</div>
+                    <div class="mode-card-desc">Valitse 30, 45, 60 tai 90 minuutin treeniblokki.</div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Training Section -->
+    <div class="training-section hidden" id="trainingSection">
+        <div class="training-panel">
+            <div class="training-header">
+                <div>
+                    <div class="training-kicker">TRAINING</div>
+                    <div class="training-title">Valitse treeni</div>
+                    <div class="training-subtitle">Yksi yhtenäinen ajastin treenipäiville.</div>
+                </div>
+                <button class="training-back" onclick="showModeChoice()">TAKAISIN</button>
+            </div>
+            <div class="training-grid">
+                <button class="training-card" onclick="startTrainingPlan(1800, '30 MIN TEKNIIKKA')">
+                    <div class="training-card-title">30 min tekniikka</div>
+                    <div class="training-card-desc">Nopea taitotreeni komboille, puolustukselle ja liikkeelle.</div>
+                    <div class="training-meta">30:00</div>
+                </button>
+                <button class="training-card" onclick="startTrainingPlan(2700, '45 MIN TREENI')">
+                    <div class="training-card-title">45 min treeni</div>
+                    <div class="training-card-desc">Tasapainoinen treeni lämmittelylle, tekniikalle ja erätyölle.</div>
+                    <div class="training-meta">45:00</div>
+                </button>
+                <button class="training-card" onclick="startTrainingPlan(3600, '1 H TREENI')">
+                    <div class="training-card-title">1 h treeni</div>
+                    <div class="training-card-desc">Täysi treenisessio syvempään tekemiseen ja kuntoon.</div>
+                    <div class="training-meta">60:00</div>
+                </button>
+                <button class="training-card" onclick="startTrainingPlan(5400, '90 MIN TÄYSI SESSIO')">
+                    <div class="training-card-title">90 min täysi sessio</div>
+                    <div class="training-card-desc">Pitkä salitreeni tekniikalle, padeille, säkille ja fysiikalle.</div>
+                    <div class="training-meta">90:00</div>
+                </button>
             </div>
         </div>
     </div>
@@ -1657,6 +1863,8 @@
         const PRE_ROUND_READ_SECONDS = 5;
         const THEME_KEY = 'strikeflow_theme';
         let activeSettingsTab = 'main';
+        let appMode = null;
+        let trainingPlanTitle = '';
 
         // State
         let timerState = {
@@ -1736,6 +1944,8 @@
         const summarySkips = document.getElementById('summarySkips');
         const summaryCompletion = document.getElementById('summaryCompletion');
         const settingsModal = document.getElementById('settingsModal');
+        const modeChoice = document.getElementById('modeChoice');
+        const trainingSection = document.getElementById('trainingSection');
         const bgIdle  = document.getElementById('bgIdle');
         const bgRound = document.getElementById('bgRound');
         const bgBreak = document.getElementById('bgBreak');
@@ -1811,9 +2021,11 @@
         function updateUI() {
             timerDisplay.textContent = formatTime(timerState.timeLeft);
             const hasSessionStarted = !!sessionStats.startedAt || timerState.currentRound > 1 || timerState.timeLeft < settings.roundTime;
-            timerStatus.textContent = hasSessionStarted && !timerState.isFinished
-                ? (timerState.isRound ? 'ROUND ACTIVE' : 'BREAK')
-                : '';
+            timerStatus.textContent = appMode === 'training'
+                ? (timerState.isFinished ? '' : 'TRAINING')
+                : (hasSessionStarted && !timerState.isFinished
+                    ? (timerState.isRound ? 'ROUND ACTIVE' : 'BREAK')
+                    : '');
 
             const swipeHint = document.getElementById('swipeHint');
             swipeHint.classList.toggle('visible',
@@ -1824,9 +2036,11 @@
             const offset = progressCircumference * (1 - progress);
             progressCircle.style.strokeDashoffset = `${offset}`;
 
-            phaseLabel.textContent = timerState.isRound 
-                ? `ROUND ${timerState.currentRound}/${settings.numberOfRounds}`
-                : 'BREAK';
+            phaseLabel.textContent = appMode === 'training'
+                ? (trainingPlanTitle || 'TRAINING')
+                : (timerState.isRound 
+                    ? `ROUND ${timerState.currentRound}/${settings.numberOfRounds}`
+                    : 'BREAK');
 
             // Background crossfade
             const isIdle = !timerState.isRunning && timerState.timeLeft === settings.roundTime && timerState.currentRound === 1;
@@ -2141,6 +2355,47 @@
                 taskState.previousTask = firstTask;
                 updateUI();
             }
+        }
+
+        function showModeChoice() {
+            modeChoice.classList.remove('hidden');
+            trainingSection.classList.add('hidden');
+        }
+
+        function openModeChoice() {
+            clearInterval(intervalId);
+            stopPreRoundDisplay();
+            releaseWakeLock();
+            timerState.isRunning = false;
+            showModeChoice();
+            updateUI();
+        }
+
+        function chooseSparMode() {
+            appMode = 'spar';
+            trainingPlanTitle = '';
+            modeChoice.classList.add('hidden');
+            trainingSection.classList.add('hidden');
+            resetTimer();
+            checkTutorial();
+        }
+
+        function openTrainingSection() {
+            modeChoice.classList.add('hidden');
+            trainingSection.classList.remove('hidden');
+        }
+
+        function startTrainingPlan(durationSeconds, title) {
+            appMode = 'training';
+            trainingPlanTitle = title;
+            settings.roundTime = durationSeconds;
+            settings.breakTime = 60;
+            settings.numberOfRounds = 1;
+            settings.taskSparEnabled = false;
+            selectedPreset = 'custom';
+            modeChoice.classList.add('hidden');
+            trainingSection.classList.add('hidden');
+            resetTimer();
         }
 
         // Settings
@@ -2589,6 +2844,7 @@
         ];
 
         function checkTutorial() {
+            if (appMode !== 'spar') return;
             if (!localStorage.getItem(TUT_KEY)) {
                 document.getElementById('tutWelcome').style.display = 'flex';
             }
