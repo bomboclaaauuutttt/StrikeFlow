@@ -512,10 +512,37 @@
             justify-content: center;
             padding: calc(22px + env(safe-area-inset-top)) 18px calc(22px + env(safe-area-inset-bottom));
             background:
-                radial-gradient(circle at 50% -20%, rgba(255, 255, 255, 0.06), transparent 34%),
+                linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 36%),
                 #060606;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
+        }
+
+        .mode-choice::before,
+        .training-section::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+            background-size: 72px 72px;
+            -webkit-mask-image: radial-gradient(circle at 50% 42%, rgba(0, 0, 0, 0.8), transparent 72%);
+            mask-image: radial-gradient(circle at 50% 42%, rgba(0, 0, 0, 0.8), transparent 72%);
+            opacity: 0.42;
+        }
+
+        .mode-choice::after,
+        .training-section::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background:
+                linear-gradient(90deg, rgba(43, 255, 74, 0.08), transparent 22%, transparent 78%, rgba(43, 255, 74, 0.05)),
+                linear-gradient(180deg, rgba(0, 0, 0, 0.15), transparent 30%, rgba(0, 0, 0, 0.5));
+            opacity: 0.7;
         }
 
         .mode-choice.hidden,
@@ -527,6 +554,8 @@
         .training-panel {
             width: min(92vw, 620px);
             animation: fadeScaleIn 0.28s ease both;
+            position: relative;
+            z-index: 1;
         }
 
         .mode-panel {
@@ -710,6 +739,118 @@
             text-transform: uppercase;
         }
 
+        .training-card-meta-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .training-tag {
+            border-radius: 6px;
+            background: #2b2b2b;
+            color: #e8e8e8;
+            font-size: 12px;
+            font-weight: 850;
+            letter-spacing: 0.45px;
+            padding: 6px 9px;
+            text-transform: uppercase;
+        }
+
+        .intensity-meter {
+            margin-top: 14px;
+            --intensity-color: var(--accent-primary);
+        }
+
+        .intensity-label {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            color: #a9a9a9;
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 0.9px;
+            margin-bottom: 7px;
+            text-transform: uppercase;
+        }
+
+        .intensity-value {
+            color: var(--intensity-color);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .intensity-flame {
+            display: none;
+            width: 12px;
+            height: 16px;
+            border-radius: 9px 9px 9px 2px;
+            background: radial-gradient(circle at 50% 72%, #fff6b0 0 16%, #ffb13b 17% 44%, #ff4a2d 45% 72%, transparent 73%);
+            filter: drop-shadow(0 0 6px rgba(255, 95, 45, 0.7));
+            transform: rotate(45deg);
+            animation: flameFlicker 0.72s ease-in-out infinite alternate;
+        }
+
+        .intensity-level-4 .intensity-flame,
+        .intensity-level-5 .intensity-flame {
+            display: inline-block;
+        }
+
+        .intensity-level-5 .intensity-flame {
+            animation-duration: 0.42s;
+            filter: drop-shadow(0 0 9px rgba(255, 55, 30, 0.9));
+        }
+
+        @keyframes flameFlicker {
+            0% {
+                transform: rotate(45deg) scale(0.92);
+                opacity: 0.78;
+            }
+            45% {
+                transform: rotate(39deg) scale(1.08);
+                opacity: 1;
+            }
+            100% {
+                transform: rotate(49deg) scale(0.98);
+                opacity: 0.88;
+            }
+        }
+
+        .intensity-bars {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 5px;
+        }
+
+        .intensity-bar {
+            height: 6px;
+            border-radius: 999px;
+            background: #303030;
+        }
+
+        .intensity-bar.active {
+            background: var(--intensity-color);
+            box-shadow: 0 0 8px var(--intensity-color);
+        }
+
+        .intensity-level-1,
+        .intensity-level-2 {
+            --intensity-color: #2bff4a;
+        }
+
+        .intensity-level-3 {
+            --intensity-color: #ffd166;
+        }
+
+        .intensity-level-4 {
+            --intensity-color: #ff9f1c;
+        }
+
+        .intensity-level-5 {
+            --intensity-color: #ff3b30;
+        }
+
         .workout-overview {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -845,6 +986,38 @@
         .training-card.expanded {
             border-color: var(--accent-primary);
             background: #202020;
+        }
+
+        .duration-card {
+            --duration-color: var(--accent-primary);
+        }
+
+        .duration-card::before {
+            background: var(--duration-color);
+        }
+
+        .duration-card .training-meta {
+            color: var(--duration-color);
+        }
+
+        .duration-card:hover {
+            border-color: var(--duration-color);
+        }
+
+        .duration-quick {
+            --duration-color: #44d2c8;
+        }
+
+        .duration-recommended {
+            --duration-color: #2bff4a;
+        }
+
+        .duration-deep {
+            --duration-color: #ffd166;
+        }
+
+        .duration-full {
+            --duration-color: #ff7a2f;
         }
 
         .training-card-head {
@@ -1838,22 +2011,22 @@
             </div>
             <div class="training-step" id="trainingDurationStep">
                 <div class="training-grid">
-                    <button class="training-card" onclick="selectTrainingDuration(30)">
+                    <button class="training-card duration-card duration-quick" onclick="selectTrainingDuration(30)">
                         <div class="training-card-title">30 min</div>
                         <div class="training-card-desc">Short technical session with focused drills and simple combos.</div>
                         <div class="training-meta">Quick work</div>
                     </button>
-                    <button class="training-card" onclick="selectTrainingDuration(45)">
+                    <button class="training-card duration-card duration-recommended" onclick="selectTrainingDuration(45)">
                         <div class="training-card-title">45 min</div>
                         <div class="training-card-desc">Full bag workout with warmup, 8 rounds, finisher and stretch.</div>
                         <div class="training-meta">Recommended</div>
                     </button>
-                    <button class="training-card" onclick="selectTrainingDuration(60)">
+                    <button class="training-card duration-card duration-deep" onclick="selectTrainingDuration(60)">
                         <div class="training-card-title">1 hour</div>
                         <div class="training-card-desc">Longer session with more volume, conditioning and technical blocks.</div>
                         <div class="training-meta">Deep work</div>
                     </button>
-                    <button class="training-card" onclick="selectTrainingDuration(90)">
+                    <button class="training-card duration-card duration-full" onclick="selectTrainingDuration(90)">
                         <div class="training-card-title">90 min</div>
                         <div class="training-card-desc">Complete gym-style training with extended skill and conditioning work.</div>
                         <div class="training-meta">Full session</div>
@@ -2693,9 +2866,12 @@
             30: [
                 {
                     id: 'quick-technique',
-                    title: 'Quick technique',
+                    title: 'Sharp basics',
+                    type: 'Shadowbox training',
                     subtitle: 'Clean basics, footwork and simple combinations.',
                     structure: '4 x 3 min technique rounds',
+                    intensity: 2,
+                    intensityLabel: 'Light',
                     minutes: 30,
                     stats: [['30', 'Minutes'], ['5', 'Blocks'], ['Light', 'Intensity']],
                     sections: [
@@ -2711,9 +2887,12 @@
                 },
                 {
                     id: 'speed-combos',
-                    title: 'Speed combos',
+                    title: 'Fast hands',
+                    type: 'Shadowbox training',
                     subtitle: 'Short, sharp work for hand speed and rhythm.',
                     structure: '6 x 3 min speed rounds',
+                    intensity: 3,
+                    intensityLabel: 'Medium',
                     minutes: 30,
                     stats: [['30', 'Minutes'], ['6', 'Rounds'], ['Fast', 'Pace']],
                     sections: [
@@ -2728,14 +2907,39 @@
                         ] },
                         { title: 'Cooldown - 5 min', items: ['Slow shadowboxing and easy stretching.'] }
                     ]
+                },
+                {
+                    id: 'blitz-bag',
+                    title: 'Blitz bag',
+                    type: 'Bag workout',
+                    subtitle: 'Short, brutal bag rounds for pace, power and conditioning.',
+                    structure: '10 x 90 s bag sprints',
+                    intensity: 5,
+                    intensityLabel: 'Very hard',
+                    minutes: 30,
+                    stats: [['30', 'Minutes'], ['10', 'Sprints'], ['Max', 'Intensity']],
+                    sections: [
+                        { title: 'Warmup - 5 min', items: ['2 min easy bounce or rope.', '3 min shadowboxing with fast hands and relaxed breathing.'] },
+                        { title: 'Bag sprints - 10 x 90 s, 30 s rest', rounds: [
+                            ['Sprints 1-2 - Straight punches', 'High-volume jab-cross. Keep the chin tucked and reset quickly.'],
+                            ['Sprints 3-4 - Hooks and low kicks', 'Hook-cross-hook, low kick finish. Keep the pace high.'],
+                            ['Sprints 5-6 - Body shots', 'Rip body hooks, return upstairs, exit with a low kick.'],
+                            ['Sprints 7-8 - Knees', 'Clinch, 10 knees, exit with 1-2, repeat.'],
+                            ['Sprints 9-10 - Empty the tank', 'All weapons. Short bursts, no long pauses.']
+                        ] },
+                        { title: 'Cooldown - 5 min', items: ['Walk, breathe, then stretch calves, hips and shoulders.'] }
+                    ]
                 }
             ],
             45: [
                 {
                     id: 'bag-workout',
-                    title: 'Bag workout',
+                    title: 'Bag builder',
+                    type: 'Bag workout',
                     subtitle: 'Warmup, 8 bag rounds, combo work, finisher and stretch.',
                     structure: '8 x 3 min bag work',
+                    intensity: 4,
+                    intensityLabel: 'Hard',
                     minutes: 45,
                     stats: [['45', 'Minutes'], ['8', 'Bag rounds'], ['30s', 'Rest']],
                     sections: [
@@ -2756,9 +2960,12 @@
                 },
                 {
                     id: 'technical-pressure',
-                    title: 'Technical pressure',
+                    title: 'Pressure craft',
+                    type: 'Bag workout',
                     subtitle: 'Controlled pressure, exits and counter attacks.',
                     structure: '7 x 3 min pressure rounds',
+                    intensity: 3,
+                    intensityLabel: 'Medium',
                     minutes: 45,
                     stats: [['45', 'Minutes'], ['7', 'Rounds'], ['Medium', 'Intensity']],
                     sections: [
@@ -2774,14 +2981,40 @@
                         ] },
                         { title: 'Finish - 10 min', items: ['5 min core circuit.', '5 min cooldown and stretching.'] }
                     ]
+                },
+                {
+                    id: 'flow-defense',
+                    title: 'Flow defense',
+                    type: 'Shadowbox training',
+                    subtitle: 'Relaxed technical shadowboxing for defense, angles and clean counters.',
+                    structure: '6 x 4 min shadowbox rounds',
+                    intensity: 2,
+                    intensityLabel: 'Light',
+                    minutes: 45,
+                    stats: [['45', 'Minutes'], ['6', 'Flow rounds'], ['Light', 'Intensity']],
+                    sections: [
+                        { title: 'Warmup - 8 min', items: ['Mobility for hips, ankles, shoulders and thoracic spine.', 'Easy shadowboxing with long stance and relaxed guard.'] },
+                        { title: 'Flow rounds - 6 x 4 min, 45 s rest', rounds: [
+                            ['Round 1 - Footwork only', 'Step in, step out, pivot, circle. No rushing.'],
+                            ['Round 2 - Jab and exits', 'Jab, double jab, jab to body, exit on an angle.'],
+                            ['Round 3 - Slips and counters', 'Slip outside, cross. Roll under, hook. Pull back, cross.'],
+                            ['Round 4 - Kick defense', 'Check, step back, catch imaginary kick, return low kick.'],
+                            ['Round 5 - Long guard', 'Frame, teep, jab, angle out. Stay tall and calm.'],
+                            ['Round 6 - Technical freestyle', 'Mix everything at 60 percent speed with perfect balance.']
+                        ] },
+                        { title: 'Cooldown - 8 min', items: ['Slow breathing, hip openers and shoulder mobility.'] }
+                    ]
                 }
             ],
             60: [
                 {
                     id: 'complete-striking',
-                    title: 'Complete striking',
+                    title: 'Full arsenal',
+                    type: 'Bag workout',
                     subtitle: 'Technique, bag rounds, knees, defense and conditioning.',
                     structure: '10 x 3 min striking rounds',
+                    intensity: 4,
+                    intensityLabel: 'Hard',
                     minutes: 60,
                     stats: [['60', 'Minutes'], ['10', 'Rounds'], ['Full', 'Session']],
                     sections: [
@@ -2796,14 +3029,61 @@
                         { title: 'Conditioning - 12 min', items: ['3 rounds: pushups, jump squats, mountain climbers, plank.'] },
                         { title: 'Stretch - 5 min', items: ['Slow breathing and full body stretching.'] }
                     ]
+                },
+                {
+                    id: 'technical-hour',
+                    title: 'Technical hour',
+                    type: 'Shadowbox training',
+                    subtitle: 'A calm one-hour skill session for mechanics, balance and movement quality.',
+                    structure: '8 x 4 min technique rounds',
+                    intensity: 2,
+                    intensityLabel: 'Light',
+                    minutes: 60,
+                    stats: [['60', 'Minutes'], ['8', 'Skill rounds'], ['Light', 'Intensity']],
+                    sections: [
+                        { title: 'Warmup - 10 min', items: ['Joint mobility, light bounce and relaxed shadowboxing.'] },
+                        { title: 'Technique rounds - 8 x 4 min, 60 s rest', rounds: [
+                            ['Rounds 1-2 - Stance and balance', 'Move without crossing feet. Every strike returns to stance.'],
+                            ['Rounds 3-4 - Punch mechanics', 'Jab, cross, hook and uppercut with clean rotation.'],
+                            ['Rounds 5-6 - Kicks and checks', 'Slow body kicks, low kicks, checks and resets.'],
+                            ['Round 7 - Defense chains', 'Slip, roll, block, check, counter slowly.'],
+                            ['Round 8 - Smooth freestyle', 'Technical flow only. No power, no rushing.']
+                        ] },
+                        { title: 'Mobility - 10 min', items: ['Hips, hamstrings, calves, shoulders and back.'] }
+                    ]
+                },
+                {
+                    id: 'engine-room',
+                    title: 'Engine room',
+                    type: 'Bag workout',
+                    subtitle: 'A nasty conditioning bag session with pace changes and hard finishes.',
+                    structure: '12 x 2 min power intervals',
+                    intensity: 5,
+                    intensityLabel: 'Very hard',
+                    minutes: 60,
+                    stats: [['60', 'Minutes'], ['12', 'Intervals'], ['Max', 'Intensity']],
+                    sections: [
+                        { title: 'Warmup - 8 min', items: ['Jump rope, mobility and 2 min easy bag touches.'] },
+                        { title: 'Power intervals - 12 x 2 min, 30 s rest', rounds: [
+                            ['Intervals 1-3 - Hands', '20 s fast hands, 10 s power shots. Repeat.'],
+                            ['Intervals 4-6 - Kick volume', 'Body kick, low kick, reset. Keep the output high.'],
+                            ['Intervals 7-9 - Mixed weapons', 'Punch into kick, knee on exit, angle and repeat.'],
+                            ['Intervals 10-12 - Fight finish', 'Hard bursts every 15 s. Stay defensively responsible.']
+                        ] },
+                        { title: 'Finisher - 10 min', items: ['5 rounds: 10 burpees, 20 mountain climbers, 30 s plank.'] },
+                        { title: 'Cooldown - 6 min', items: ['Walk until breathing settles, then stretch.'] }
+                    ]
                 }
             ],
             90: [
                 {
                     id: 'full-gym-session',
-                    title: 'Full gym session',
+                    title: 'Fight camp',
+                    type: 'Bag workout',
                     subtitle: 'Long technical session with bag work, conditioning and cooldown.',
                     structure: '10 x 3 min plus skill blocks',
+                    intensity: 5,
+                    intensityLabel: 'Very hard',
                     minutes: 90,
                     stats: [['90', 'Minutes'], ['Long', 'Volume'], ['Hard', 'Intensity']],
                     sections: [
@@ -2818,6 +3098,27 @@
                         ] },
                         { title: 'Conditioning - 15 min', items: ['Bodyweight circuit with pushups, squats, lunges, core and sprawls.'] },
                         { title: 'Cooldown - 10 min', items: ['Walk, breathe, stretch hips, back, calves and shoulders.'] }
+                    ]
+                },
+                {
+                    id: 'long-flow',
+                    title: 'Long flow',
+                    type: 'Shadowbox training',
+                    subtitle: 'A low-impact long session for technique, rhythm, breathing and mobility.',
+                    structure: '12 x 4 min shadowbox flow',
+                    intensity: 2,
+                    intensityLabel: 'Light',
+                    minutes: 90,
+                    stats: [['90', 'Minutes'], ['12', 'Flow rounds'], ['Light', 'Intensity']],
+                    sections: [
+                        { title: 'Warmup - 15 min', items: ['Mobility, easy footwork and relaxed shadowboxing.'] },
+                        { title: 'Flow rounds - 12 x 4 min, 60 s rest', rounds: [
+                            ['Rounds 1-3 - Movement base', 'Footwork, pivots, stance switches and exits.'],
+                            ['Rounds 4-6 - Boxing mechanics', 'Clean punches, head movement and counters at easy pace.'],
+                            ['Rounds 7-9 - Kicks and checks', 'Technical kicks, checks, teeps and balance resets.'],
+                            ['Rounds 10-12 - Tactical flow', 'Imagine an opponent and make calm tactical decisions.']
+                        ] },
+                        { title: 'Mobility finish - 20 min', items: ['Long stretching for hips, calves, adductors, shoulders and back.'] }
                     ]
                 }
             ]
@@ -2928,13 +3229,27 @@
             const workouts = TRAINING_WORKOUTS[minutes] || [];
             document.getElementById('trainingOptionsGrid').innerHTML = workouts.map(workout => {
                 const isExpanded = expandedTrainingWorkoutId === workout.id;
+                const intensityBars = Array.from({ length: 5 }, (_, index) =>
+                    `<span class="intensity-bar ${index < workout.intensity ? 'active' : ''}"></span>`
+                ).join('');
                 return `
                     <div class="training-card ${isExpanded ? 'expanded' : ''}" role="button" tabindex="0" onclick="toggleTrainingWorkout(${minutes}, '${workout.id}')">
                         <div class="training-card-head">
                             <div>
-                                <div class="training-card-title">${workout.minutes} min</div>
+                                <div class="training-card-title">${workout.title}</div>
                                 <div class="training-card-desc">${workout.structure}</div>
-                                <div class="training-meta">${workout.title}</div>
+                                <div class="training-card-meta-row">
+                                    <span class="training-tag">${workout.minutes} min</span>
+                                    <span class="training-tag">${workout.type}</span>
+                                    <span class="training-tag">${workout.stats[1][0]} ${workout.stats[1][1]}</span>
+                                </div>
+                                <div class="intensity-meter intensity-level-${workout.intensity}">
+                                    <div class="intensity-label">
+                                        <span>Intensity</span>
+                                        <span class="intensity-value">${workout.intensityLabel}<span class="intensity-flame"></span></span>
+                                    </div>
+                                    <div class="intensity-bars">${intensityBars}</div>
+                                </div>
                             </div>
                             <div class="training-card-chevron">⌄</div>
                         </div>
