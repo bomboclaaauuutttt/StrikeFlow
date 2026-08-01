@@ -17,11 +17,11 @@
     <link rel="apple-touch-icon" href="Strike Flow.png">
     <style>
         :root {
-            --app-bg: #0a0a0a;
-            --bg-idle: linear-gradient(135deg, #555 0%, #333 100%);
-            --bg-round: linear-gradient(135deg, #ff2b2b 0%, #e60000 100%);
-            --bg-break: linear-gradient(135deg, #2bff4a 0%, #00cc00 100%);
-            --ring-track: rgba(255, 255, 255, 0.2);
+            --app-bg: #060606;
+            --bg-idle: radial-gradient(circle at 50% -20%, rgba(255, 255, 255, 0.06), transparent 34%), #060606;
+            --bg-round: radial-gradient(circle at 50% -20%, rgba(255, 255, 255, 0.06), transparent 34%), #060606;
+            --bg-break: radial-gradient(circle at 50% -20%, rgba(43, 255, 74, 0.08), transparent 34%), #060606;
+            --ring-track: rgba(255, 255, 255, 0.11);
             --ring-warning: #ffaa33;
             --ring-danger: #ff3333;
             --modal-bg: #1a1a1a;
@@ -223,25 +223,28 @@
         }
 
         .app * { color: white; }
-        .app.break .app-content * { color: black; }
+        .app.break .app-content * { color: white; }
 
         .top-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px;
-            font-size: 24px;
-            font-weight: 700;
-            letter-spacing: 2px;
+            padding: 22px 24px;
+            font-size: 18px;
+            font-weight: 900;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            opacity: 0.94;
         }
 
         .settings-btn {
             background: transparent;
             border: none;
-            font-size: 36px;
+            font-size: 34px;
             cursor: pointer;
-            padding: 10px;
-            transition: transform 0.3s ease;
+            padding: 8px;
+            line-height: 1;
+            transition: transform 0.2s ease, opacity 0.2s ease;
         }
 
         .settings-btn:hover {
@@ -249,20 +252,22 @@
         }
 
         .mode-btn {
-            background: rgba(255, 255, 255, 0.08);
-            border: 2px solid currentColor;
-            border-radius: 10px;
+            background: #181818;
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            border-radius: 8px;
             font-size: 12px;
             font-weight: 900;
             letter-spacing: 1.2px;
-            padding: 8px 10px;
+            padding: 9px 11px;
             cursor: pointer;
-            transition: transform 0.2s ease, opacity 0.2s ease;
+            transition: transform 0.2s ease, opacity 0.2s ease, border-color 0.2s ease, background 0.2s ease;
         }
 
         .mode-btn:hover {
             transform: translateY(-1px);
             opacity: 0.86;
+            border-color: var(--accent-primary);
+            background: #202020;
         }
 
         .timer-section {
@@ -275,24 +280,24 @@
         }
 
         .timer-status {
-            font-size: clamp(30px, 7.2vmin, 64px);
-            font-weight: 800;
-            letter-spacing: 3px;
+            font-size: clamp(16px, 2.4vmin, 24px);
+            font-weight: 900;
+            letter-spacing: 2px;
             text-transform: uppercase;
-            line-height: 0.95;
-            margin-bottom: 18px;
+            line-height: 1;
+            margin-bottom: 22px;
             min-height: 1em;
-            opacity: 0.92;
+            opacity: 0.7;
             text-align: center;
         }
 
         .timer-ring-wrap {
             position: relative;
-            width: clamp(320px, 76vmin, 660px);
-            height: clamp(320px, 76vmin, 660px);
+            width: clamp(280px, 58vmin, 560px);
+            height: clamp(280px, 58vmin, 560px);
             display: grid;
             place-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 16px;
         }
 
         .timer-ring {
@@ -301,13 +306,13 @@
             width: 100%;
             height: 100%;
             transform: rotate(-90deg);
-            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.25));
+            filter: none;
         }
 
         .ring-track,
         .ring-progress {
             fill: none;
-            stroke-width: 7;
+            stroke-width: 3.5;
         }
 
         .ring-track {
@@ -315,9 +320,13 @@
         }
 
         .ring-progress {
-            stroke: currentColor;
+            stroke: #f2f2f2;
             stroke-linecap: round;
             transition: stroke-dashoffset 0.06s linear, stroke 0.4s ease;
+        }
+
+        .app.break .ring-progress {
+            stroke: var(--accent-primary);
         }
 
         .ring-progress.warning {
@@ -329,14 +338,14 @@
         }
 
         .timer-display {
-            font-size: clamp(74px, 17vmin, 170px);
+            font-size: clamp(64px, 13vmin, 138px);
             font-weight: 900;
             line-height: 1;
             font-family: 'Consolas', 'Lucida Console', 'Courier New', monospace;
             font-variant-numeric: tabular-nums lining-nums;
             text-rendering: geometricPrecision;
             -webkit-font-smoothing: subpixel-antialiased;
-            letter-spacing: -2px;
+            letter-spacing: 0;
             transition: transform 0.1s ease;
             white-space: nowrap;
         }
@@ -420,33 +429,35 @@
 
         .controls {
             display: flex;
-            gap: 15px;
-            padding: 0 20px calc(20px + env(safe-area-inset-bottom));
+            gap: 12px;
+            padding: 0 24px calc(24px + env(safe-area-inset-bottom));
             justify-content: center;
         }
 
         .btn {
-            padding: 18px 30px;
-            font-size: 20px;
-            font-weight: 700;
-            border-radius: 12px;
-            border: 3px solid currentColor;
-            background: transparent;
+            padding: 17px 28px;
+            font-size: 16px;
+            font-weight: 950;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: #181818;
             cursor: pointer;
-            letter-spacing: 1px;
-            transition: opacity 0.2s ease, transform 0.2s ease, max-width 0.35s ease, padding 0.35s ease, border-width 0.35s ease, flex 0.35s ease;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            transition: opacity 0.2s ease, transform 0.2s ease, max-width 0.35s ease, padding 0.35s ease, border-width 0.35s ease, flex 0.35s ease, background 0.2s ease, border-color 0.2s ease;
             overflow: hidden;
             white-space: nowrap;
             max-width: 400px;
         }
 
         .btn:hover:not(:disabled) {
-            opacity: 0.8;
-            transform: scale(1.03);
+            border-color: var(--accent-primary);
+            background: #202020;
+            transform: translateY(-1px);
         }
 
         .btn:active:not(:disabled) {
-            transform: scale(0.97);
+            transform: scale(0.98);
         }
 
         .btn:disabled {
@@ -457,6 +468,14 @@
         .btn-start {
             flex: 1.2;
             min-width: 120px;
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: #000;
+        }
+
+        .btn-start:hover:not(:disabled) {
+            background: #50ff68;
+            color: #000;
         }
 
         .btn-reset {
@@ -493,8 +512,8 @@
             justify-content: center;
             padding: calc(22px + env(safe-area-inset-top)) 18px calc(22px + env(safe-area-inset-bottom));
             background:
-                radial-gradient(circle at 50% 0%, rgba(43, 255, 74, 0.16), transparent 34%),
-                linear-gradient(135deg, #101010 0%, #050505 100%);
+                radial-gradient(circle at 50% -20%, rgba(255, 255, 255, 0.06), transparent 34%),
+                #060606;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
         }
@@ -506,8 +525,22 @@
 
         .mode-panel,
         .training-panel {
-            width: min(92vw, 520px);
+            width: min(92vw, 620px);
             animation: fadeScaleIn 0.28s ease both;
+        }
+
+        .mode-panel {
+            position: relative;
+        }
+
+        .mode-panel::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: -28px;
+            width: 74px;
+            height: 3px;
+            background: var(--accent-primary);
         }
 
         .mode-kicker,
@@ -535,7 +568,8 @@
             color: #cfcfcf;
             font-size: 16px;
             line-height: 1.45;
-            margin-bottom: 24px;
+            margin-bottom: 26px;
+            max-width: 520px;
         }
 
         .mode-actions,
@@ -544,23 +578,47 @@
             gap: 12px;
         }
 
+        .training-grid {
+            gap: 14px;
+        }
+
         .mode-card,
         .training-card {
             width: 100%;
-            border: 2px solid rgba(255, 255, 255, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.16);
             border-radius: 8px;
-            background: rgba(255, 255, 255, 0.08);
-            padding: 18px;
+            background: #181818;
+            padding: 18px 18px 16px;
             text-align: left;
             cursor: pointer;
-            transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+        }
+
+        .mode-card::before,
+        .training-card::before {
+            content: "";
+            position: absolute;
+            inset: 0 auto 0 0;
+            width: 5px;
+            background: var(--accent-primary);
+        }
+
+        .mode-card.spar-card::before {
+            background: #f2f2f2;
+        }
+
+        .mode-card.training-card-entry::before {
+            background: var(--accent-primary);
         }
 
         .mode-card:hover,
         .training-card:hover {
             transform: translateY(-2px);
             border-color: var(--accent-primary);
-            background: rgba(43, 255, 74, 0.1);
+            background: #202020;
+            box-shadow: 0 18px 42px rgba(0, 0, 0, 0.36);
         }
 
         .mode-card:active,
@@ -578,11 +636,49 @@
             text-transform: uppercase;
         }
 
+        .mode-card-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .mode-card-label {
+            flex: 0 0 auto;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 6px;
+            color: var(--accent-primary);
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            padding: 5px 8px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
         .mode-card-desc,
         .training-card-desc {
             color: #bdbdbd;
             font-size: 14px;
             line-height: 1.42;
+        }
+
+        .mode-card-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 14px;
+        }
+
+        .mode-pill {
+            border-radius: 6px;
+            background: #2b2b2b;
+            color: #e8e8e8;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.4px;
+            padding: 6px 9px;
+            text-transform: uppercase;
         }
 
         .training-header {
@@ -612,6 +708,200 @@
             letter-spacing: 1px;
             margin-top: 10px;
             text-transform: uppercase;
+        }
+
+        .workout-overview {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .workout-stat {
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 8px;
+            background: #181818;
+            padding: 12px;
+        }
+
+        .workout-stat-value {
+            color: #fff;
+            font-size: 20px;
+            font-weight: 950;
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+
+        .workout-stat-label {
+            color: #a9a9a9;
+            font-size: 11px;
+            font-weight: 850;
+            letter-spacing: 0.7px;
+            text-transform: uppercase;
+        }
+
+        .workout-section {
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 8px;
+            background: #181818;
+            padding: 16px 16px 14px;
+        }
+
+        .workout-section-title {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 950;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .workout-list {
+            color: #c9c9c9;
+            font-size: 14px;
+            line-height: 1.45;
+            list-style: none;
+        }
+
+        .workout-list li {
+            margin-bottom: 7px;
+            padding-left: 14px;
+            position: relative;
+        }
+
+        .workout-list li::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0.65em;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--accent-primary);
+        }
+
+        .round-plan {
+            display: grid;
+            gap: 9px;
+        }
+
+        .round-item {
+            border-left: 3px solid var(--accent-primary);
+            background: #202020;
+            border-radius: 6px;
+            padding: 12px 12px 10px;
+        }
+
+        .round-title {
+            color: #fff;
+            font-size: 14px;
+            font-weight: 950;
+            letter-spacing: 0.6px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .round-notes {
+            color: #c8c8c8;
+            font-size: 13px;
+            line-height: 1.45;
+        }
+
+        .workout-start {
+            width: 100%;
+            margin-top: 16px;
+            padding: 16px 18px;
+            border: none;
+            border-radius: 8px;
+            background: var(--accent-primary);
+            color: #000;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 950;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .training-step.hidden {
+            display: none;
+        }
+
+        .training-card {
+            display: block;
+        }
+
+        .training-card:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+
+        .training-card:disabled:hover {
+            transform: none;
+            border-color: rgba(255, 255, 255, 0.16);
+            background: #181818;
+            box-shadow: none;
+        }
+
+        .training-card.expanded {
+            border-color: var(--accent-primary);
+            background: #202020;
+        }
+
+        .training-card-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .training-card-chevron {
+            color: var(--accent-primary);
+            font-size: 20px;
+            font-weight: 950;
+            line-height: 1;
+            transform: rotate(0deg);
+            transition: transform 0.28s ease;
+        }
+
+        .training-card.expanded .training-card-chevron {
+            transform: rotate(180deg);
+        }
+
+        .training-detail {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.38s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.22s ease, padding-top 0.28s ease;
+        }
+
+        .training-card.expanded .training-detail {
+            max-height: min(62vh, 680px);
+            opacity: 1;
+            padding-top: 16px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+        }
+
+        .training-detail-inner {
+            display: grid;
+            gap: 12px;
+            padding-right: 2px;
+        }
+
+        .training-card.expanded .training-detail-inner {
+            animation: detailFadeUp 0.26s ease both;
+        }
+
+        @keyframes detailFadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* Settings Modal */
@@ -1110,22 +1400,35 @@
 
         @media (max-width: 600px) {
             .timer-ring-wrap {
-                width: min(94vw, 420px);
-                height: min(94vw, 420px);
+                width: min(84vw, 390px);
+                height: min(84vw, 390px);
             }
 
             .ring-track,
             .ring-progress {
-                stroke-width: 6;
+                stroke-width: 3.5;
             }
 
             .timer-display {
-                font-size: min(26vw, 110px);
-                letter-spacing: -3px;
+                font-size: min(22vw, 96px);
+                letter-spacing: 0;
             }
 
             .task-display {
                 font-size: 24px;
+            }
+
+            .mode-card-top,
+            .training-header {
+                flex-direction: column;
+            }
+
+            .mode-card-label {
+                align-self: flex-start;
+            }
+
+            .workout-overview {
+                grid-template-columns: 1fr;
             }
 
             .pre-round-task {
@@ -1487,16 +1790,36 @@
     <div class="mode-choice" id="modeChoice">
         <div class="mode-panel">
             <div class="mode-kicker">STRIKEFLOW</div>
-            <div class="mode-title">Mitä tänään?</div>
-            <div class="mode-subtitle">Valitse sparri nykyiseen eräajastimeen tai treeni pidempään yhtenäiseen harjoitukseen.</div>
+            <div class="mode-title">Choose today's work</div>
+            <div class="mode-subtitle">Pick live rounds for sparring, or follow guided training with drills, combos and session instructions.</div>
             <div class="mode-actions">
-                <button class="mode-card" onclick="chooseSparMode()">
-                    <div class="mode-card-title">Sparrata</div>
-                    <div class="mode-card-desc">Erät, tauot, Task Spar ja ottelutyyliset intervallit.</div>
+                <button class="mode-card spar-card" onclick="chooseSparMode()">
+                    <div class="mode-card-top">
+                        <div>
+                            <div class="mode-card-title">Sparring</div>
+                            <div class="mode-card-desc">Run clean fight rounds with bells, breaks and optional Task Spar prompts between rounds.</div>
+                        </div>
+                        <div class="mode-card-label">Fight timer</div>
+                    </div>
+                    <div class="mode-card-meta">
+                        <span class="mode-pill">Live rounds</span>
+                        <span class="mode-pill">Breaks</span>
+                        <span class="mode-pill">Bell cues</span>
+                    </div>
                 </button>
-                <button class="mode-card" onclick="openTrainingSection()">
-                    <div class="mode-card-title">Treenata</div>
-                    <div class="mode-card-desc">Valitse 30, 45, 60 tai 90 minuutin treeniblokki.</div>
+                <button class="mode-card training-card-entry" onclick="openTrainingSection()">
+                    <div class="mode-card-top">
+                        <div>
+                            <div class="mode-card-title">Training</div>
+                            <div class="mode-card-desc">Follow structured workouts with combo lists, drill notes and round-by-round guidance.</div>
+                        </div>
+                        <div class="mode-card-label">Session block</div>
+                    </div>
+                    <div class="mode-card-meta">
+                        <span class="mode-pill">Combos</span>
+                        <span class="mode-pill">Drills</span>
+                        <span class="mode-pill">Instructions</span>
+                    </div>
                 </button>
             </div>
         </div>
@@ -1508,32 +1831,38 @@
             <div class="training-header">
                 <div>
                     <div class="training-kicker">TRAINING</div>
-                    <div class="training-title">Valitse treeni</div>
-                    <div class="training-subtitle">Yksi yhtenäinen ajastin treenipäiville.</div>
+                    <div class="training-title" id="trainingTitle">Choose duration</div>
+                    <div class="training-subtitle" id="trainingSubtitle">Pick how long you want to train, then choose a guided workout with drills, combos and instructions.</div>
                 </div>
-                <button class="training-back" onclick="showModeChoice()">TAKAISIN</button>
+                <button class="training-back" onclick="trainingBack()">BACK</button>
             </div>
-            <div class="training-grid">
-                <button class="training-card" onclick="startTrainingPlan(1800, '30 MIN TEKNIIKKA')">
-                    <div class="training-card-title">30 min tekniikka</div>
-                    <div class="training-card-desc">Nopea taitotreeni komboille, puolustukselle ja liikkeelle.</div>
-                    <div class="training-meta">30:00</div>
-                </button>
-                <button class="training-card" onclick="startTrainingPlan(2700, '45 MIN TREENI')">
-                    <div class="training-card-title">45 min treeni</div>
-                    <div class="training-card-desc">Tasapainoinen treeni lämmittelylle, tekniikalle ja erätyölle.</div>
-                    <div class="training-meta">45:00</div>
-                </button>
-                <button class="training-card" onclick="startTrainingPlan(3600, '1 H TREENI')">
-                    <div class="training-card-title">1 h treeni</div>
-                    <div class="training-card-desc">Täysi treenisessio syvempään tekemiseen ja kuntoon.</div>
-                    <div class="training-meta">60:00</div>
-                </button>
-                <button class="training-card" onclick="startTrainingPlan(5400, '90 MIN TÄYSI SESSIO')">
-                    <div class="training-card-title">90 min täysi sessio</div>
-                    <div class="training-card-desc">Pitkä salitreeni tekniikalle, padeille, säkille ja fysiikalle.</div>
-                    <div class="training-meta">90:00</div>
-                </button>
+            <div class="training-step" id="trainingDurationStep">
+                <div class="training-grid">
+                    <button class="training-card" onclick="selectTrainingDuration(30)">
+                        <div class="training-card-title">30 min</div>
+                        <div class="training-card-desc">Short technical session with focused drills and simple combos.</div>
+                        <div class="training-meta">Quick work</div>
+                    </button>
+                    <button class="training-card" onclick="selectTrainingDuration(45)">
+                        <div class="training-card-title">45 min</div>
+                        <div class="training-card-desc">Full bag workout with warmup, 8 rounds, finisher and stretch.</div>
+                        <div class="training-meta">Recommended</div>
+                    </button>
+                    <button class="training-card" onclick="selectTrainingDuration(60)">
+                        <div class="training-card-title">1 hour</div>
+                        <div class="training-card-desc">Longer session with more volume, conditioning and technical blocks.</div>
+                        <div class="training-meta">Deep work</div>
+                    </button>
+                    <button class="training-card" onclick="selectTrainingDuration(90)">
+                        <div class="training-card-title">90 min</div>
+                        <div class="training-card-desc">Complete gym-style training with extended skill and conditioning work.</div>
+                        <div class="training-meta">Full session</div>
+                    </button>
+                </div>
+            </div>
+
+            <div class="training-step hidden" id="trainingOptionsStep">
+                <div class="training-grid" id="trainingOptionsGrid"></div>
             </div>
         </div>
     </div>
@@ -2357,6 +2686,143 @@
             }
         }
 
+        let selectedTrainingDuration = null;
+        let expandedTrainingWorkoutId = null;
+
+        const TRAINING_WORKOUTS = {
+            30: [
+                {
+                    id: 'quick-technique',
+                    title: 'Quick technique',
+                    subtitle: 'Clean basics, footwork and simple combinations.',
+                    structure: '4 x 3 min technique rounds',
+                    minutes: 30,
+                    stats: [['30', 'Minutes'], ['5', 'Blocks'], ['Light', 'Intensity']],
+                    sections: [
+                        { title: 'Warmup - 5 min', items: ['2 min light jog or jump rope.', '3 min shadowboxing with loose shoulders and active footwork.'] },
+                        { title: 'Technique rounds - 4 x 3 min', rounds: [
+                            ['Round 1 - Jab and movement', 'Jab while circling. Step out after every 2-3 strikes.'],
+                            ['Round 2 - 1-2 basics', 'Keep the guard high. Reset your feet after every combo.'],
+                            ['Round 3 - Hooks and low kicks', 'Hook-low kick, cross-hook-low kick, jab-hook-body kick.'],
+                            ['Round 4 - Defense first', 'Slip, block or step out before every counter combination.']
+                        ] },
+                        { title: 'Finish - 5 min', items: ['3 relaxed shadowboxing minutes.', '2 min stretching hips, calves and shoulders.'] }
+                    ]
+                },
+                {
+                    id: 'speed-combos',
+                    title: 'Speed combos',
+                    subtitle: 'Short, sharp work for hand speed and rhythm.',
+                    structure: '6 x 3 min speed rounds',
+                    minutes: 30,
+                    stats: [['30', 'Minutes'], ['6', 'Rounds'], ['Fast', 'Pace']],
+                    sections: [
+                        { title: 'Warmup - 4 min', items: ['Easy bounce, shoulder rolls and light shadowboxing.'] },
+                        { title: 'Combo work - 6 x 3 min', rounds: [
+                            ['Round 1 - Fast jab', 'Double jab, jab-body jab, jab-step out.'],
+                            ['Round 2 - 1-2 rhythm', '1-2, 1-2-slip-2, 1-2-low kick.'],
+                            ['Round 3 - Hooks', 'Jab-hook, cross-hook, hook-cross-hook.'],
+                            ['Round 4 - Kick entries', 'Jab-low kick, cross-body kick, hook-middle kick.'],
+                            ['Round 5 - Burst work', '10 s fast hands, 20 s relaxed movement. Repeat.'],
+                            ['Round 6 - Freestyle', 'Use only clean combinations. No sloppy volume.']
+                        ] },
+                        { title: 'Cooldown - 5 min', items: ['Slow shadowboxing and easy stretching.'] }
+                    ]
+                }
+            ],
+            45: [
+                {
+                    id: 'bag-workout',
+                    title: 'Bag workout',
+                    subtitle: 'Warmup, 8 bag rounds, combo work, finisher and stretch.',
+                    structure: '8 x 3 min bag work',
+                    minutes: 45,
+                    stats: [['45', 'Minutes'], ['8', 'Bag rounds'], ['30s', 'Rest']],
+                    sections: [
+                        { title: 'Warmup - 5 min', items: ['2 min jump rope or light jog.', '3 min shadowboxing with mobility work.'] },
+                        { title: 'Bag work - 8 x 3 min, 30 s rest', rounds: [
+                            ['Round 1 - Technique', 'Light tempo. Move a lot. Jab, cross, hooks and low kicks.'],
+                            ['Round 2 - Combos', '1-2-low kick. Jab-hook-middle kick. Cross-hook-low kick. Keep every strike clean.'],
+                            ['Round 3 - High tempo', 'Punch and kick almost the whole round. Keep moving constantly.'],
+                            ['Round 4 - Knees', 'Clinch the bag. Throw 5-10 knees. Exit, throw 1-2, return to clinch.'],
+                            ['Round 5 - Kicks', 'Alternate right and left body kicks. Finish each sequence with a low kick.'],
+                            ['Round 6 - Fight round', 'Imagine an opponent. Add slips, angles, counters and resets.'],
+                            ['Round 7 - Max pace', '15 s all out, 15 s normal pace. Repeat for the full round.'],
+                            ['Round 8 - Final round', 'Empty the tank. Fight pace until the bell.']
+                        ] },
+                        { title: 'Finisher - 10-12 min', items: ['3 rounds without long breaks.', '20 pushups, 20 jump squats, 20 crunches, 30 s plank.'] },
+                        { title: 'Stretch - 2-3 min', items: ['Bring the heart rate down and stretch hips, calves, shoulders and back.'] }
+                    ]
+                },
+                {
+                    id: 'technical-pressure',
+                    title: 'Technical pressure',
+                    subtitle: 'Controlled pressure, exits and counter attacks.',
+                    structure: '7 x 3 min pressure rounds',
+                    minutes: 45,
+                    stats: [['45', 'Minutes'], ['7', 'Rounds'], ['Medium', 'Intensity']],
+                    sections: [
+                        { title: 'Warmup - 7 min', items: ['Light jog, mobility, then shadowbox with long guard and angles.'] },
+                        { title: 'Main work - 7 x 3 min', rounds: [
+                            ['Round 1 - Long range', 'Jab, teep, step out. Keep the opponent away.'],
+                            ['Round 2 - Entry combos', 'Jab-cross-hook, cross-hook-low kick, jab-teep-cross.'],
+                            ['Round 3 - Pressure', 'Step in behind the jab. Finish every combo with an angle.'],
+                            ['Round 4 - Counters', 'Slip-cross, block-hook-low kick, pull-cross.'],
+                            ['Round 5 - Body work', 'Jab body, cross body, hook body, finish upstairs.'],
+                            ['Round 6 - Clinch entries', 'Punch into clinch, knees, exit with guard high.'],
+                            ['Round 7 - Fight simulation', 'Move, defend, counter and reset like a real round.']
+                        ] },
+                        { title: 'Finish - 10 min', items: ['5 min core circuit.', '5 min cooldown and stretching.'] }
+                    ]
+                }
+            ],
+            60: [
+                {
+                    id: 'complete-striking',
+                    title: 'Complete striking',
+                    subtitle: 'Technique, bag rounds, knees, defense and conditioning.',
+                    structure: '10 x 3 min striking rounds',
+                    minutes: 60,
+                    stats: [['60', 'Minutes'], ['10', 'Rounds'], ['Full', 'Session']],
+                    sections: [
+                        { title: 'Warmup - 10 min', items: ['Jump rope, mobility and shadowboxing with all weapons.'] },
+                        { title: 'Main work - 10 x 3 min', rounds: [
+                            ['Rounds 1-2 - Basics', 'Jab, cross, hooks, teeps and low kicks with clean resets.'],
+                            ['Rounds 3-4 - Combos', 'Build 3-5 strike combinations and finish with kicks.'],
+                            ['Rounds 5-6 - Defense', 'Slip, block, check, counter and exit.'],
+                            ['Rounds 7-8 - Knees and kicks', 'Clinch knees, body kicks and low kick finishes.'],
+                            ['Rounds 9-10 - Fight pace', 'Work like sparring rounds. Stay composed under fatigue.']
+                        ] },
+                        { title: 'Conditioning - 12 min', items: ['3 rounds: pushups, jump squats, mountain climbers, plank.'] },
+                        { title: 'Stretch - 5 min', items: ['Slow breathing and full body stretching.'] }
+                    ]
+                }
+            ],
+            90: [
+                {
+                    id: 'full-gym-session',
+                    title: 'Full gym session',
+                    subtitle: 'Long technical session with bag work, conditioning and cooldown.',
+                    structure: '10 x 3 min plus skill blocks',
+                    minutes: 90,
+                    stats: [['90', 'Minutes'], ['Long', 'Volume'], ['Hard', 'Intensity']],
+                    sections: [
+                        { title: 'Warmup - 15 min', items: ['Jog or rope, mobility, activation and 3 rounds of shadowboxing.'] },
+                        { title: 'Technical block - 20 min', items: ['Work stance, footwork, defense, jab entries and kick mechanics.'] },
+                        { title: 'Bag work - 10 x 3 min', rounds: [
+                            ['Rounds 1-2 - Clean technique', 'Move and keep every strike balanced.'],
+                            ['Rounds 3-4 - Combination building', 'Layer punches, kicks and exits.'],
+                            ['Rounds 5-6 - Clinch and knees', 'Enter safely, knee, exit and strike back in.'],
+                            ['Rounds 7-8 - Fight simulation', 'Visualize an opponent and make tactical choices.'],
+                            ['Rounds 9-10 - Pace rounds', 'Alternate hard bursts with controlled recovery.']
+                        ] },
+                        { title: 'Conditioning - 15 min', items: ['Bodyweight circuit with pushups, squats, lunges, core and sprawls.'] },
+                        { title: 'Cooldown - 10 min', items: ['Walk, breathe, stretch hips, back, calves and shoulders.'] }
+                    ]
+                }
+            ]
+        };
+
         function showModeChoice() {
             modeChoice.classList.remove('hidden');
             trainingSection.classList.add('hidden');
@@ -2383,6 +2849,116 @@
         function openTrainingSection() {
             modeChoice.classList.add('hidden');
             trainingSection.classList.remove('hidden');
+            showTrainingDurationStep();
+        }
+
+        function setTrainingStep(step) {
+            ['trainingDurationStep', 'trainingOptionsStep'].forEach(id => {
+                document.getElementById(id).classList.toggle('hidden', id !== step);
+            });
+        }
+
+        function showTrainingDurationStep() {
+            selectedTrainingDuration = null;
+            expandedTrainingWorkoutId = null;
+            document.getElementById('trainingTitle').textContent = 'Choose duration';
+            document.getElementById('trainingSubtitle').textContent = 'Pick how long you want to train, then choose a guided workout with drills, combos and instructions.';
+            setTrainingStep('trainingDurationStep');
+        }
+
+        function selectTrainingDuration(minutes) {
+            selectedTrainingDuration = minutes;
+            expandedTrainingWorkoutId = null;
+            const workouts = TRAINING_WORKOUTS[minutes] || [];
+            document.getElementById('trainingTitle').textContent = `${minutes} min training`;
+            document.getElementById('trainingSubtitle').textContent = 'Choose a workout. Tap a card to expand the full plan and scroll through the details.';
+            renderTrainingOptions(minutes);
+            setTrainingStep('trainingOptionsStep');
+        }
+
+        function findTrainingWorkout(minutes, workoutId) {
+            return (TRAINING_WORKOUTS[minutes] || []).find(workout => workout.id === workoutId);
+        }
+
+        function renderWorkoutDetails(workout, minutes) {
+            const overview = workout.stats.map(stat => `
+                <div class="workout-stat">
+                    <div class="workout-stat-value">${stat[0]}</div>
+                    <div class="workout-stat-label">${stat[1]}</div>
+                </div>
+            `).join('');
+
+            const sections = workout.sections.map(section => {
+                if (section.rounds) {
+                    return `
+                        <div class="workout-section">
+                            <div class="workout-section-title">${section.title}</div>
+                            <div class="round-plan">
+                                ${section.rounds.map(round => `
+                                    <div class="round-item">
+                                        <div class="round-title">${round[0]}</div>
+                                        <div class="round-notes">${round[1]}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div class="workout-section">
+                        <div class="workout-section-title">${section.title}</div>
+                        <ul class="workout-list">
+                            ${section.items.map(item => `<li>${item}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }).join('');
+
+            return `
+                <div class="training-detail-inner">
+                    <div class="workout-overview">${overview}</div>
+                    ${sections}
+                    <button class="workout-start" onclick="event.stopPropagation(); startTrainingPlan(${minutes * 60}, '${minutes} MIN ${workout.title.toUpperCase()}')">Start ${minutes} min timer</button>
+                </div>
+            `;
+        }
+
+        function renderTrainingOptions(minutes) {
+            const workouts = TRAINING_WORKOUTS[minutes] || [];
+            document.getElementById('trainingOptionsGrid').innerHTML = workouts.map(workout => {
+                const isExpanded = expandedTrainingWorkoutId === workout.id;
+                return `
+                    <div class="training-card ${isExpanded ? 'expanded' : ''}" role="button" tabindex="0" onclick="toggleTrainingWorkout(${minutes}, '${workout.id}')">
+                        <div class="training-card-head">
+                            <div>
+                                <div class="training-card-title">${workout.minutes} min</div>
+                                <div class="training-card-desc">${workout.structure}</div>
+                                <div class="training-meta">${workout.title}</div>
+                            </div>
+                            <div class="training-card-chevron">⌄</div>
+                        </div>
+                        <div class="training-detail">
+                            ${isExpanded ? renderWorkoutDetails(workout, minutes) : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleTrainingWorkout(minutes, workoutId) {
+            expandedTrainingWorkoutId = expandedTrainingWorkoutId === workoutId ? null : workoutId;
+            renderTrainingOptions(minutes);
+        }
+
+        function trainingBack() {
+            if (!trainingSection.classList.contains('hidden')) {
+                if (!document.getElementById('trainingOptionsStep').classList.contains('hidden')) {
+                    showTrainingDurationStep();
+                    return;
+                }
+            }
+            showModeChoice();
         }
 
         function startTrainingPlan(durationSeconds, title) {
