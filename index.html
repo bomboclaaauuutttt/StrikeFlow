@@ -7957,10 +7957,35 @@
             }
         });
 
-        document.addEventListener('pointerup', function(e) {
+        let pendingUiClickTarget = null;
+        let pendingUiClickStartX = 0;
+        let pendingUiClickStartY = 0;
+
+        document.addEventListener('pointerdown', function(e) {
             const clickable = e.target.closest('button, [role="button"], .training-card');
-            if (!clickable || clickable.disabled) return;
+            if (!clickable || clickable.disabled) {
+                pendingUiClickTarget = null;
+                return;
+            }
+            pendingUiClickTarget = clickable;
+            pendingUiClickStartX = e.clientX;
+            pendingUiClickStartY = e.clientY;
+        }, { passive: true });
+
+        document.addEventListener('pointerup', function(e) {
+            if (!pendingUiClickTarget) return;
+            const endTarget = e.target.closest('button, [role="button"], .training-card');
+            const movedX = Math.abs(e.clientX - pendingUiClickStartX);
+            const movedY = Math.abs(e.clientY - pendingUiClickStartY);
+            const isTap = movedX <= 10 && movedY <= 10;
+            const sameTarget = endTarget === pendingUiClickTarget || pendingUiClickTarget.contains(e.target);
+            pendingUiClickTarget = null;
+            if (!isTap || !sameTarget) return;
             playUiClick();
+        }, { passive: true });
+
+        document.addEventListener('pointercancel', function() {
+            pendingUiClickTarget = null;
         }, { passive: true });
 
         // Extra fallback: some mobile browsers may still try to move viewport.
