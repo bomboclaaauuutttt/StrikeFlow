@@ -248,6 +248,10 @@
             height: 100%;
             position: relative;
             z-index: 1;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            touch-action: pan-y;
+            -webkit-overflow-scrolling: touch;
         }
 
         .app * { color: white; }
@@ -334,12 +338,12 @@
         }
 
         .timer-section {
-            flex: 1;
+            flex: 1 0 auto;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
-            padding: 20px 20px 112px;
+            padding: clamp(12px, 2.2vh, 24px) 20px 132px;
         }
 
         .phase-banner {
@@ -937,6 +941,10 @@
             position: relative;
             transition: transform 0.18s ease, filter 0.18s ease;
             animation: premiumAdPulse 2.6s ease-in-out infinite;
+        }
+
+        .mode-premium-ad.hidden {
+            display: none;
         }
 
         .mode-premium-ad::before {
@@ -1559,6 +1567,40 @@
         .premium-tag {
             background: #2bff4a;
             color: #050505;
+        }
+
+        .training-card.premium-unlocked {
+            border-color: rgba(190, 255, 0, 0.55);
+            background:
+                radial-gradient(circle at 92% 16%, rgba(255, 209, 102, 0.16), transparent 24%),
+                linear-gradient(90deg, rgba(190, 255, 0, 0.08), transparent 42%),
+                #181818;
+            box-shadow: inset 0 0 0 1px rgba(190, 255, 0, 0.08), 0 0 28px rgba(43, 255, 74, 0.08);
+        }
+
+        .training-card.premium-unlocked .premium-tag {
+            background: linear-gradient(90deg, #baff00, #ffd166);
+            box-shadow: 0 0 14px rgba(190, 255, 0, 0.18);
+        }
+
+        .pro-unlocked-badge {
+            align-items: center;
+            border: 1px solid rgba(255, 209, 102, 0.68);
+            border-radius: 999px;
+            color: #ffd166;
+            display: inline-flex;
+            font-size: 11px;
+            font-weight: 950;
+            gap: 7px;
+            letter-spacing: 0.8px;
+            padding: 8px 11px;
+            text-transform: uppercase;
+            white-space: nowrap;
+            box-shadow: 0 0 18px rgba(255, 159, 28, 0.12);
+        }
+
+        .pro-unlocked-badge .icon {
+            color: var(--accent-primary);
         }
 
         .training-card.locked {
@@ -2309,6 +2351,271 @@
                 opacity: 0;
                 transform: translateX(90%);
             }
+        }
+
+        .premium-unlock-celebration {
+            position: fixed;
+            inset: 0;
+            z-index: 10100;
+            display: grid;
+            place-items: center;
+            padding: 22px;
+            background:
+                radial-gradient(circle at 50% 48%, rgba(190, 255, 0, 0.18), transparent 24%),
+                radial-gradient(circle at 50% 100%, rgba(255, 159, 28, 0.22), transparent 34%),
+                rgba(0, 0, 0, 0.88);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.24s ease;
+        }
+
+        .premium-unlock-celebration.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .unlock-burst {
+            position: absolute;
+            width: min(92vw, 520px);
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background:
+                conic-gradient(from 0deg, transparent 0 10deg, rgba(190, 255, 0, 0.9) 12deg 16deg, transparent 18deg 42deg, rgba(255, 209, 102, 0.8) 44deg 48deg, transparent 50deg 78deg);
+            filter: blur(0.3px) drop-shadow(0 0 24px rgba(190, 255, 0, 0.22));
+            opacity: 0;
+            transform: scale(0.54) rotate(-18deg);
+        }
+
+        .premium-unlock-celebration.show .unlock-burst {
+            animation: unlockBurst 1.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .unlock-panel {
+            width: min(92vw, 470px);
+            border: 1px solid rgba(190, 255, 0, 0.72);
+            border-radius: 8px;
+            background:
+                radial-gradient(circle at 88% 10%, rgba(255, 209, 102, 0.18), transparent 24%),
+                linear-gradient(180deg, #171717, #0d0d0d);
+            box-shadow: 0 0 52px rgba(43, 255, 74, 0.16), 0 0 74px rgba(255, 159, 28, 0.1);
+            overflow: hidden;
+            padding: 28px 24px 26px;
+            position: relative;
+            text-align: center;
+            transform: translateY(18px) scale(0.92);
+            opacity: 0;
+        }
+
+        .premium-unlock-celebration.show .unlock-panel {
+            animation: unlockPanelIn 0.62s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both;
+        }
+
+        .unlock-panel::before {
+            content: "";
+            position: absolute;
+            inset: auto -10% -28% -10%;
+            height: 46%;
+            background:
+                radial-gradient(circle at 22% 80%, rgba(255, 72, 28, 0.48), transparent 25%),
+                radial-gradient(circle at 48% 72%, rgba(255, 159, 28, 0.58), transparent 30%),
+                radial-gradient(circle at 76% 88%, rgba(255, 209, 102, 0.34), transparent 26%);
+            filter: blur(18px);
+            opacity: 0.75;
+            animation: premiumBackFire 0.76s ease-in-out infinite alternate;
+        }
+
+        .unlock-trophy-stage {
+            display: grid;
+            height: 96px;
+            margin: -2px auto 12px;
+            place-items: center;
+            position: relative;
+            width: 140px;
+            z-index: 1;
+        }
+
+        .unlock-trophy-glow {
+            position: absolute;
+            width: 104px;
+            height: 104px;
+            border-radius: 50%;
+            background:
+                radial-gradient(circle, rgba(255, 209, 102, 0.38), transparent 58%),
+                radial-gradient(circle, rgba(43, 255, 74, 0.28), transparent 72%);
+            filter: blur(8px);
+            opacity: 0;
+        }
+
+        .premium-unlock-celebration.show .unlock-trophy-glow {
+            animation: trophyGlow 1.65s ease-in-out both;
+        }
+
+        .unlock-main-trophy {
+            color: #ffd166;
+            filter: drop-shadow(0 0 20px rgba(255, 159, 28, 0.72));
+            font-size: 72px;
+            opacity: 0;
+            position: relative;
+            transform: translateY(20px) scale(0.55) rotate(-10deg);
+            z-index: 2;
+        }
+
+        .premium-unlock-celebration.show .unlock-main-trophy {
+            animation: trophyPop 0.74s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
+        }
+
+        .unlock-flying-trophy {
+            color: #ffd166;
+            filter: drop-shadow(0 0 14px rgba(255, 159, 28, 0.68));
+            height: 34px;
+            opacity: 0;
+            position: absolute;
+            width: 34px;
+        }
+
+        .premium-unlock-celebration.show .unlock-flying-trophy {
+            animation: trophyFly 1.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .unlock-flying-trophy.trophy-1 { left: 9%; top: 58%; --tx: -120px; --ty: -150px; --rot: -32deg; animation-delay: 0.05s; }
+        .unlock-flying-trophy.trophy-2 { left: 78%; top: 60%; --tx: 112px; --ty: -162px; --rot: 34deg; animation-delay: 0.13s; }
+        .unlock-flying-trophy.trophy-3 { left: 18%; top: 36%; --tx: -94px; --ty: -78px; --rot: 22deg; animation-delay: 0.2s; }
+        .unlock-flying-trophy.trophy-4 { left: 72%; top: 34%; --tx: 94px; --ty: -84px; --rot: -24deg; animation-delay: 0.27s; }
+        .unlock-flying-trophy.trophy-5 { left: 47%; top: 70%; --tx: 0px; --ty: -178px; --rot: 12deg; animation-delay: 0.34s; }
+
+        .unlock-kicker {
+            color: var(--accent-primary);
+            font-size: 13px;
+            font-weight: 950;
+            letter-spacing: 1.7px;
+            margin-bottom: 10px;
+            position: relative;
+            text-transform: uppercase;
+            z-index: 1;
+        }
+
+        .unlock-title {
+            color: #fff;
+            font-size: clamp(42px, 11vw, 76px);
+            font-weight: 950;
+            letter-spacing: 0;
+            line-height: 0.86;
+            position: relative;
+            text-transform: uppercase;
+            z-index: 1;
+        }
+
+        .unlock-subtitle {
+            color: #d8d8d8;
+            font-size: 15px;
+            font-weight: 850;
+            line-height: 1.35;
+            margin: 16px auto 20px;
+            max-width: 330px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .unlock-rewards {
+            display: grid;
+            gap: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .unlock-rewards span {
+            border-radius: 7px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 950;
+            letter-spacing: 0.5px;
+            padding: 10px 12px;
+            text-transform: uppercase;
+        }
+
+        .unlock-victory-line {
+            align-items: center;
+            color: #ffd166;
+            display: flex;
+            font-size: 12px;
+            font-weight: 950;
+            gap: 10px;
+            justify-content: center;
+            letter-spacing: 1px;
+            margin-top: 18px;
+            position: relative;
+            text-transform: uppercase;
+            z-index: 1;
+        }
+
+        .unlock-victory-line::before,
+        .unlock-victory-line::after {
+            content: "";
+            border-radius: 999px;
+            display: inline-block;
+            height: 3px;
+            width: 52px;
+            background: linear-gradient(90deg, var(--accent-primary), #ffd166);
+            box-shadow: 0 0 18px rgba(190, 255, 0, 0.34);
+        }
+
+        .unlock-spark {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+            background: #baff00;
+            box-shadow: 0 0 14px rgba(190, 255, 0, 0.9);
+            opacity: 0;
+        }
+
+        .premium-unlock-celebration.show .unlock-spark {
+            animation: unlockSpark 1.2s ease-out both;
+        }
+
+        .unlock-spark:nth-child(2) { left: 17%; top: 24%; animation-delay: 0.08s; }
+        .unlock-spark:nth-child(3) { left: 77%; top: 22%; animation-delay: 0.16s; background: #ffd166; }
+        .unlock-spark:nth-child(4) { left: 20%; top: 72%; animation-delay: 0.22s; background: #ff9f1c; }
+        .unlock-spark:nth-child(5) { left: 82%; top: 70%; animation-delay: 0.28s; }
+        .unlock-spark:nth-child(6) { left: 50%; top: 14%; animation-delay: 0.34s; background: #ffd166; }
+
+        @keyframes unlockBurst {
+            0% { opacity: 0; transform: scale(0.42) rotate(-22deg); }
+            18% { opacity: 0.95; }
+            100% { opacity: 0; transform: scale(1.18) rotate(34deg); }
+        }
+
+        @keyframes unlockPanelIn {
+            0% { opacity: 0; transform: translateY(18px) scale(0.92); }
+            60% { opacity: 1; transform: translateY(-3px) scale(1.015); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes unlockSpark {
+            0% { opacity: 0; transform: translateY(18px) scale(0.3) rotate(0deg); }
+            20% { opacity: 1; }
+            100% { opacity: 0; transform: translateY(-44px) scale(1.1) rotate(80deg); }
+        }
+
+        @keyframes trophyPop {
+            0% { opacity: 0; transform: translateY(20px) scale(0.55) rotate(-10deg); }
+            58% { opacity: 1; transform: translateY(-6px) scale(1.16) rotate(4deg); }
+            78% { transform: translateY(1px) scale(0.98) rotate(-2deg); }
+            100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+        }
+
+        @keyframes trophyGlow {
+            0% { opacity: 0; transform: scale(0.55); }
+            35% { opacity: 1; transform: scale(1.08); }
+            100% { opacity: 0.72; transform: scale(1); }
+        }
+
+        @keyframes trophyFly {
+            0% { opacity: 0; transform: translate(0, 0) scale(0.35) rotate(0deg); }
+            18% { opacity: 1; }
+            72% { opacity: 1; }
+            100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(1.18) rotate(var(--rot)); }
         }
 
         .workout-preview-panel {
@@ -3425,7 +3732,7 @@
                         <span class="mode-pill">Instructions</span>
                     </div>
                 </button>
-                <button class="mode-premium-ad" onclick="openPremiumModal('Unlock 58 guided fight workouts, Task Spar cues and harder camp sessions.')">
+                <button class="mode-premium-ad" id="modePremiumAd" onclick="openPremiumModal('Unlock 58 guided fight workouts, Task Spar cues and harder camp sessions.')">
                     <img class="premium-ad-image" src="Unlock 50+ workouts with premium AD.png" alt="Unlock 58 workouts with Premium">
                 </button>
             </div>
@@ -3562,6 +3869,35 @@
                 <button class="save-btn premium-unlock-btn" onclick="simulatePremiumUnlock()">UNLOCK PRO</button>
                 <button class="secondary-btn premium-dismiss" onclick="closePremiumModal()">NOT NOW</button>
             </div>
+        </div>
+    </div>
+
+    <div class="premium-unlock-celebration" id="premiumUnlockCelebration" aria-hidden="true">
+        <div class="unlock-burst"></div>
+        <svg class="icon unlock-flying-trophy trophy-1"><use href="#icon-trophy"></use></svg>
+        <svg class="icon unlock-flying-trophy trophy-2"><use href="#icon-trophy"></use></svg>
+        <svg class="icon unlock-flying-trophy trophy-3"><use href="#icon-trophy"></use></svg>
+        <svg class="icon unlock-flying-trophy trophy-4"><use href="#icon-trophy"></use></svg>
+        <svg class="icon unlock-flying-trophy trophy-5"><use href="#icon-trophy"></use></svg>
+        <span class="unlock-spark"></span>
+        <span class="unlock-spark"></span>
+        <span class="unlock-spark"></span>
+        <span class="unlock-spark"></span>
+        <span class="unlock-spark"></span>
+        <div class="unlock-panel">
+            <div class="unlock-trophy-stage">
+                <div class="unlock-trophy-glow"></div>
+                <svg class="icon unlock-main-trophy"><use href="#icon-trophy"></use></svg>
+            </div>
+            <div class="unlock-kicker">FightWise Pro activated</div>
+            <div class="unlock-title">Pro unlocked</div>
+            <div class="unlock-subtitle">Your full fight library is open. Premium sessions are now marked so they feel earned.</div>
+            <div class="unlock-rewards">
+                <span>58 guided workouts unlocked</span>
+                <span>Task Spar cues unlocked</span>
+                <span>Premium fight camps unlocked</span>
+            </div>
+            <div class="unlock-victory-line">Champion access</div>
         </div>
     </div>
 
@@ -4018,6 +4354,7 @@
         const workoutPreviewSubtitle = document.getElementById('workoutPreviewSubtitle');
         const workoutPreviewBody = document.getElementById('workoutPreviewBody');
         const premiumModal = document.getElementById('premiumModal');
+        const premiumUnlockCelebration = document.getElementById('premiumUnlockCelebration');
         const bgIdle  = document.getElementById('bgIdle');
         const bgRound = document.getElementById('bgRound');
         const bgBreak = document.getElementById('bgBreak');
@@ -5825,6 +6162,12 @@
             }
         }
 
+        function resetPremiumOnRefresh() {
+            try {
+                localStorage.removeItem(PREMIUM_KEY);
+            } catch (e) {}
+        }
+
         function openPremiumModal(message = 'Unlock 58 guided fight workouts, Task Spar cues and harder camp sessions.') {
             const premiumMessage = document.getElementById('premiumMessage');
             if (premiumMessage) premiumMessage.textContent = message;
@@ -5840,10 +6183,23 @@
                 localStorage.setItem(PREMIUM_KEY, 'true');
             } catch (e) {}
             closePremiumModal();
+            updatePremiumVisibility();
             updateDurationLocks();
             renderTrainingOptions(selectedTrainingDuration);
             updateSettingsUI();
             renderSparringSetup();
+            showPremiumUnlockCelebration();
+        }
+
+        function showPremiumUnlockCelebration() {
+            if (!premiumUnlockCelebration) return;
+            premiumUnlockCelebration.classList.remove('show');
+            void premiumUnlockCelebration.offsetWidth;
+            premiumUnlockCelebration.classList.add('show');
+            if (navigator.vibrate) navigator.vibrate([40, 45, 80, 55, 130]);
+            setTimeout(() => {
+                premiumUnlockCelebration.classList.remove('show');
+            }, 2800);
         }
 
         function updateDurationLocks() {
@@ -5851,6 +6207,13 @@
             document.querySelectorAll('[data-premium-duration]').forEach(card => {
                 card.classList.toggle('duration-locked', !unlocked);
             });
+        }
+
+        function updatePremiumVisibility() {
+            const modePremiumAd = document.getElementById('modePremiumAd');
+            if (modePremiumAd) {
+                modePremiumAd.classList.toggle('hidden', isPremiumUnlocked());
+            }
         }
 
         function showModeChoice() {
@@ -6281,13 +6644,15 @@
 
         function renderTrainingOptions(minutes) {
             const workouts = TRAINING_WORKOUTS[minutes] || [];
+            const premiumUnlocked = isPremiumUnlocked();
             const workoutCards = workouts.map(workout => {
-                const locked = workout.premium && !isPremiumUnlocked();
+                const locked = workout.premium && !premiumUnlocked;
+                const unlockedPremium = workout.premium && premiumUnlocked;
                 const intensityBars = Array.from({ length: 5 }, (_, index) =>
                     `<span class="intensity-bar ${index < workout.intensity ? 'active' : ''}"></span>`
                 ).join('');
                 return `
-                    <div class="training-card ${locked ? 'locked' : ''}" role="button" tabindex="0" onclick="openWorkoutPreview(${minutes}, '${workout.id}')">
+                    <div class="training-card ${locked ? 'locked' : ''} ${unlockedPremium ? 'premium-unlocked' : ''}" role="button" tabindex="0" onclick="openWorkoutPreview(${minutes}, '${workout.id}')">
                         <div class="training-card-head">
                             <div>
                                 <div class="training-card-title">${workout.title}</div>
@@ -6295,7 +6660,7 @@
                                 <div class="training-card-meta-row">
                                     <span class="training-tag">${workout.minutes} min</span>
                                     <span class="training-tag">${workout.type}</span>
-                                    ${workout.premium ? '<span class="training-tag premium-tag">Pro</span>' : ''}
+                                    ${workout.premium ? `<span class="training-tag premium-tag">${premiumUnlocked ? 'Pro unlocked' : 'Pro'}</span>` : ''}
                                     <span class="training-tag">${workout.stats[1][0]} ${workout.stats[1][1]}</span>
                                 </div>
                                 <div class="intensity-meter intensity-level-${workout.intensity}">
@@ -6307,7 +6672,7 @@
                                 </div>
                             </div>
                             <div class="${locked ? 'premium-lock' : 'training-card-chevron'}">
-                                ${locked ? '<span class="icon-row"><svg class="icon icon-sm"><use href="#icon-lock"></use></svg>Locked</span>' : '<svg class="icon icon-md"><use href="#icon-arrow-right"></use></svg>'}
+                                ${locked ? '<span class="icon-row"><svg class="icon icon-sm"><use href="#icon-lock"></use></svg>Locked</span>' : unlockedPremium ? '<span class="pro-unlocked-badge"><svg class="icon icon-sm"><use href="#icon-check"></use></svg>Pro unlocked</span>' : '<svg class="icon icon-md"><use href="#icon-arrow-right"></use></svg>'}
                             </div>
                         </div>
                     </div>
@@ -6770,8 +7135,9 @@
 
         document.addEventListener('touchmove', e => {
             // Allow native scrolling inside overlay panels.
+            const scrollableArea = e.target.closest('.app-content, .timer-section, .mode-choice, .training-section, .sparring-setup, .modal-content, .workout-preview-body, .premium-panel');
             if (
-                e.target.closest('.mode-choice, .training-section, .sparring-setup, .modal-content, .workout-preview-body, .premium-panel') ||
+                (scrollableArea && !swipeActive) ||
                 settingsModal.classList.contains('show') ||
                 workoutPreview.classList.contains('show') ||
                 premiumModal.classList.contains('show') ||
@@ -7118,7 +7484,10 @@
         });
 
         // Apply initial theme
+        resetPremiumOnRefresh();
         applyTheme();
+        updatePremiumVisibility();
+        updateDurationLocks();
 
         // Show tutorial on load
         checkTutorial();
