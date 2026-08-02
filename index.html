@@ -7957,7 +7957,7 @@
             }
         });
 
-        document.addEventListener('pointerdown', function(e) {
+        document.addEventListener('pointerup', function(e) {
             const clickable = e.target.closest('button, [role="button"], .training-card');
             if (!clickable || clickable.disabled) return;
             playUiClick();
