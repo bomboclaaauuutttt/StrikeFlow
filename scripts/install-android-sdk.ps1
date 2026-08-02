@@ -47,7 +47,7 @@ $sdkManager = Find-SdkManager $SdkRoot
 
 if (-not $sdkManager) {
     Write-Step "Downloading Android SDK Command-line Tools"
-    $tempRoot = Join-Path $env:TEMP "strikeflow-android-sdk"
+    $tempRoot = Join-Path $env:TEMP "fightwise-android-sdk"
     $zipPath = Join-Path $tempRoot "commandlinetools.zip"
     $extractPath = Join-Path $tempRoot "extract"
     $latestToolsPath = Join-Path $SdkRoot "cmdline-tools\latest"

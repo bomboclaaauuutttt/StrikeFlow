@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>StrikeFlow - Muay Thai Timer</title>
+    <title>FightWise - Fight Timer</title>
 
     <!-- PWA -->
     <link rel="manifest" href="manifest.json">
@@ -13,8 +13,8 @@
     <!-- iOS home screen -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="StrikeFlow">
-    <link rel="apple-touch-icon" href="Strike Flow.png">
+    <meta name="apple-mobile-web-app-title" content="FightWise">
+    <link rel="apple-touch-icon" href="FightWise logo.png">
     <link rel="preload" href="click-soundeffect.mp3" as="audio">
     <link rel="preload" href="Unlock 50+ workouts with premium AD.png" as="image">
     <style>
@@ -683,7 +683,7 @@
             inset: 0;
             z-index: 9500;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
             padding: calc(22px + env(safe-area-inset-top)) 18px calc(22px + env(safe-area-inset-bottom));
             background:
@@ -691,6 +691,16 @@
                 #060606;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
+        }
+
+        .mode-choice {
+            background: #020302;
+            padding-top: max(26px, calc(18px + env(safe-area-inset-top)));
+            padding-bottom: max(34px, calc(28px + env(safe-area-inset-bottom)));
+        }
+
+        .training-section {
+            align-items: center;
         }
 
         .mode-choice::before,
@@ -754,13 +764,35 @@
         }
 
         .mode-choice::before {
-            background-image: url('StrikeFlow logo.png');
-            background-repeat: no-repeat;
-            background-position: center 16%;
-            background-size: min(88vw, 580px);
-            -webkit-mask-image: none;
-            mask-image: none;
-            opacity: 0.075;
+            background:
+                linear-gradient(rgba(255, 255, 255, 0.026) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.026) 1px, transparent 1px);
+            background-size: 72px 72px, 72px 72px;
+            -webkit-mask-image: radial-gradient(circle at 50% 44%, rgba(0, 0, 0, 0.72), transparent 78%);
+            mask-image: radial-gradient(circle at 50% 44%, rgba(0, 0, 0, 0.72), transparent 78%);
+            opacity: 0.42;
+        }
+
+        .mode-choice .mode-bg-logo {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(circle at 50% 22%, rgba(43, 255, 74, 0.11), transparent 24%),
+                url('FightWise logo.png') center 11% / min(92vw, 760px) auto no-repeat;
+            opacity: 0.14;
+            filter: grayscale(0.1);
+        }
+
+        .training-section::before {
+            background:
+                linear-gradient(rgba(255, 255, 255, 0.032) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.032) 1px, transparent 1px);
+            background-size: 72px 72px, 72px 72px;
+            -webkit-mask-image: radial-gradient(circle at 50% 38%, rgba(0, 0, 0, 0.9), transparent 76%);
+            mask-image: radial-gradient(circle at 50% 38%, rgba(0, 0, 0, 0.9), transparent 76%);
+            opacity: 0.56;
         }
 
         .mode-lockup {
@@ -790,11 +822,41 @@
             background: var(--accent-primary);
         }
 
+        .mode-logo-stack {
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .mode-logo-stack::before {
+            content: "";
+            position: absolute;
+            inset: -18px -40px 18px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(43, 255, 74, 0.16), transparent 68%);
+            filter: blur(14px);
+            pointer-events: none;
+        }
+
         .mode-logo {
-            width: min(48vw, 220px);
+            display: block;
+            width: min(31vw, 142px);
             height: auto;
-            margin-bottom: 18px;
+            position: relative;
+            z-index: 1;
             filter: drop-shadow(0 18px 42px rgba(0, 0, 0, 0.62));
+        }
+
+        .mode-logo-text {
+            display: block;
+            width: min(58vw, 300px);
+            height: auto;
+            margin-top: -8px;
+            position: relative;
+            z-index: 1;
+            filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.55));
         }
 
         .mode-kicker,
@@ -1230,6 +1292,17 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            transform-origin: center;
+            will-change: transform;
+        }
+
+        .mode-card.spar-card {
+            animation: modeCardNudge 4.8s ease-in-out infinite;
+        }
+
+        .mode-card.training-card-entry {
+            animation: modeCardNudge 4.8s ease-in-out infinite;
+            animation-delay: 2.4s;
         }
 
         .mode-card::before,
@@ -1251,6 +1324,7 @@
 
         .mode-card:hover,
         .training-card:hover {
+            animation-play-state: paused;
             transform: translateY(-2px);
             border-color: var(--accent-primary);
             background: #242424;
@@ -1260,6 +1334,21 @@
         .mode-card:active,
         .training-card:active {
             transform: scale(0.98);
+        }
+
+        @keyframes modeCardNudge {
+            0%, 58%, 100% {
+                transform: scale(1) rotate(0deg);
+            }
+            66% {
+                transform: scale(1.018) rotate(-0.22deg);
+            }
+            74% {
+                transform: scale(1.026) rotate(0.22deg);
+            }
+            82% {
+                transform: scale(1.012) rotate(0deg);
+            }
         }
 
         .mode-card-title,
@@ -3025,9 +3114,13 @@
 
     <!-- Daily Mode Choice -->
     <div class="mode-choice" id="modeChoice">
+        <div class="mode-bg-logo" aria-hidden="true"></div>
         <div class="mode-panel">
-            <img class="mode-logo" src="StrikeFlow logo.png" alt="StrikeFlow">
-            <div class="mode-lockup">StrikeFlow</div>
+            <div class="mode-logo-stack" aria-label="FightWise">
+                <img class="mode-logo" src="FightWise logo.png" alt="">
+                <img class="mode-logo-text" src="FightWise text.png" alt="FightWise">
+            </div>
+            <div class="mode-lockup">Fight Timer & Guided Workouts</div>
             <div class="mode-title">Train. Fight. Improve.</div>
             <div class="mode-subtitle">Choose your session and get to work.</div>
             <div class="mode-actions">
@@ -3144,7 +3237,7 @@
 
     <div class="premium-modal" id="premiumModal">
         <div class="premium-panel">
-            <div class="premium-kicker">StrikeFlow Pro</div>
+            <div class="premium-kicker">FightWise Pro</div>
             <div class="premium-title">Unlock the full fight library</div>
             <div class="premium-copy" id="premiumMessage">Premium unlocks advanced training plans and Task Spar mode.</div>
             <div class="premium-list">
@@ -3163,7 +3256,7 @@
             <div class="tut-welcome-icon">
                 <svg class="icon icon-lg"><use href="#icon-star"></use></svg>
             </div>
-            <div class="tut-welcome-title">WELCOME TO STRIKEFLOW</div>
+            <div class="tut-welcome-title">WELCOME TO CORNER COACH</div>
             <div class="tut-welcome-text">Your boxing interval timer.<br>Would you like a quick tour of the app?</div>
             <div class="tut-welcome-btns">
                 <button class="tut-btn-yes" onclick="startTutorial()">YES, SHOW ME</button>
@@ -4810,6 +4903,413 @@
             ]
         };
 
+        function premiumWorkout(id, title, type, subtitle, structure, intensity, intensityLabel, minutes, metric, sections) {
+            return {
+                id,
+                title,
+                type,
+                subtitle,
+                structure,
+                intensity,
+                intensityLabel,
+                minutes,
+                premium: true,
+                stats: [[String(minutes), 'Minutes'], metric, [intensityLabel, 'Intensity']],
+                sections
+            };
+        }
+
+        const MORE_PREMIUM_WORKOUTS = {
+            30: [
+                premiumWorkout('pro-jab-authority', 'Jab authority', 'Shadowbox training', 'Own the range with jab rhythm, exits and counters.', '5 x 3 min jab control rounds', 3, 'Medium', 30, ['5', 'Jab rounds'], [
+                    { title: 'Warmup - 5 min', items: ['Loose bounce, shoulder rolls and long relaxed jabs.'] },
+                    { title: 'Jab control - 5 x 3 min', rounds: [
+                        ['Round 1 - Range finder', 'Single jab, double jab, jab to body and step out.'],
+                        ['Round 2 - Jab exits', 'Jab, pivot. Jab, step back. Jab, frame and move.'],
+                        ['Round 3 - Jab counters', 'Slip, jab. Block, jab. Pull, jab-cross.'],
+                        ['Round 4 - Feints', 'Feint jab, real jab. Feint low, jab high.'],
+                        ['Round 5 - Freestyle', 'Everything starts with the jab. Stay balanced.']
+                    ] },
+                    { title: 'Cooldown - 5 min', items: ['Slow shadowbox and stretch shoulders.'] }
+                ]),
+                premiumWorkout('pro-teep-keeper', 'Teep keeper', 'Shadowbox training', 'Muay Thai distance control with teeps, frames and resets.', '6 x 2 min teep rounds', 2, 'Light', 30, ['6', 'Teep rounds'], [
+                    { title: 'Warmup - 5 min', items: ['Hip mobility, knees up, easy front kicks and balance holds.'] },
+                    { title: 'Teep rounds - 6 x 2 min', rounds: [
+                        ['Rounds 1-2 - Lead teep', 'Lead teep, land stable, reset stance.'],
+                        ['Rounds 3-4 - Rear teep', 'Rear teep, frame, angle away.'],
+                        ['Round 5 - Teep to hands', 'Teep, jab-cross, exit.'],
+                        ['Round 6 - Defensive teeps', 'Imagine pressure and stop it before it starts.']
+                    ] },
+                    { title: 'Stretch - 7 min', items: ['Hip flexors, calves and hamstrings.'] }
+                ]),
+                premiumWorkout('pro-body-shot-furnace', 'Body shot furnace', 'Bag workout', 'Short boxing body-shot session that burns fast.', '8 x 90 s body attack intervals', 5, 'Very hard', 30, ['8', 'Intervals'], [
+                    { title: 'Warmup - 5 min', items: ['Light bag touches, shoulder mobility and easy body hooks.'] },
+                    { title: 'Body intervals - 8 x 90 s', rounds: [
+                        ['Intervals 1-2 - Jab downstairs', 'Jab head, jab body, cross head.'],
+                        ['Intervals 3-4 - Hooks', 'Lead hook body, rear hook body, guard high.'],
+                        ['Intervals 5-6 - Uppercuts', 'Dip safely, uppercut body, hook head.'],
+                        ['Intervals 7-8 - Pressure finish', '30 s body flurry, 15 s reset, repeat.']
+                    ] },
+                    { title: 'Cooldown - 5 min', items: ['Walk, breathe and stretch abs, chest and shoulders.'] }
+                ]),
+                premiumWorkout('pro-southpaw-primer', 'Southpaw primer', 'Shadowbox training', 'Simple southpaw work for stance comfort and clean left-side attacks.', '5 x 3 min switch stance rounds', 2, 'Light', 30, ['5', 'Skill rounds'], [
+                    { title: 'Warmup - 5 min', items: ['Step switches, easy jabs from both stances and calf mobility.'] },
+                    { title: 'Southpaw rounds - 5 x 3 min', rounds: [
+                        ['Round 1 - Stance comfort', 'Move without crossing feet. Keep the rear heel ready.'],
+                        ['Round 2 - Right jab', 'Right jab, right jab body, right jab exit.'],
+                        ['Round 3 - Left cross', 'Jab-left cross, slip-left cross, step-left cross.'],
+                        ['Round 4 - Left kick', 'Left body kick after jab and after angle step.'],
+                        ['Round 5 - Smooth flow', 'Switch stance only when balance is clean.']
+                    ] },
+                    { title: 'Cooldown - 5 min', items: ['Calves, hips and relaxed breathing.'] }
+                ]),
+                premiumWorkout('pro-check-return-circuit', 'Check return circuit', 'Shadowbox training', 'Build the habit of checking kicks and answering immediately.', '6 x 2 min check rounds', 3, 'Medium', 30, ['6', 'Check rounds'], [
+                    { title: 'Warmup - 5 min', items: ['Hip circles, knee lifts, light checks and low kick motion.'] },
+                    { title: 'Check rounds - 6 x 2 min', rounds: [
+                        ['Rounds 1-2 - Check basics', 'Check, land balanced, return low kick.'],
+                        ['Rounds 3-4 - Check to punch', 'Check, cross-hook, exit.'],
+                        ['Round 5 - Check to body kick', 'Check, body kick, frame away.'],
+                        ['Round 6 - Mixed defense', 'Check, block, step back and answer.']
+                    ] },
+                    { title: 'Stretch - 7 min', items: ['Hips, shins, calves and adductors.'] }
+                ]),
+                premiumWorkout('pro-bag-accuracy', 'Bag accuracy', 'Bag workout', 'Controlled bag work for clean targets instead of blind volume.', '6 x 3 min target rounds', 3, 'Medium', 30, ['6', 'Bag rounds'], [
+                    { title: 'Warmup - 4 min', items: ['Easy bag touches with perfect posture.'] },
+                    { title: 'Target rounds - 6 x 3 min', rounds: [
+                        ['Rounds 1-2 - Straight lines', 'Hit centerline, reset guard every time.'],
+                        ['Rounds 3-4 - Body-head', 'Body shot, head shot, angle out.'],
+                        ['Round 5 - Kick placement', 'Body kick and low kick with balance.'],
+                        ['Round 6 - Clean choices', 'No sloppy strikes. Every shot has a target.']
+                    ] },
+                    { title: 'Cooldown - 8 min', items: ['Slow breathing and full body stretch.'] }
+                ]),
+                premiumWorkout('pro-pocket-escape', 'Pocket escape', 'Shadowbox training', 'Boxing defense for escaping after short exchanges.', '5 x 3 min exit rounds', 4, 'Hard', 30, ['5', 'Exit rounds'], [
+                    { title: 'Warmup - 5 min', items: ['Head movement, short steps and easy punch returns.'] },
+                    { title: 'Exit rounds - 5 x 3 min', rounds: [
+                        ['Round 1 - Two and out', '1-2, step out. Hook-cross, pivot out.'],
+                        ['Round 2 - Roll exits', 'Hook, roll, hook, exit.'],
+                        ['Round 3 - Frame exits', 'Frame, jab, step out.'],
+                        ['Round 4 - Angle exits', 'Cross-hook, pivot to outside.'],
+                        ['Round 5 - Pressure escape', 'Short combo, defend, leave clean.']
+                    ] },
+                    { title: 'Cooldown - 5 min', items: ['Neck, shoulders and breathing reset.'] }
+                ]),
+                premiumWorkout('pro-knee-ladder', 'Knee ladder', 'Bag workout', 'Escalating knee rounds for clinch pressure and grit.', '10 x 60 s knee intervals', 5, 'Very hard', 30, ['10', 'Intervals'], [
+                    { title: 'Warmup - 5 min', items: ['Light knees, clinch grip and hip mobility.'] },
+                    { title: 'Knee ladder - 10 x 60 s', rounds: [
+                        ['Intervals 1-3 - Volume', 'Straight knees only. Smooth and nonstop.'],
+                        ['Intervals 4-6 - Turns', 'Knee, turn bag, knee again.'],
+                        ['Intervals 7-9 - Exit and re-enter', '5 knees, exit with 1-2, clinch again.'],
+                        ['Interval 10 - Empty tank', 'Best pace you can hold with good posture.']
+                    ] },
+                    { title: 'Cooldown - 5 min', items: ['Walk, breathe and stretch hips.'] }
+                ]),
+                premiumWorkout('pro-recovery-guard-flow', 'Recovery guard flow', 'Shadowbox training', 'Easy guard, defense and mobility session for tired days.', '4 x 4 min guard flow', 1, 'Easy', 30, ['4', 'Flow rounds'], [
+                    { title: 'Mobility - 8 min', items: ['Neck, shoulders, spine, hips and ankles.'] },
+                    { title: 'Guard flow - 4 x 4 min', rounds: [
+                        ['Round 1 - High guard', 'Block calmly and step out.'],
+                        ['Round 2 - Long guard', 'Frame, teep and circle.'],
+                        ['Round 3 - Shell to counter', 'Cover, breathe, answer once.'],
+                        ['Round 4 - Smooth freestyle', 'No power. Clean shape only.']
+                    ] },
+                    { title: 'Stretch - 6 min', items: ['Long relaxed stretching.'] }
+                ])
+            ],
+            45: [
+                premiumWorkout('pro-dutch-drill-room', 'Dutch drill room', 'Bag workout', 'Classic Dutch kickboxing combinations with disciplined exits.', '8 x 3 min Dutch rounds', 4, 'Hard', 45, ['8', 'Combo rounds'], [
+                    { title: 'Warmup - 6 min', items: ['Boxing rhythm, low kicks and easy bag touches.'] },
+                    { title: 'Dutch rounds - 8 x 3 min', rounds: [
+                        ['Rounds 1-2 - Hands to low kick', '1-2-hook-low kick and cross-hook-low kick.'],
+                        ['Rounds 3-4 - Body work', 'Body hook, head hook, low kick.'],
+                        ['Rounds 5-6 - High-low rhythm', 'Head punches, body shot, kick finish.'],
+                        ['Rounds 7-8 - Pressure choice', 'Build combinations without losing guard.']
+                    ] },
+                    { title: 'Finish - 9 min', items: ['3 rounds: squats, pushups, plank.'] }
+                ]),
+                premiumWorkout('pro-thai-long-guard', 'Thai long guard', 'Shadowbox training', 'Control distance with frames, teeps, knees and calm exits.', '7 x 4 min long guard rounds', 3, 'Medium', 45, ['7', 'Thai rounds'], [
+                    { title: 'Warmup - 6 min', items: ['Shoulder mobility, frames, teeps and easy knees.'] },
+                    { title: 'Long guard rounds - 7 x 4 min', rounds: [
+                        ['Rounds 1-2 - Frames', 'Frame, jab, teep and angle.'],
+                        ['Rounds 3-4 - Teep control', 'Stop entries before they build.'],
+                        ['Rounds 5-6 - Knee entries', 'Frame to knee, exit with balance.'],
+                        ['Round 7 - Thai flow', 'Long guard first, attack second.']
+                    ] },
+                    { title: 'Cooldown - 7 min', items: ['Breathing and hip stretching.'] }
+                ]),
+                premiumWorkout('pro-body-kick-factory', 'Body kick factory', 'Bag workout', 'Build clean volume on both sides without rushing.', '9 x 3 min body kick rounds', 4, 'Hard', 45, ['9', 'Kick rounds'], [
+                    { title: 'Warmup - 6 min', items: ['Hip mobility and easy left-right body kicks.'] },
+                    { title: 'Body kick rounds - 9 x 3 min', rounds: [
+                        ['Rounds 1-3 - Right kick', 'Jab-right kick, cross-right kick, check-right kick.'],
+                        ['Rounds 4-6 - Left kick', 'Switch kick, step left kick, jab-left kick.'],
+                        ['Rounds 7-9 - Alternating sides', 'Right, left, hands, kick. Keep posture tall.']
+                    ] },
+                    { title: 'Cooldown - 8 min', items: ['Calves, hips and lower back.'] }
+                ]),
+                premiumWorkout('pro-counter-punch-lab', 'Counter punch lab', 'Shadowbox training', 'Technical boxing counters after slips, blocks and pulls.', '8 x 3 min counter rounds', 3, 'Medium', 45, ['8', 'Counter rounds'], [
+                    { title: 'Warmup - 7 min', items: ['Head movement, guard drills and relaxed footwork.'] },
+                    { title: 'Counter rounds - 8 x 3 min', rounds: [
+                        ['Rounds 1-2 - Slip counters', 'Slip outside, cross. Slip inside, hook.'],
+                        ['Rounds 3-4 - Block counters', 'High block, hook. Body block, uppercut.'],
+                        ['Rounds 5-6 - Pull counters', 'Pull, cross. Pull, cross-hook.'],
+                        ['Rounds 7-8 - Full counter flow', 'Defend, answer, exit.']
+                    ] },
+                    { title: 'Cooldown - 8 min', items: ['Neck, shoulders and breathing.'] }
+                ]),
+                premiumWorkout('pro-ring-cut-pressure', 'Ring cut pressure', 'Shadowbox training', 'Learn to pressure without chasing.', '7 x 3 min pressure rounds', 4, 'Hard', 45, ['7', 'Pressure rounds'], [
+                    { title: 'Warmup - 7 min', items: ['Footwork lines, pivots and relaxed strikes.'] },
+                    { title: 'Pressure rounds - 7 x 3 min', rounds: [
+                        ['Rounds 1-2 - Cut the exit', 'Step where the opponent wants to go.'],
+                        ['Rounds 3-4 - Jab pressure', 'Jab to chest, jab to head, angle.'],
+                        ['Rounds 5-6 - Kick pressure', 'Low kick after they move.'],
+                        ['Round 7 - Calm pressure', 'Walk them down without leaning.']
+                    ] },
+                    { title: 'Finish - 10 min', items: ['Core and mobility circuit.'] }
+                ]),
+                premiumWorkout('pro-heavy-bag-pyramid', 'Heavy bag pyramid', 'Bag workout', 'Power and pace ladder that gets harder every block.', '10 bag rounds pyramid', 5, 'Very hard', 45, ['10', 'Bag rounds'], [
+                    { title: 'Warmup - 6 min', items: ['Easy bag work and mobility.'] },
+                    { title: 'Pyramid rounds - 10 rounds', rounds: [
+                        ['Rounds 1-2 - Technique', 'Clean basics only.'],
+                        ['Rounds 3-4 - Volume', 'Longer combinations and quick resets.'],
+                        ['Rounds 5-6 - Power', 'Hard shots with full balance.'],
+                        ['Rounds 7-8 - Sprints', '15 s hard, 15 s steady.'],
+                        ['Rounds 9-10 - Fight finish', 'Hold form while tired.']
+                    ] },
+                    { title: 'Cooldown - 9 min', items: ['Walk, breathe and stretch.'] }
+                ]),
+                premiumWorkout('pro-elbow-entry-flow', 'Elbow entry flow', 'Shadowbox training', 'Muay Thai elbow entries without reckless crashing.', '8 x 3 min elbow entry rounds', 3, 'Medium', 45, ['8', 'Entry rounds'], [
+                    { title: 'Warmup - 7 min', items: ['Shoulders, frames, short steps and light knees.'] },
+                    { title: 'Elbow entries - 8 x 3 min', rounds: [
+                        ['Rounds 1-2 - Frame entries', 'Frame, step, elbow line, exit.'],
+                        ['Rounds 3-4 - Punch to elbow', 'Jab-cross, step elbow, knee.'],
+                        ['Rounds 5-6 - Clinch breaks', 'Break, elbow line, angle out.'],
+                        ['Rounds 7-8 - Technical flow', 'No wild swings. Sharp entries only.']
+                    ] },
+                    { title: 'Cooldown - 8 min', items: ['Shoulder and neck mobility.'] }
+                ]),
+                premiumWorkout('pro-cardio-kickboxing-engine', 'Cardio kickboxing engine', 'Bag workout', 'Sweaty, simple, high-output striking intervals.', '12 x 2 min cardio rounds', 5, 'Very hard', 45, ['12', 'Intervals'], [
+                    { title: 'Warmup - 6 min', items: ['Light bounce, easy punches and kicks.'] },
+                    { title: 'Cardio rounds - 12 x 2 min', rounds: [
+                        ['Rounds 1-4 - Hands', 'Fast straight punches and defensive resets.'],
+                        ['Rounds 5-8 - Kicks', 'Body kicks, low kicks and teeps.'],
+                        ['Rounds 9-12 - All weapons', 'Hands, kicks, knees, then move.']
+                    ] },
+                    { title: 'Cooldown - 9 min', items: ['Walk and stretch full body.'] }
+                ]),
+                premiumWorkout('pro-smooth-operator', 'Smooth operator', 'Shadowbox training', 'Longer relaxed flow for timing, rhythm and clean mechanics.', '6 x 5 min smooth flow rounds', 2, 'Light', 45, ['6', 'Flow rounds'], [
+                    { title: 'Warmup - 7 min', items: ['Mobility and easy stance work.'] },
+                    { title: 'Smooth flow - 6 x 5 min', rounds: [
+                        ['Rounds 1-2 - Boxing rhythm', 'Loose hands and calm head movement.'],
+                        ['Rounds 3-4 - Kicks and teeps', 'No power. Balance first.'],
+                        ['Rounds 5-6 - Tactical flow', 'Imagine an opponent and make simple choices.']
+                    ] },
+                    { title: 'Mobility - 8 min', items: ['Hips, calves, shoulders and spine.'] }
+                ])
+            ],
+            60: [
+                premiumWorkout('pro-championship-boxing', 'Championship boxing', 'Bag workout', 'Twelve boxing rounds with tactical themes and late-round discipline.', '12 x 3 min boxing rounds', 4, 'Hard', 60, ['12', 'Boxing rounds'], [
+                    { title: 'Warmup - 8 min', items: ['Rope, shoulders, defense and light bag work.'] },
+                    { title: 'Boxing rounds - 12 x 3 min', rounds: [
+                        ['Rounds 1-3 - Establish jab', 'Own the range and keep exits clean.'],
+                        ['Rounds 4-6 - Body investment', 'Body jab, hooks and uppercuts.'],
+                        ['Rounds 7-9 - Counter rounds', 'Defend first, answer sharp.'],
+                        ['Rounds 10-12 - Championship pace', 'Smart pressure without sloppy feet.']
+                    ] },
+                    { title: 'Cooldown - 10 min', items: ['Walk, breathe and stretch.'] }
+                ]),
+                premiumWorkout('pro-clinch-hour', 'Clinch hour', 'Bag workout', 'Knees, turns, breaks and exits for Muay Thai clinch pressure.', '10 clinch blocks', 4, 'Hard', 60, ['10', 'Blocks'], [
+                    { title: 'Warmup - 8 min', items: ['Neck, shoulders, hips and light knees.'] },
+                    { title: 'Clinch blocks - 10 rounds', rounds: [
+                        ['Blocks 1-3 - Control', 'Grip, posture, knee and reset.'],
+                        ['Blocks 4-6 - Turns', 'Knee, turn, knee again.'],
+                        ['Blocks 7-8 - Breaks', 'Break, elbow line, punch exit.'],
+                        ['Blocks 9-10 - Pressure', 'Continuous knees with clean posture.']
+                    ] },
+                    { title: 'Cooldown - 10 min', items: ['Hips, neck and lower back.'] }
+                ]),
+                premiumWorkout('pro-mma-range-finder', 'MMA range finder', 'Shadowbox training', 'Striking choices built around level changes and takedown awareness.', '10 x 4 min MMA rounds', 3, 'Medium', 60, ['10', 'MMA rounds'], [
+                    { title: 'Warmup - 8 min', items: ['Footwork, sprawls, stance switches and light strikes.'] },
+                    { title: 'MMA range - 10 x 4 min', rounds: [
+                        ['Rounds 1-2 - Long range', 'Jab, teep, low kick, exit wide.'],
+                        ['Rounds 3-4 - Level threats', 'Punch to level change, exit.'],
+                        ['Rounds 5-6 - Pocket exits', 'Short combo, frame, angle.'],
+                        ['Rounds 7-8 - Cage awareness', 'Circle off imaginary fence.'],
+                        ['Rounds 9-10 - Fight IQ', 'Every attack has a defensive exit.']
+                    ] },
+                    { title: 'Cooldown - 8 min', items: ['Breathing and mobility.'] }
+                ]),
+                premiumWorkout('pro-kick-defense-system', 'Kick defense system', 'Shadowbox training', 'Checks, catches, teeps and returns at technical pace.', '9 x 4 min kick defense rounds', 2, 'Light', 60, ['9', 'Defense rounds'], [
+                    { title: 'Warmup - 8 min', items: ['Hip mobility, checks and easy kicks.'] },
+                    { title: 'Kick defense - 9 x 4 min', rounds: [
+                        ['Rounds 1-2 - Low kick checks', 'Check, return, reset.'],
+                        ['Rounds 3-4 - Body kick blocks', 'Shell, return cross or kick.'],
+                        ['Rounds 5-6 - Catches', 'Catch motion, sweep step, reset.'],
+                        ['Rounds 7-8 - Teep defense', 'Parry, angle, answer.'],
+                        ['Round 9 - Full flow', 'Defend kicks calmly and return.']
+                    ] },
+                    { title: 'Mobility - 10 min', items: ['Hips, calves and adductors.'] }
+                ]),
+                premiumWorkout('pro-bag-power-endurance', 'Bag power endurance', 'Bag workout', 'Hard short rounds that test power while tired.', '14 x 2 min power rounds', 5, 'Very hard', 60, ['14', 'Power rounds'], [
+                    { title: 'Warmup - 8 min', items: ['Easy bag touches, mobility and defense.'] },
+                    { title: 'Power endurance - 14 x 2 min', rounds: [
+                        ['Rounds 1-4 - Straight power', 'Hard straight punches with full reset.'],
+                        ['Rounds 5-8 - Hooks and body', 'Body-head hooks and uppercuts.'],
+                        ['Rounds 9-12 - Kicks and knees', 'Power kicks, knees and exits.'],
+                        ['Rounds 13-14 - Empty tank', 'Hard pace, clean guard.']
+                    ] },
+                    { title: 'Cooldown - 10 min', items: ['Walk and stretch.'] }
+                ]),
+                premiumWorkout('pro-technical-southpaw-hour', 'Technical southpaw hour', 'Shadowbox training', 'A full technical hour for southpaw angles and left-side attacks.', '10 x 4 min southpaw rounds', 3, 'Medium', 60, ['10', 'Skill rounds'], [
+                    { title: 'Warmup - 8 min', items: ['Switch stance drills and footwork.'] },
+                    { title: 'Southpaw rounds - 10 x 4 min', rounds: [
+                        ['Rounds 1-2 - Right jab', 'Own the lead hand.'],
+                        ['Rounds 3-4 - Left cross', 'Set it up with feints and angles.'],
+                        ['Rounds 5-6 - Left kick', 'Body kick after hand entries.'],
+                        ['Rounds 7-8 - Defense', 'Exit to your power side.'],
+                        ['Rounds 9-10 - Tactical flow', 'Switch only when it creates advantage.']
+                    ] },
+                    { title: 'Cooldown - 8 min', items: ['Calves, hips and shoulders.'] }
+                ]),
+                premiumWorkout('pro-long-guard-pressure', 'Long guard pressure', 'Bag workout', 'Thai pressure with frames, teeps, knees and kicks.', '11 x 3 min pressure rounds', 4, 'Hard', 60, ['11', 'Thai rounds'], [
+                    { title: 'Warmup - 8 min', items: ['Frames, teeps, knees and easy body kicks.'] },
+                    { title: 'Pressure rounds - 11 x 3 min', rounds: [
+                        ['Rounds 1-3 - Teep pressure', 'Teep, frame, step in.'],
+                        ['Rounds 4-6 - Knee pressure', 'Hands to knees, exit with frame.'],
+                        ['Rounds 7-9 - Kick pressure', 'Body kick, low kick, long guard reset.'],
+                        ['Rounds 10-11 - Fight pressure', 'Control without rushing.']
+                    ] },
+                    { title: 'Cooldown - 9 min', items: ['Hips, back and breathing.'] }
+                ]),
+                premiumWorkout('pro-counter-fighter-hour', 'Counter fighter hour', 'Shadowbox training', 'An hour of defensive reads and clean answers.', '10 x 4 min counter rounds', 3, 'Medium', 60, ['10', 'Counter rounds'], [
+                    { title: 'Warmup - 8 min', items: ['Defense shapes and slow counters.'] },
+                    { title: 'Counter rounds - 10 x 4 min', rounds: [
+                        ['Rounds 1-2 - Jab counters', 'Parry, jab. Slip, cross.'],
+                        ['Rounds 3-4 - Kick counters', 'Check, return low. Block, body kick.'],
+                        ['Rounds 5-6 - Pressure counters', 'Frame, angle, answer.'],
+                        ['Rounds 7-8 - Pocket counters', 'Roll, hook, exit.'],
+                        ['Rounds 9-10 - Fight reads', 'React before attacking.']
+                    ] },
+                    { title: 'Cooldown - 8 min', items: ['Slow mobility.'] }
+                ]),
+                premiumWorkout('pro-recovery-skill-hour', 'Recovery skill hour', 'Shadowbox training', 'A long easy session for skill quality and body recovery.', '8 x 4 min recovery rounds', 1, 'Easy', 60, ['8', 'Flow rounds'], [
+                    { title: 'Mobility - 12 min', items: ['Full body joint prep and nasal breathing.'] },
+                    { title: 'Recovery rounds - 8 x 4 min', rounds: [
+                        ['Rounds 1-2 - Feet only', 'Movement and balance.'],
+                        ['Rounds 3-4 - Hands only', 'Loose mechanics, no power.'],
+                        ['Rounds 5-6 - Kicks only', 'Slow kicks and checks.'],
+                        ['Rounds 7-8 - Smooth flow', 'Everything relaxed.']
+                    ] },
+                    { title: 'Stretch - 16 min', items: ['Long hips, shoulders, calves and back stretch.'] }
+                ])
+            ],
+            90: [
+                premiumWorkout('pro-fight-week-simulation', 'Fight week simulation', 'Bag workout', 'A complete session with warmup, tactical rounds and controlled finish.', '12 x 3 min fight simulation', 4, 'Hard', 90, ['12', 'Fight rounds'], [
+                    { title: 'Warmup - 15 min', items: ['Rope, mobility, shadowboxing and easy bag touches.'] },
+                    { title: 'Fight simulation - 12 x 3 min', rounds: [
+                        ['Rounds 1-3 - Feeling out', 'Jab, teep, exits and defense.'],
+                        ['Rounds 4-6 - Build pressure', 'Body work, low kicks and angles.'],
+                        ['Rounds 7-9 - Tactical reads', 'Counter, clinch, reset and choose.'],
+                        ['Rounds 10-12 - Finish smart', 'Hard pace but no sloppy choices.']
+                    ] },
+                    { title: 'Conditioning - 18 min', items: ['Core, sprawls, pushups and squats.'] },
+                    { title: 'Cooldown - 12 min', items: ['Walk and stretch.'] }
+                ]),
+                premiumWorkout('pro-thai-stadium-rounds', 'Thai stadium rounds', 'Bag workout', 'Traditional-feeling Thai volume with kicks, knees, clinch and long guard.', '15 x 3 min Thai rounds', 5, 'Very hard', 90, ['15', 'Thai rounds'], [
+                    { title: 'Warmup - 15 min', items: ['Rope, kicks, knees and mobility.'] },
+                    { title: 'Thai stadium rounds - 15 x 3 min', rounds: [
+                        ['Rounds 1-4 - Kicks', 'Body kicks and low kicks with posture.'],
+                        ['Rounds 5-8 - Knees', 'Clinch knees, turns and exits.'],
+                        ['Rounds 9-12 - Long guard', 'Frame, teep, kick and reset.'],
+                        ['Rounds 13-15 - Fight pace', 'High output, clean balance.']
+                    ] },
+                    { title: 'Cooldown - 15 min', items: ['Long hips, calves and back mobility.'] }
+                ]),
+                premiumWorkout('pro-technical-marathon', 'Technical marathon', 'Shadowbox training', 'A deep technical session for patient skill building.', '18 x 3 min technical rounds', 2, 'Light', 90, ['18', 'Skill rounds'], [
+                    { title: 'Warmup - 14 min', items: ['Mobility, breathing and relaxed movement.'] },
+                    { title: 'Technical marathon - 18 x 3 min', rounds: [
+                        ['Rounds 1-4 - Footwork', 'Move clean and reset stance.'],
+                        ['Rounds 5-8 - Boxing', 'Clean hands and defense.'],
+                        ['Rounds 9-12 - Kicks', 'Slow technical kicks and checks.'],
+                        ['Rounds 13-16 - Clinch entries', 'Frame, knee, exit.'],
+                        ['Rounds 17-18 - Smooth flow', 'Everything easy and precise.']
+                    ] },
+                    { title: 'Mobility - 22 min', items: ['Full body stretching.'] }
+                ]),
+                premiumWorkout('pro-mma-striking-camp', 'MMA striking camp', 'Shadowbox training', 'Long tactical striking session with level-change awareness.', '12 x 5 min MMA rounds', 4, 'Hard', 90, ['12', 'MMA rounds'], [
+                    { title: 'Warmup - 12 min', items: ['Movement, sprawls, stance switches and light strikes.'] },
+                    { title: 'MMA camp rounds - 12 x 5 min', rounds: [
+                        ['Rounds 1-3 - Range', 'Jab, teep, low kick and exit.'],
+                        ['Rounds 4-6 - Entries', 'Punch to level change threat.'],
+                        ['Rounds 7-9 - Fence work', 'Frame, circle, strike out.'],
+                        ['Rounds 10-12 - Fight decisions', 'Strike with takedown awareness.']
+                    ] },
+                    { title: 'Conditioning - 12 min', items: ['Sprawls, plank and mountain climbers.'] },
+                    { title: 'Cooldown - 12 min', items: ['Breathing and mobility.'] }
+                ]),
+                premiumWorkout('pro-boxing-volume-camp', 'Boxing volume camp', 'Bag workout', 'High-volume boxing day for hands, body work and late-round composure.', '16 x 3 min boxing rounds', 4, 'Hard', 90, ['16', 'Boxing rounds'], [
+                    { title: 'Warmup - 12 min', items: ['Rope, shoulders and light bag rhythm.'] },
+                    { title: 'Boxing volume - 16 x 3 min', rounds: [
+                        ['Rounds 1-4 - Jab and footwork', 'Win position first.'],
+                        ['Rounds 5-8 - Combinations', 'Layer hands without losing guard.'],
+                        ['Rounds 9-12 - Body attack', 'Body-head rhythm.'],
+                        ['Rounds 13-16 - Pressure and counters', 'Finish rounds with discipline.']
+                    ] },
+                    { title: 'Cooldown - 18 min', items: ['Walk, breathe and stretch upper body.'] }
+                ]),
+                premiumWorkout('pro-kickboxing-iq-camp', 'Kickboxing IQ camp', 'Shadowbox training', 'Decision-making rounds for K1 and kickboxing tactics.', '14 x 4 min tactical rounds', 3, 'Medium', 90, ['14', 'IQ rounds'], [
+                    { title: 'Warmup - 14 min', items: ['Footwork, checks, punches into kicks.'] },
+                    { title: 'Tactical rounds - 14 x 4 min', rounds: [
+                        ['Rounds 1-3 - Lead hand plans', 'Jab, feint, angle and kick.'],
+                        ['Rounds 4-6 - Low kick strategy', 'Set up and defend returns.'],
+                        ['Rounds 7-9 - Body kick strategy', 'Create space and exit.'],
+                        ['Rounds 10-12 - Counter strategy', 'Make them miss first.'],
+                        ['Rounds 13-14 - Fight plan', 'Choose the right answer, not the loudest one.']
+                    ] },
+                    { title: 'Mobility - 20 min', items: ['Hips, calves, shoulders and back.'] }
+                ]),
+                premiumWorkout('pro-pressure-cooker-camp', 'Pressure cooker camp', 'Bag workout', 'A brutal camp day for athletes who want controlled suffering.', '18 hard pressure rounds', 5, 'Very hard', 90, ['18', 'Hard rounds'], [
+                    { title: 'Warmup - 12 min', items: ['Rope, mobility and progressive bag pace.'] },
+                    { title: 'Pressure cooker - 18 rounds', rounds: [
+                        ['Rounds 1-4 - Build', 'Clean technique under rising pace.'],
+                        ['Rounds 5-8 - Volume', 'Long combinations and quick resets.'],
+                        ['Rounds 9-12 - Power', 'Hard shots with full guard recovery.'],
+                        ['Rounds 13-16 - Sprints', '20 s hard, 10 s reset.'],
+                        ['Rounds 17-18 - Last stand', 'Fight pace to the end.']
+                    ] },
+                    { title: 'Cooldown - 14 min', items: ['Walk, breathing and long stretch.'] }
+                ]),
+                premiumWorkout('pro-mobility-skill-camp', 'Mobility skill camp', 'Shadowbox training', 'Long easy skill day for recovery, control and movement quality.', '10 x 5 min recovery skill rounds', 1, 'Easy', 90, ['10', 'Flow rounds'], [
+                    { title: 'Mobility - 20 min', items: ['Hips, ankles, shoulders, spine and breathing.'] },
+                    { title: 'Skill flow - 10 x 5 min', rounds: [
+                        ['Rounds 1-2 - Footwork', 'Slow steps and balance.'],
+                        ['Rounds 3-4 - Boxing shape', 'Light punches and defense.'],
+                        ['Rounds 5-6 - Kicking shape', 'Slow kicks and checks.'],
+                        ['Rounds 7-8 - Clinch shape', 'Frames, knees and exits.'],
+                        ['Rounds 9-10 - Full flow', 'Relaxed tactical shadowboxing.']
+                    ] },
+                    { title: 'Stretch - 20 min', items: ['Long full body recovery.'] }
+                ]),
+                premiumWorkout('pro-all-weapons-academy', 'All weapons academy', 'Bag workout', 'Complete bag session covering boxing, kicks, knees, defense and fight rounds.', '15 x 3 min all-weapons rounds', 4, 'Hard', 90, ['15', 'Academy rounds'], [
+                    { title: 'Warmup - 15 min', items: ['Rope, mobility, shadowboxing and light bag touches.'] },
+                    { title: 'All weapons - 15 x 3 min', rounds: [
+                        ['Rounds 1-3 - Boxing', 'Hands, head movement and exits.'],
+                        ['Rounds 4-6 - Kicks', 'Body kicks, low kicks and teeps.'],
+                        ['Rounds 7-9 - Knees and clinch', 'Knee entries, turns and exits.'],
+                        ['Rounds 10-12 - Defense and counters', 'Block, slip, check and answer.'],
+                        ['Rounds 13-15 - Fight rounds', 'Mix every weapon with smart pacing.']
+                    ] },
+                    { title: 'Conditioning - 12 min', items: ['Pushups, squats, core and sprawls.'] },
+                    { title: 'Cooldown - 12 min', items: ['Breathing and full body stretch.'] }
+                ])
+            ]
+        };
+
+        Object.entries(MORE_PREMIUM_WORKOUTS).forEach(([minutes, workouts]) => {
+            PREMIUM_TRAINING_WORKOUTS[minutes] = [
+                ...(PREMIUM_TRAINING_WORKOUTS[minutes] || []),
+                ...workouts
+            ];
+        });
+
         Object.entries(PREMIUM_TRAINING_WORKOUTS).forEach(([minutes, workouts]) => {
             TRAINING_WORKOUTS[minutes] = [
                 ...(TRAINING_WORKOUTS[minutes] || []),
@@ -4935,7 +5435,7 @@
 
         function selectSetupOption(key, value, element = null, premium = false) {
             if (premium && !isPremiumUnlocked()) {
-                openPremiumModal('Task Spar is a StrikeFlow Pro feature. Unlock Pro to get random combinations and objectives between rounds.');
+                openPremiumModal('Task Spar is a FightWise Pro feature. Unlock Pro to get random combinations and objectives between rounds.');
                 return;
             }
             sparringDraft[key] = value;
@@ -5213,7 +5713,7 @@
             if (workout.premium && !isPremiumUnlocked()) {
                 return `
                     <div class="training-detail-inner">
-                        <div class="premium-copy">This guided workout is included in StrikeFlow Pro.</div>
+                        <div class="premium-copy">This guided workout is included in FightWise Pro.</div>
                         <div class="premium-list">
                             <div>Advanced guided plan</div>
                             <div>${workout.structure}</div>
@@ -5342,7 +5842,7 @@
             const workout = findTrainingWorkout(minutes, workoutId);
             if (!workout) return;
             if (workout.premium && !isPremiumUnlocked()) {
-                openPremiumModal(`Unlock StrikeFlow Pro to use ${workout.title} and the full premium training library.`);
+                openPremiumModal(`Unlock FightWise Pro to use ${workout.title} and the full premium training library.`);
                 return;
             }
 
@@ -5370,7 +5870,7 @@
         function startTrainingPlan(durationSeconds, title, sourceMinutes = null, workoutId = null) {
             const requestedWorkout = sourceMinutes && workoutId ? findTrainingWorkout(sourceMinutes, workoutId) : null;
             if (requestedWorkout && requestedWorkout.premium && !isPremiumUnlocked()) {
-                openPremiumModal(`Unlock StrikeFlow Pro to start ${requestedWorkout.title}.`);
+                openPremiumModal(`Unlock FightWise Pro to start ${requestedWorkout.title}.`);
                 return;
             }
 
@@ -5541,7 +6041,7 @@
             if (!isPremiumUnlocked()) {
                 settings.taskSparEnabled = false;
                 updateSettingsUI();
-                openPremiumModal('Task Spar is a StrikeFlow Pro feature. Unlock Pro to get random combinations and objectives each round.');
+                openPremiumModal('Task Spar is a FightWise Pro feature. Unlock Pro to get random combinations and objectives each round.');
                 return;
             }
             settings.taskSparEnabled = !settings.taskSparEnabled;

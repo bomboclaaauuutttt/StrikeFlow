@@ -7,10 +7,8 @@ const files = [
   'sw.js',
   'manifest.json',
   'privacy-policy.html',
-  'icon-192.png',
-  'icon-512.png',
-  'StrikeFlow logo.png',
-  'Strike Flow.png',
+  'FightWise logo.png',
+  'FightWise text.png',
   'Unlock 50+ workouts with premium AD.png'
 ];
 

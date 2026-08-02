@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "StrikeFlow",
-    "slug": "strikeflow",
+    "name": "FightWise",
+    "slug": "fightwise",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -16,7 +16,7 @@
     ],
     "ios": {
       "supportsTabletMode": false,
-      "bundleIdentifier": "com.strikeflow.app",
+      "bundleIdentifier": "com.fightwise.app",
       "requireFullScreen": true,
       "infoPlist": {
         "UIRequiredDeviceCapabilities": [
@@ -29,7 +29,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000000"
       },
-      "package": "com.strikeflow.app",
+      "package": "com.fightwise.app",
       "permissions": [
         "android.permission.VIBRATE"
       ]
@@ -41,7 +41,7 @@
       [
         "expo-av",
         {
-          "microphonePermission": "Allow StrikeFlow to access your microphone"
+          "microphonePermission": "Allow FightWise to access your microphone"
         }
       ]
     ]

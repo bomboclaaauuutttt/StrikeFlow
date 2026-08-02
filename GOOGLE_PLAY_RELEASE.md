@@ -1,6 +1,6 @@
-# StrikeFlow Google Play Release
+# FightWise Google Play Release
 
-StrikeFlow is now wrapped as an Android app with Capacitor.
+FightWise is now wrapped as an Android app with Capacitor.
 
 ## Requirements
 
@@ -80,8 +80,8 @@ android/app/build/outputs/bundle/release/app-release.aab
 
 ## Google Play Checklist
 
-- App name: `StrikeFlow`
-- Package name: `com.strikeflow.app`
+- App name: `FightWise`
+- Package name: `com.fightwise.app`
 - Version name: `1.0`
 - Version code: `1`
 - Privacy policy: include the hosted `privacy-policy.html` URL
@@ -95,5 +95,5 @@ android/app/build/outputs/bundle/release/app-release.aab
 
 - Test on a real Android phone.
 - Confirm sound, voice cues, vibration and screen wake behavior.
-- Replace default Android launcher icons/splash with final StrikeFlow branded assets if needed.
+- Replace default Android launcher icons/splash with final FightWise branded assets if needed.
 - Create a signed release bundle for Play Console.

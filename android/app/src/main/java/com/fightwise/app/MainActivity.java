@@ -1,4 +1,4 @@
-package com.strikeflow.app;
+package com.fightwise.app;
 
 import com.getcapacitor.BridgeActivity;
 

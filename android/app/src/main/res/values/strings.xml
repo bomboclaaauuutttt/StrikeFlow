@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">StrikeFlow</string>
-    <string name="title_activity_main">StrikeFlow</string>
-    <string name="package_name">com.strikeflow.app</string>
-    <string name="custom_url_scheme">com.strikeflow.app</string>
+    <string name="app_name">FightWise</string>
+    <string name="title_activity_main">FightWise</string>
+    <string name="package_name">com.fightwise.app</string>
+    <string name="custom_url_scheme">com.fightwise.app</string>
 </resources>

@@ -1,6 +1,6 @@
 {
-  "appId": "com.strikeflow.app",
-  "appName": "StrikeFlow",
+  "appId": "com.fightwise.app",
+  "appName": "FightWise",
   "webDir": "www",
   "bundledWebRuntime": false,
   "server": {

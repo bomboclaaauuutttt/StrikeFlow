@@ -1,14 +1,12 @@
-const CACHE = 'strikeflow-v52';
+const CACHE = 'fightwise-v6';
 const ASSETS = [
   './index.html',
   './privacy-policy.html',
   './manifest.json',
-  './StrikeFlow logo.png',
+  './FightWise logo.png',
+  './FightWise text.png',
   './click-soundeffect.mp3',
-  './Unlock 50+ workouts with premium AD.png',
-  './Strike Flow.png',
-  './icon-192.png',
-  './icon-512.png'
+  './Unlock 50+ workouts with premium AD.png'
 ];
 
 self.addEventListener('install', e => {
