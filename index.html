@@ -671,8 +671,16 @@
             min-width: 100px;
         }
 
+        .btn-skip {
+            flex: 0.8;
+            min-width: 112px;
+            border-color: rgba(255, 209, 102, 0.58);
+            color: #ffd166;
+        }
+
         .btn-reset.hidden,
         .btn-continue.hidden,
+        .btn-skip.hidden,
         .btn-start.hidden {
             max-width: 0 !important;
             min-width: 0 !important;
@@ -997,6 +1005,45 @@
             animation-duration: 2.8s;
         }
 
+        .premium-coming-card {
+            border: 1px solid rgba(190, 255, 0, 0.54);
+            border-radius: 8px;
+            background:
+                radial-gradient(circle at 86% 20%, rgba(255, 209, 102, 0.18), transparent 26%),
+                linear-gradient(90deg, rgba(190, 255, 0, 0.1), transparent 48%),
+                #171717;
+            padding: 16px 18px;
+            position: relative;
+            z-index: 2;
+            text-align: left;
+        }
+
+        .premium-coming-kicker {
+            color: var(--accent-primary);
+            font-size: 12px;
+            font-weight: 950;
+            letter-spacing: 1.2px;
+            margin-bottom: 7px;
+            text-transform: uppercase;
+        }
+
+        .premium-coming-title {
+            color: #fff;
+            font-size: clamp(24px, 5vw, 34px);
+            font-weight: 950;
+            letter-spacing: 0.5px;
+            line-height: 0.96;
+            text-transform: uppercase;
+        }
+
+        .premium-coming-copy {
+            color: #cfcfcf;
+            font-size: 13px;
+            font-weight: 800;
+            line-height: 1.35;
+            margin-top: 8px;
+        }
+
         @keyframes premiumAdPulse {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-1px); }
@@ -1127,6 +1174,94 @@
             background: var(--accent-primary);
             border-color: var(--accent-primary);
             color: #050505;
+        }
+
+        .custom-workout-card {
+            --duration-color: #baff00;
+        }
+
+        .custom-builder {
+            display: grid;
+            gap: 14px;
+        }
+
+        .custom-field {
+            display: grid;
+            gap: 7px;
+        }
+
+        .custom-field label {
+            color: var(--accent-primary);
+            font-size: 12px;
+            font-weight: 950;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .custom-field input,
+        .custom-field textarea {
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 8px;
+            background: #181818;
+            color: #fff;
+            font: inherit;
+            font-size: 15px;
+            font-weight: 750;
+            padding: 12px;
+            width: 100%;
+        }
+
+        .custom-field textarea {
+            min-height: 76px;
+            resize: vertical;
+        }
+
+        .custom-step-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .custom-step-card {
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-left: 5px solid var(--accent-primary);
+            border-radius: 8px;
+            background: #171717;
+            display: grid;
+            gap: 10px;
+            padding: 12px;
+        }
+
+        .custom-step-head {
+            align-items: center;
+            display: flex;
+            gap: 10px;
+            justify-content: space-between;
+        }
+
+        .custom-step-title {
+            color: #fff;
+            font-size: 13px;
+            font-weight: 950;
+            letter-spacing: 0.9px;
+            text-transform: uppercase;
+        }
+
+        .custom-remove {
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 6px;
+            background: #242424;
+            color: #fff;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 950;
+            padding: 7px 9px;
+            text-transform: uppercase;
+        }
+
+        .custom-actions {
+            display: grid;
+            gap: 10px;
+            grid-template-columns: 1fr 1fr;
         }
 
         .sparring-setup {
@@ -3197,20 +3332,37 @@
         }
 
         .finished-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
+            align-items: center;
+            background:
+                radial-gradient(circle at 50% 22%, rgba(43, 255, 74, 0.12), transparent 28%),
+                rgba(0, 0, 0, 0.9);
             bottom: 0;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.8);
+            left: 0;
+            overflow: hidden;
+            padding: calc(24px + env(safe-area-inset-top)) 20px calc(24px + env(safe-area-inset-bottom));
+            position: fixed;
+            right: 0;
+            top: 0;
             z-index: 1000;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.4s ease;
+        }
+
+        .finished-overlay::before {
+            content: "";
+            position: absolute;
+            width: min(88vw, 520px);
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background:
+                conic-gradient(from 0deg, transparent 0 18deg, rgba(43, 255, 74, 0.75) 20deg 24deg, transparent 26deg 58deg, rgba(255, 209, 102, 0.72) 60deg 65deg, transparent 67deg 100deg);
+            filter: blur(0.4px) drop-shadow(0 0 26px rgba(43, 255, 74, 0.2));
+            opacity: 0;
+            transform: scale(0.55) rotate(-14deg);
         }
 
         .finished-overlay.show {
@@ -3218,20 +3370,75 @@
             pointer-events: auto;
         }
 
+        .finished-overlay.show::before {
+            animation: finishBurst 1.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
         .finished-box {
-            text-align: center;
             color: white;
-            animation: fadeScaleIn 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+            position: relative;
+            text-align: center;
+            width: min(92vw, 470px);
+            z-index: 1;
+        }
+
+        .finished-trophy-stage {
+            display: grid;
+            height: 156px;
+            margin: 0 auto 18px;
+            place-items: center;
+            position: relative;
+            width: 180px;
+            z-index: 2;
+        }
+
+        .finished-trophy-glow {
+            position: absolute;
+            width: 156px;
+            height: 156px;
+            border-radius: 50%;
+            background:
+                radial-gradient(circle, rgba(255, 209, 102, 0.38), transparent 58%),
+                radial-gradient(circle, rgba(43, 255, 74, 0.24), transparent 72%);
+            filter: blur(10px);
+            opacity: 0;
+        }
+
+        .finished-big-trophy {
+            color: #ffd166;
+            filter: drop-shadow(0 0 28px rgba(255, 159, 28, 0.72));
+            font-size: 122px;
+            opacity: 0;
+            position: relative;
+            transform: translateY(18px) scale(0.4) rotate(-10deg);
+            z-index: 2;
+        }
+
+        .finished-overlay.show .finished-trophy-glow {
+            animation: trophyGlow 1.7s ease-in-out both;
+        }
+
+        .finished-overlay.show .finished-big-trophy {
+            animation: finishedHeroTrophy 0.95s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .finished-content {
+            opacity: 0;
+            transform: translateY(22px);
+        }
+
+        .finished-overlay.show .finished-content {
+            animation: finishedContentReveal 0.62s cubic-bezier(0.16, 1, 0.3, 1) 0.78s both;
         }
 
         .finished-title {
-            align-items: center;
-            display: inline-flex;
-            font-size: 56px;
-            font-weight: 700;
-            gap: 12px;
-            justify-content: center;
-            margin-bottom: 15px;
+            color: #fff;
+            font-size: clamp(42px, 11vw, 72px);
+            font-weight: 950;
+            letter-spacing: 0;
+            line-height: 0.88;
+            margin-bottom: 10px;
+            text-transform: uppercase;
         }
 
         .finished-title .icon {
@@ -3239,17 +3446,25 @@
             filter: drop-shadow(0 0 10px rgba(255, 209, 102, 0.35));
         }
 
+        .finished-overlay.show .finished-title .icon {
+            animation: finishedTrophyPop 0.86s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
         .finished-subtitle {
-            font-size: 28px;
-            font-weight: 600;
+            color: #d7d7d7;
+            font-size: 18px;
+            font-weight: 850;
+            line-height: 1.32;
         }
 
         .finished-summary {
             margin-top: 22px;
-            width: min(88vw, 420px);
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 14px;
+            width: 100%;
+            background: #171717;
+            border: 1px solid rgba(43, 255, 74, 0.28);
+            border-left: 5px solid var(--accent-primary);
+            border-radius: 8px;
+            box-shadow: 0 20px 54px rgba(0, 0, 0, 0.42);
             padding: 14px 16px;
             text-align: left;
         }
@@ -3278,7 +3493,73 @@
 
         .finished-action {
             margin-top: 18px;
-            width: min(88vw, 420px);
+            width: 100%;
+        }
+
+        .finished-confetti {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .finished-confetti span {
+            background: var(--accent-primary);
+            border-radius: 2px;
+            height: 12px;
+            left: 50%;
+            opacity: 0;
+            position: absolute;
+            top: 42%;
+            width: 7px;
+        }
+
+        .finished-overlay.show .finished-confetti span {
+            animation: finishConfetti 1.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .finished-confetti span:nth-child(1) { --x: -180px; --y: -180px; --r: -70deg; background: #ffd166; animation-delay: 0.04s; }
+        .finished-confetti span:nth-child(2) { --x: -120px; --y: -230px; --r: 44deg; background: #2bff4a; animation-delay: 0.1s; }
+        .finished-confetti span:nth-child(3) { --x: -60px; --y: -170px; --r: 86deg; background: #ff9f1c; animation-delay: 0.16s; }
+        .finished-confetti span:nth-child(4) { --x: 40px; --y: -220px; --r: -42deg; background: #ffd166; animation-delay: 0.08s; }
+        .finished-confetti span:nth-child(5) { --x: 110px; --y: -170px; --r: 70deg; background: #2bff4a; animation-delay: 0.14s; }
+        .finished-confetti span:nth-child(6) { --x: 175px; --y: -210px; --r: -88deg; background: #ff9f1c; animation-delay: 0.2s; }
+        .finished-confetti span:nth-child(7) { --x: -190px; --y: 28px; --r: 118deg; background: #2bff4a; animation-delay: 0.22s; }
+        .finished-confetti span:nth-child(8) { --x: -118px; --y: 84px; --r: -122deg; background: #ffd166; animation-delay: 0.18s; }
+        .finished-confetti span:nth-child(9) { --x: 94px; --y: 72px; --r: 96deg; background: #ff9f1c; animation-delay: 0.24s; }
+        .finished-confetti span:nth-child(10) { --x: 190px; --y: 18px; --r: -96deg; background: #2bff4a; animation-delay: 0.3s; }
+        .finished-confetti span:nth-child(11) { --x: -22px; --y: -250px; --r: 136deg; background: #fff; animation-delay: 0.12s; }
+        .finished-confetti span:nth-child(12) { --x: 12px; --y: 112px; --r: -136deg; background: #ffd166; animation-delay: 0.26s; }
+
+        @keyframes finishBurst {
+            0% { opacity: 0; transform: scale(0.42) rotate(-18deg); }
+            22% { opacity: 0.88; }
+            100% { opacity: 0; transform: scale(1.16) rotate(28deg); }
+        }
+
+        @keyframes finishedTrophyPop {
+            0% { transform: translateY(14px) scale(0.45) rotate(-12deg); opacity: 0; }
+            55% { transform: translateY(-5px) scale(1.22) rotate(6deg); opacity: 1; }
+            100% { transform: translateY(0) scale(1) rotate(0); opacity: 1; }
+        }
+
+        @keyframes finishedHeroTrophy {
+            0% { opacity: 0; transform: translateY(18px) scale(0.4) rotate(-10deg); }
+            46% { opacity: 1; transform: translateY(-9px) scale(1.2) rotate(6deg); }
+            72% { transform: translateY(2px) scale(0.96) rotate(-2deg); }
+            100% { opacity: 1; transform: translateY(0) scale(1) rotate(0); }
+        }
+
+        @keyframes finishedContentReveal {
+            from { opacity: 0; transform: translateY(22px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes finishConfetti {
+            0% { opacity: 0; transform: translate(0, 0) scale(0.35) rotate(0deg); }
+            18% { opacity: 1; }
+            72% { opacity: 1; }
+            100% { opacity: 0; transform: translate(var(--x), var(--y)) scale(1) rotate(var(--r)); }
         }
 
         @media (max-width: 600px) {
@@ -3297,6 +3578,24 @@
 
             .timer-status {
                 font-size: clamp(26px, 8vw, 38px);
+            }
+
+            .finished-trophy-stage {
+                height: 126px;
+                margin-bottom: 14px;
+                width: 150px;
+            }
+
+            .finished-big-trophy {
+                font-size: 96px;
+            }
+
+            .finished-title {
+                font-size: clamp(38px, 12vw, 56px);
+            }
+
+            .finished-summary {
+                margin-top: 16px;
             }
 
             .phase-hint {
@@ -3480,6 +3779,7 @@
             /* Replace slide-width animation with height-based for column layout */
             .btn-reset.hidden,
             .btn-continue.hidden,
+            .btn-skip.hidden,
             .btn-start.hidden {
                 max-width: none !important;
                 min-width: 0 !important;
@@ -3502,7 +3802,7 @@
         .tut-welcome {
             position: fixed;
             inset: 0;
-            z-index: 9000;
+            z-index: 12000;
             background: rgba(0,0,0,0.82);
             display: flex;
             align-items: center;
@@ -3562,7 +3862,7 @@
         .tut-overlay {
             position: fixed;
             inset: 0;
-            z-index: 8900;
+            z-index: 11900;
             pointer-events: none;
             transition: opacity 0.3s;
         }
@@ -3570,7 +3870,7 @@
         /* Tooltip */
         .tut-tooltip {
             position: fixed;
-            z-index: 9100;
+            z-index: 12010;
             background: #1a1a1a;
             border: 2px solid #2bff4a;
             border-radius: 16px;
@@ -3691,7 +3991,7 @@
             position: fixed;
             border-radius: 16px;
             border: 2.5px solid #2bff4a;
-            z-index: 8950;
+            z-index: 11950;
             pointer-events: none;
             animation: tutPulse 1.4s ease-in-out infinite;
             box-shadow: 0 0 18px rgba(43,255,74,0.35);
@@ -3776,6 +4076,7 @@
             </div>
             <div class="controls">
                 <button class="btn btn-start" id="startBtn" onclick="toggleTimer()">START</button>
+                <button class="btn btn-skip hidden" id="skipStepBtn" onclick="skipTrainingStep()">SKIP STEP</button>
                 <button class="btn btn-reset hidden" id="resetBtn" onclick="resetTimer()">RESET</button>
                 <button class="btn btn-continue hidden" id="continueBtn" onclick="continueTimer()">CONTINUE</button>
             </div>
@@ -3824,8 +4125,12 @@
                         <span class="mode-pill">Instructions</span>
                     </div>
                 </button>
-                <button class="mode-premium-ad" id="modePremiumAd" onclick="openPremiumModal('Unlock 58 guided fight workouts, Task Spar cues and harder camp sessions.')">
-                    <img class="premium-ad-image" src="Unlock 50+ workouts with premium AD.png" alt="Unlock 58 workouts with Premium">
+                <button class="mode-premium-ad" id="modePremiumAd" onclick="openPremiumModal('Get FightWise Pro for testing: unlock 58 guided workouts, Task Spar cues and custom workouts.')">
+                    <div class="premium-coming-card">
+                        <div class="premium-coming-kicker">Premium</div>
+                        <div class="premium-coming-title">Get Premium</div>
+                        <div class="premium-coming-copy">Test 58 guided workouts, Task Spar cues and premium fight camp plans.</div>
+                    </div>
                 </button>
             </div>
         </div>
@@ -3914,6 +4219,17 @@
                             <span class="duration-stat">Hard</span>
                         </div>
                     </button>
+                    <button class="training-card duration-card custom-workout-card duration-locked" data-premium-duration onclick="openCustomWorkoutBuilder()">
+                        <div class="training-card-title">Custom</div>
+                        <div class="training-card-desc">Build your own guided workout with timed steps and instructions.</div>
+                        <div class="training-meta">Your plan</div>
+                        <div class="duration-stats">
+                            <span class="duration-stat highlight">Create</span>
+                            <span class="duration-stat">Pro</span>
+                            <span class="duration-stat">Steps</span>
+                            <span class="duration-stat">Guided</span>
+                        </div>
+                    </button>
                 </div>
             </div>
 
@@ -3934,6 +4250,20 @@
                     </div>
                 </div>
                 <div class="training-grid" id="trainingOptionsGrid"></div>
+            </div>
+
+            <div class="training-step hidden" id="customWorkoutStep">
+                <div class="custom-builder">
+                    <div class="custom-field">
+                        <label for="customWorkoutName">Workout name</label>
+                        <input id="customWorkoutName" type="text" value="My workout" maxlength="40">
+                    </div>
+                    <div class="custom-step-list" id="customStepList"></div>
+                    <div class="custom-actions">
+                        <button class="secondary-btn" onclick="addCustomWorkoutStep()">Add step</button>
+                        <button class="save-btn" onclick="startCustomWorkout()">Start workout</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -3959,12 +4289,11 @@
         <div class="premium-panel">
             <div class="premium-hero">
                 <div class="premium-kicker"><svg class="icon icon-sm"><use href="#icon-flame"></use></svg>FightWise Pro</div>
-                <div class="premium-title">Train like you mean it</div>
-                <div class="premium-copy" id="premiumMessage">Unlock 58 guided fight workouts, Task Spar prompts and harder camp sessions.</div>
+                <div class="premium-title">Get Premium</div>
+                <div class="premium-copy" id="premiumMessage">Get FightWise Pro for testing: unlock 58 guided workouts, Task Spar prompts and harder camp sessions.</div>
                 <div class="premium-offer-line">
-                    <span class="premium-price">4.99€</span>
-                    <span class="premium-old-price">10.00€</span>
-                    <span class="premium-once">Launch offer</span>
+                    <span class="premium-price">Test</span>
+                    <span class="premium-once">Temporary unlock</span>
                 </div>
                 <div class="premium-list">
                     <div><svg class="icon icon-sm"><use href="#icon-check"></use></svg>58 guided workouts ready to start</div>
@@ -3973,7 +4302,7 @@
                 </div>
             </div>
             <div class="premium-actions">
-                <button class="save-btn premium-unlock-btn" onclick="simulatePremiumUnlock()">UNLOCK PRO</button>
+                <button class="save-btn premium-unlock-btn" onclick="simulatePremiumUnlock()">GET PREMIUM</button>
                 <button class="secondary-btn premium-dismiss" onclick="closePremiumModal()">NOT NOW</button>
             </div>
         </div>
@@ -4014,8 +4343,8 @@
             <div class="tut-welcome-icon">
                 <svg class="icon icon-lg"><use href="#icon-star"></use></svg>
             </div>
-            <div class="tut-welcome-title">WELCOME TO CORNER COACH</div>
-            <div class="tut-welcome-text">Your boxing interval timer.<br>Would you like a quick tour of the app?</div>
+            <div class="tut-welcome-title">WELCOME TO FIGHTWISE</div>
+            <div class="tut-welcome-text">Want a quick tour before you start?<br>See the main features step by step.</div>
             <div class="tut-welcome-btns">
                 <button class="tut-btn-yes" onclick="startTutorial()">YES, SHOW ME</button>
                 <button class="tut-btn-no" onclick="skipTutorial()">SKIP</button>
@@ -4052,16 +4381,26 @@
     <!-- Finished Overlay -->
     <div class="finished-overlay" id="finishedOverlay">
         <div class="finished-box">
-            <div class="finished-title">SESSION COMPLETE! <svg class="icon icon-md"><use href="#icon-trophy"></use></svg></div>
-            <div class="finished-subtitle">Great workout!</div>
-            <div class="finished-summary">
-                <div class="finished-row"><span>Rounds completed</span><strong id="summaryRounds">0/0</strong></div>
-                <div class="finished-row"><span>Active time</span><strong id="summaryActive">00:00</strong></div>
-                <div class="finished-row"><span>Break time</span><strong id="summaryBreak">00:00</strong></div>
-                <div class="finished-row"><span>Skipped breaks</span><strong id="summarySkips">0</strong></div>
-                <div class="finished-row"><span>Completion</span><strong id="summaryCompletion">0%</strong></div>
+            <div class="finished-confetti" aria-hidden="true">
+                <span></span><span></span><span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span><span></span><span></span>
             </div>
-            <button class="save-btn finished-action" onclick="resetTimer()">START NEW SESSION</button>
+            <div class="finished-trophy-stage" aria-hidden="true">
+                <div class="finished-trophy-glow"></div>
+                <svg class="icon finished-big-trophy"><use href="#icon-trophy"></use></svg>
+            </div>
+            <div class="finished-content">
+                <div class="finished-title">SESSION COMPLETE!</div>
+                <div class="finished-subtitle">Great workout!</div>
+                <div class="finished-summary">
+                    <div class="finished-row"><span>Rounds completed</span><strong id="summaryRounds">0/0</strong></div>
+                    <div class="finished-row"><span>Active time</span><strong id="summaryActive">00:00</strong></div>
+                    <div class="finished-row"><span>Break time</span><strong id="summaryBreak">00:00</strong></div>
+                    <div class="finished-row"><span>Skipped breaks</span><strong id="summarySkips">0</strong></div>
+                    <div class="finished-row"><span>Completion</span><strong id="summaryCompletion">0%</strong></div>
+                </div>
+                <button class="save-btn finished-action" onclick="resetTimer()">START NEW SESSION</button>
+            </div>
         </div>
     </div>
 
@@ -4434,6 +4773,7 @@
         const taskDisplay = document.getElementById('taskDisplay');
         const phaseLabel = document.getElementById('phaseLabel');
         const startBtn = document.getElementById('startBtn');
+        const skipStepBtn = document.getElementById('skipStepBtn');
         const continueBtn = document.getElementById('continueBtn');
         const resetBtn = document.getElementById('resetBtn');
         const progressCircle = document.getElementById('progressCircle');
@@ -4555,6 +4895,49 @@
             } catch (e) {}
         }
 
+        function playToneEffect(notes) {
+            try {
+                const ac = ensureAudioReady();
+                if (!ac) return;
+
+                notes.forEach(note => {
+                    const osc = ac.createOscillator();
+                    const gain = ac.createGain();
+                    osc.connect(gain);
+                    gain.connect(ac.destination);
+                    osc.type = note.type || 'sine';
+                    osc.frequency.setValueAtTime(note.frequency, ac.currentTime + note.delay);
+                    if (note.to) {
+                        osc.frequency.exponentialRampToValueAtTime(note.to, ac.currentTime + note.delay + note.duration);
+                    }
+                    gain.gain.setValueAtTime(0.001, ac.currentTime + note.delay);
+                    gain.gain.exponentialRampToValueAtTime(note.gain || 0.4, ac.currentTime + note.delay + 0.025);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + note.delay + note.duration);
+                    osc.start(ac.currentTime + note.delay);
+                    osc.stop(ac.currentTime + note.delay + note.duration + 0.03);
+                });
+            } catch (e) {}
+        }
+
+        function playPremiumChime() {
+            playToneEffect([
+                { frequency: 740, duration: 0.22, delay: 0, gain: 0.42, type: 'triangle' },
+                { frequency: 988, duration: 0.24, delay: 0.1, gain: 0.46, type: 'sine' },
+                { frequency: 1320, duration: 0.42, delay: 0.22, gain: 0.38, type: 'triangle' },
+                { frequency: 1980, duration: 0.18, delay: 0.34, gain: 0.2, type: 'sine' }
+            ]);
+        }
+
+        function playWorkoutCompleteFanfare() {
+            playToneEffect([
+                { frequency: 392, duration: 0.28, delay: 0, gain: 0.42, type: 'triangle' },
+                { frequency: 523, duration: 0.28, delay: 0.12, gain: 0.44, type: 'triangle' },
+                { frequency: 659, duration: 0.34, delay: 0.24, gain: 0.48, type: 'triangle' },
+                { frequency: 784, duration: 0.52, delay: 0.42, gain: 0.5, type: 'sine' },
+                { frequency: 1046, duration: 0.22, delay: 0.54, gain: 0.22, type: 'sine' }
+            ]);
+        }
+
         function speakCue(text, options = {}) {
             if (!settings.roundVoiceEnabled) return;
             if (!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') return;
@@ -4583,6 +4966,19 @@
             const completion = settings.numberOfRounds > 0
                 ? Math.round((rounds / settings.numberOfRounds) * 100)
                 : 0;
+
+            const finishedTitle = document.querySelector('.finished-title');
+            const finishedSubtitle = document.querySelector('.finished-subtitle');
+            if (finishedTitle) {
+                finishedTitle.textContent = appMode === 'training'
+                    ? 'WORKOUT COMPLETE!'
+                    : 'SESSION COMPLETE!';
+            }
+            if (finishedSubtitle) {
+                finishedSubtitle.textContent = appMode === 'training'
+                    ? 'Strong work. You finished the plan.'
+                    : 'Great work!';
+            }
 
             summaryRounds.textContent = `${rounds}/${settings.numberOfRounds}`;
             summaryActive.textContent = formatTime(sessionStats.activeSeconds);
@@ -4674,6 +5070,8 @@
                 resetBtn.classList.add('hidden');
                 continueBtn.classList.add('hidden');
             }
+
+            skipStepBtn.classList.toggle('hidden', !(appMode === 'training' && activeTrainingWorkout && hasSessionStarted && !timerState.isFinished && trainingTimeline.length > 1));
 
             // Task / guided training display with fade animation
             const showTrainingGuide = appMode === 'training' && activeTrainingWorkout && !timerState.isFinished;
@@ -4791,6 +5189,28 @@
             lastWholeSecond = Math.ceil(timerState.timeLeft);
         }
 
+        function skipTrainingStep() {
+            if (appMode !== 'training' || !activeTrainingWorkout || trainingTimeline.length === 0 || timerState.isFinished) return;
+            const step = getCurrentGuideStep();
+            if (!step) return;
+            const currentIndex = trainingTimeline.indexOf(step);
+            const nextStep = trainingTimeline[currentIndex + 1];
+
+            if (!nextStep) {
+                timerState.timeLeft = 0;
+                handleTransition();
+                return;
+            }
+
+            const nextElapsed = Math.min(settings.roundTime, nextStep.start + 0.01);
+            timerState.timeLeft = Math.max(0, settings.roundTime - nextElapsed);
+            currentGuideIndex = -1;
+            lastTickMs = performance.now();
+            lastWholeSecond = Math.ceil(timerState.timeLeft);
+            speakCue(`Next. ${nextStep.title}`, { rate: 0.96 });
+            updateUI();
+        }
+
         function handleTransition() {
             if (timerState.isRound) {
                 // Round ending
@@ -4802,6 +5222,7 @@
                     releaseWakeLock();
                     renderSessionSummary();
                     finishedOverlay.classList.add('show');
+                    playWorkoutCompleteFanfare();
                     speakCue('Session complete');
                     updateUI();
                     return;
@@ -4986,6 +5407,7 @@
         let activeTrainingWorkout = null;
         let trainingTimeline = [];
         let currentGuideIndex = -1;
+        let customWorkoutSteps = [];
         let setupStep = 0;
         let setupCustomActive = false;
         let sparringDraft = {
@@ -6276,7 +6698,7 @@
             } catch (e) {}
         }
 
-        function openPremiumModal(message = 'Unlock 58 guided fight workouts, Task Spar cues and harder camp sessions.') {
+        function openPremiumModal(message = 'Get FightWise Pro for testing: unlock 58 guided workouts, Task Spar cues and custom workouts.') {
             const premiumMessage = document.getElementById('premiumMessage');
             if (premiumMessage) premiumMessage.textContent = message;
             document.getElementById('premiumModal').classList.add('show');
@@ -6299,8 +6721,18 @@
             showPremiumUnlockCelebration();
         }
 
+        function showPremiumComingSoon() {
+            playPremiumChime();
+            const premiumMessage = document.getElementById('premiumMessage');
+            if (premiumMessage) {
+                premiumMessage.textContent = 'Tap Get Premium to unlock Pro instantly for testing.';
+            }
+            if (navigator.vibrate) navigator.vibrate(35);
+        }
+
         function showPremiumUnlockCelebration() {
             if (!premiumUnlockCelebration) return;
+            playPremiumChime();
             premiumUnlockCelebration.classList.remove('show');
             void premiumUnlockCelebration.offsetWidth;
             premiumUnlockCelebration.classList.add('show');
@@ -6413,7 +6845,7 @@
 
         function selectSetupOption(key, value, element = null, premium = false) {
             if (premium && !isPremiumUnlocked()) {
-                openPremiumModal('Task Spar is a FightWise Pro feature. Unlock Pro to get random combinations and objectives between rounds.');
+                openPremiumModal('Get Premium to test Task Spar combinations and round objectives.');
                 return;
             }
             sparringDraft[key] = value;
@@ -6540,7 +6972,6 @@
             settings.taskSparEnabled = sparringDraft.taskSparEnabled;
             selectedPreset = 'custom';
             resetTimer();
-            checkTutorial();
         }
 
         function openTrainingSection() {
@@ -6551,7 +6982,7 @@
         }
 
         function setTrainingStep(step) {
-            ['trainingDurationStep', 'trainingOptionsStep'].forEach(id => {
+            ['trainingDurationStep', 'trainingOptionsStep', 'customWorkoutStep'].forEach(id => {
                 document.getElementById(id).classList.toggle('hidden', id !== step);
             });
         }
@@ -6566,9 +6997,119 @@
             setTrainingStep('trainingDurationStep');
         }
 
+        function openCustomWorkoutBuilder() {
+            if (!isPremiumUnlocked()) {
+                openPremiumModal('Get Premium to test custom workouts.');
+                return;
+            }
+            selectedTrainingDuration = null;
+            expandedTrainingWorkoutId = null;
+            closeTrainingSortMenu();
+            if (customWorkoutSteps.length === 0) {
+                customWorkoutSteps = [
+                    { title: 'Warmup', minutes: 5, note: 'Easy movement, mobility and light shadowboxing.' },
+                    { title: 'Main work', minutes: 20, note: 'Work your chosen combinations with clean technique.' },
+                    { title: 'Cooldown', minutes: 5, note: 'Breathe, stretch and let your heart rate come down.' }
+                ];
+            }
+            document.getElementById('trainingTitle').textContent = 'Custom workout';
+            document.getElementById('trainingSubtitle').textContent = 'Create timed steps. FightWise will guide you through each part.';
+            renderCustomWorkoutSteps();
+            setTrainingStep('customWorkoutStep');
+        }
+
+        function renderCustomWorkoutSteps() {
+            const list = document.getElementById('customStepList');
+            if (!list) return;
+            list.innerHTML = customWorkoutSteps.map((step, index) => `
+                <div class="custom-step-card">
+                    <div class="custom-step-head">
+                        <div class="custom-step-title">Step ${index + 1}</div>
+                        ${customWorkoutSteps.length > 1 ? `<button class="custom-remove" onclick="removeCustomWorkoutStep(${index})">Remove</button>` : ''}
+                    </div>
+                    <div class="custom-field">
+                        <label>Step name</label>
+                        <input type="text" value="${escapeHtml(step.title)}" maxlength="42" oninput="updateCustomWorkoutStep(${index}, 'title', this.value)">
+                    </div>
+                    <div class="custom-field">
+                        <label>Minutes</label>
+                        <input type="number" min="1" max="90" step="1" value="${step.minutes}" oninput="updateCustomWorkoutStep(${index}, 'minutes', this.value)">
+                    </div>
+                    <div class="custom-field">
+                        <label>Instructions</label>
+                        <textarea maxlength="220" oninput="updateCustomWorkoutStep(${index}, 'note', this.value)">${escapeHtml(step.note)}</textarea>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function escapeHtml(value) {
+            return String(value || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function updateCustomWorkoutStep(index, key, value) {
+            const step = customWorkoutSteps[index];
+            if (!step) return;
+            if (key === 'minutes') {
+                const minutes = Math.max(1, Math.min(90, parseInt(value, 10) || 1));
+                step.minutes = minutes;
+                return;
+            }
+            step[key] = value;
+        }
+
+        function addCustomWorkoutStep() {
+            customWorkoutSteps.push({ title: 'New step', minutes: 3, note: 'Add your instructions here.' });
+            renderCustomWorkoutSteps();
+        }
+
+        function removeCustomWorkoutStep(index) {
+            customWorkoutSteps.splice(index, 1);
+            if (customWorkoutSteps.length === 0) addCustomWorkoutStep();
+            renderCustomWorkoutSteps();
+        }
+
+        function startCustomWorkout() {
+            const nameInput = document.getElementById('customWorkoutName');
+            const title = (nameInput && nameInput.value.trim()) || 'Custom workout';
+            const cleanSteps = customWorkoutSteps
+                .map(step => ({
+                    title: (step.title || 'Step').trim(),
+                    minutes: Math.max(1, Math.min(90, Number(step.minutes) || 1)),
+                    note: (step.note || 'Follow your plan for this step.').trim()
+                }))
+                .filter(step => step.title);
+
+            if (cleanSteps.length === 0) return;
+
+            const totalSeconds = cleanSteps.reduce((total, step) => total + (step.minutes * 60), 0);
+            const customWorkout = {
+                id: `custom-${Date.now()}`,
+                title,
+                type: 'Custom workout',
+                subtitle: 'Your own guided workout.',
+                structure: `${cleanSteps.length} custom steps`,
+                intensity: 3,
+                intensityLabel: 'Custom',
+                minutes: Math.round(totalSeconds / 60),
+                stats: [[Math.round(totalSeconds / 60), 'minutes'], [cleanSteps.length, 'steps'], ['Custom', 'plan']],
+                sections: cleanSteps.map(step => ({
+                    title: `${step.title} - ${step.minutes} min`,
+                    durationSeconds: step.minutes * 60,
+                    items: [step.note]
+                }))
+            };
+
+            startTrainingPlan(totalSeconds, title.toUpperCase(), null, null, customWorkout);
+        }
+
         function selectTrainingDuration(minutes) {
             if (PREMIUM_DURATION_MINUTES.includes(minutes) && !isPremiumUnlocked()) {
-                openPremiumModal(`${minutes} min guided workouts are included in FightWise Pro. Unlock Pro to train with this duration.`);
+                openPremiumModal(`Get Premium to test ${minutes} min guided workouts.`);
                 return;
             }
             selectedTrainingDuration = minutes;
@@ -6711,7 +7252,7 @@
                     return;
                 }
 
-                const sectionDuration = parseMinutesFromTitle(section.title, 3);
+                const sectionDuration = section.durationSeconds || parseMinutesFromTitle(section.title, 3);
                 const note = section.items ? section.items.join(' ') : '';
                 timeline.push({
                     start,
@@ -6775,13 +7316,13 @@
             if (workout.premium && !isPremiumUnlocked()) {
                 return `
                     <div class="training-detail-inner">
-                        <div class="premium-copy">${workout.title} is ready in Pro. Unlock it with 58 guided fight workouts.</div>
+                        <div class="premium-copy">Get Premium to test ${workout.title} with the full guided workout library.</div>
                         <div class="premium-list">
                             <div><svg class="icon icon-sm"><use href="#icon-check"></use></svg>${workout.structure}</div>
                             <div><svg class="icon icon-sm"><use href="#icon-check"></use></svg>${workout.intensityLabel} intensity</div>
                             <div><svg class="icon icon-sm"><use href="#icon-check"></use></svg>Guided steps while the timer runs</div>
                         </div>
-                        <button class="workout-start" onclick="event.stopPropagation(); openPremiumModal('Unlock Pro to start ${workout.title}.')">Unlock Pro</button>
+                        <button class="workout-start" onclick="event.stopPropagation(); openPremiumModal('Get Premium to test ${workout.title}.')">Get Premium</button>
                     </div>
                 `;
             }
@@ -6874,7 +7415,7 @@
             const workout = findTrainingWorkout(minutes, workoutId);
             if (!workout) return;
             if (workout.premium && !isPremiumUnlocked()) {
-                openPremiumModal(`Unlock ${workout.title} and 58 total guided fight workouts.`);
+                openPremiumModal(`Get Premium to test ${workout.title} and the full guided workout library.`);
                 return;
             }
 
@@ -6891,7 +7432,10 @@
 
         function trainingBack() {
             if (!trainingSection.classList.contains('hidden')) {
-                if (!document.getElementById('trainingOptionsStep').classList.contains('hidden')) {
+                if (
+                    !document.getElementById('trainingOptionsStep').classList.contains('hidden') ||
+                    !document.getElementById('customWorkoutStep').classList.contains('hidden')
+                ) {
                     showTrainingDurationStep();
                     return;
                 }
@@ -6899,16 +7443,16 @@
             showModeChoice();
         }
 
-        function startTrainingPlan(durationSeconds, title, sourceMinutes = null, workoutId = null) {
+        function startTrainingPlan(durationSeconds, title, sourceMinutes = null, workoutId = null, customWorkout = null) {
             const requestedWorkout = sourceMinutes && workoutId ? findTrainingWorkout(sourceMinutes, workoutId) : null;
             if (requestedWorkout && requestedWorkout.premium && !isPremiumUnlocked()) {
-                openPremiumModal(`Unlock FightWise Pro to start ${requestedWorkout.title}.`);
+                openPremiumModal(`Get Premium to test ${requestedWorkout.title}.`);
                 return;
             }
 
             appMode = 'training';
             trainingPlanTitle = title;
-            activeTrainingWorkout = requestedWorkout;
+            activeTrainingWorkout = customWorkout || requestedWorkout;
             trainingTimeline = activeTrainingWorkout ? buildTrainingTimeline(activeTrainingWorkout) : [];
             currentGuideIndex = -1;
             settings.roundTime = durationSeconds;
@@ -7073,7 +7617,7 @@
             if (!isPremiumUnlocked()) {
                 settings.taskSparEnabled = false;
                 updateSettingsUI();
-                openPremiumModal('Task Spar is a FightWise Pro feature. Unlock Pro to get random combinations and objectives each round.');
+                openPremiumModal('Get Premium to test Task Spar combinations and objectives each round.');
                 return;
             }
             settings.taskSparEnabled = !settings.taskSparEnabled;
@@ -7424,7 +7968,7 @@
         updateSettingsUI();
 
         // ===== TUTORIAL =====
-        const TUT_KEY = 'strikeflow_tutorial_done';
+        const TUT_KEY = 'fightwise_main_tutorial_done';
         let tutStep = 0;
         let tutActive = false;
         let tutAnimFrame = null;
@@ -7435,55 +7979,52 @@
 
         const TUT_STEPS = [
             {
-                selector: '.timer-ring-wrap',
-                title: 'TIMER',
-                text: 'The circular ring shows how much time is left in the current round or break. The number in the middle is the countdown.'
+                selector: '.mode-logo-stack',
+                title: 'FIGHTWISE',
+                text: 'Start here. FightWise gives you a clean fight timer, guided workouts and training structure in one place.'
             },
             {
-                selector: '.controls',
-                title: 'CONTROLS',
-                text: 'START begins the session. During the session it becomes STOP. After a round you can CONTINUE or RESET back to the beginning.'
+                selector: '.spar-card',
+                title: 'SPARRING',
+                text: 'Use Sparring for live fight rounds. You can choose round time, breaks, number of rounds and Task Spar options.'
             },
             {
-                selector: '.top-bar',
-                title: 'ROUND COUNTER',
-                text: 'Shows which round you are on and the total number of rounds. The phase (ROUND / BREAK) is displayed here too.'
+                selector: '.training-card-entry',
+                title: 'TRAINING',
+                text: 'Use Training for guided workouts. The app tells you what to do step by step while the timer runs.'
             },
             {
-                selector: '.settings-btn',
-                title: 'SETTINGS ⚙️',
-                text: 'Tap the gear to open settings. Choose a quick preset (K1, Muay Thai, Conditioning) or build a custom session with your own round/break times and number of rounds.'
+                selector: '#modePremiumAd',
+                title: 'FIGHTWISE PRO',
+                text: 'For testing, tap Get Premium to unlock premium workouts, Task Spar cues and custom workouts instantly.'
             },
             {
-                selector: '.settings-btn',
-                title: 'TASK SPAR MODE',
-                text: 'Inside settings you can enable Task Spar Mode. Each round you will get a random combination to practice — choose difficulty and number or text notation.'
+                selector: '.mode-actions',
+                title: 'CHOOSE YOUR WORK',
+                text: 'Pick Sparring when you want rounds. Pick Training when you want instructions, combos and complete workout plans.'
             }
         ];
 
         function checkTutorial() {
-            if (appMode !== 'spar') return;
-            if (!localStorage.getItem(TUT_KEY)) {
-                document.getElementById('tutWelcome').style.display = 'flex';
-            }
+            showModeChoice();
+            document.getElementById('tutWelcome').style.display = 'flex';
         }
 
         function resetTutorial() {
             localStorage.removeItem(TUT_KEY);
             closeSettings();
             setTimeout(() => {
+                showModeChoice();
                 document.getElementById('tutWelcome').style.display = 'flex';
             }, 180);
         }
 
         function skipTutorial() {
-            localStorage.setItem(TUT_KEY, '1');
             document.getElementById('tutWelcome').style.display = 'none';
             closeTutorialStep();
         }
 
         function startTutorial() {
-            localStorage.setItem(TUT_KEY, '1');
             document.getElementById('tutWelcome').style.display = 'none';
             tutStep = 0;
             tutDir = 1;
@@ -7499,6 +8040,14 @@
             if (tutStep >= TUT_STEPS.length) { closeTutorialStep(); return; }
             const step = TUT_STEPS[tutStep];
             const el = document.querySelector(step.selector);
+            if (!el) {
+                tutStep++;
+                showTutStep(isFirst);
+                return;
+            }
+            if (typeof el.scrollIntoView === 'function') {
+                el.scrollIntoView({ block: 'center', inline: 'nearest' });
+            }
             const targetRect = el.getBoundingClientRect();
             const pad = 12;
 
@@ -7683,8 +8232,8 @@
         updatePremiumVisibility();
         updateDurationLocks();
 
-        // Show tutorial on load
-        checkTutorial();
+        // Show tutorial on load. In test mode this appears every refresh.
+        setTimeout(checkTutorial, 120);
 
         // Register service worker for PWA/offline support
         if ('serviceWorker' in navigator) {
