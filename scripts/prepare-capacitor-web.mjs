@@ -11,7 +11,11 @@ const files = [
   'icon-512.png',
   'StrikeFlow logo.png',
   'Strike Flow.png',
-  'click soundeffect.mp3'
+  'Unlock 50+ workouts with premium AD.png'
+];
+
+const renamedFiles = [
+  ['click soundeffect.mp3', 'click-soundeffect.mp3']
 ];
 
 rmSync(webDir, { recursive: true, force: true });
@@ -24,4 +28,11 @@ for (const file of files) {
   copyFileSync(file, join(webDir, basename(file)));
 }
 
-console.log(`Prepared ${files.length} web assets in ${webDir}/`);
+for (const [source, target] of renamedFiles) {
+  if (!existsSync(source)) {
+    throw new Error(`Missing required web asset: ${source}`);
+  }
+  copyFileSync(source, join(webDir, target));
+}
+
+console.log(`Prepared ${files.length + renamedFiles.length} web assets in ${webDir}/`);

@@ -12,7 +12,8 @@
     "cap:sync": "npm run prepare:android-web && npx cap sync android",
     "cap:open:android": "npm run cap:sync && npx cap open android",
     "android:build:debug": "npm run cap:sync && cd android && gradlew.bat assembleDebug",
-    "android:build:release": "npm run cap:sync && cd android && gradlew.bat bundleRelease"
+    "android:build:release": "npm run cap:sync && cd android && gradlew.bat bundleRelease",
+    "android:install-sdk": "powershell -ExecutionPolicy Bypass -File scripts/install-android-sdk.ps1"
   },
   "dependencies": {
     "expo": "~50.0.0",

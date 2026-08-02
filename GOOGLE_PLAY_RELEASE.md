@@ -16,6 +16,12 @@ Typical Windows SDK path:
 $env:ANDROID_HOME="$env:LOCALAPPDATA\Android\Sdk"
 ```
 
+You can install the required SDK packages for this project with:
+
+```powershell
+npm run android:install-sdk
+```
+
 Or create `android/local.properties`:
 
 ```properties
