@@ -339,7 +339,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 20px 20px 112px;
         }
 
         .phase-banner {
@@ -605,8 +605,15 @@
         .controls {
             display: flex;
             gap: 12px;
-            padding: 0 24px calc(24px + env(safe-area-inset-bottom));
+            padding: 14px 24px calc(18px + env(safe-area-inset-bottom));
             justify-content: center;
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 20;
+            background: linear-gradient(180deg, rgba(5, 5, 5, 0), rgba(5, 5, 5, 0.88) 24%, rgba(5, 5, 5, 0.98));
+            pointer-events: none;
         }
 
         .btn {
@@ -623,6 +630,7 @@
             overflow: hidden;
             white-space: nowrap;
             max-width: 400px;
+            pointer-events: auto;
         }
 
         .btn:hover:not(:disabled) {
@@ -646,6 +654,7 @@
             background: var(--accent-primary);
             border-color: var(--accent-primary);
             color: #000;
+            box-shadow: 0 0 26px rgba(43, 255, 74, 0.24);
         }
 
         .btn-start:hover:not(:disabled) {
@@ -691,6 +700,8 @@
                 #060606;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+            touch-action: pan-y;
         }
 
         .mode-choice {
@@ -700,7 +711,9 @@
         }
 
         .training-section {
-            align-items: center;
+            align-items: flex-start;
+            padding-top: max(26px, calc(18px + env(safe-area-inset-top)));
+            padding-bottom: max(34px, calc(28px + env(safe-area-inset-bottom)));
         }
 
         .mode-choice::before,
@@ -744,10 +757,8 @@
         }
 
         .training-panel {
-            max-height: calc(100dvh - 44px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-            overflow-y: auto;
-            overscroll-behavior: contain;
-            -webkit-overflow-scrolling: touch;
+            max-height: none;
+            overflow: visible;
             padding-right: 4px;
         }
 
@@ -1125,7 +1136,9 @@
             color: #fff;
             cursor: pointer;
             padding: 16px 18px;
+            position: relative;
             text-align: left;
+            overflow: hidden;
             transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
         }
 
@@ -1143,6 +1156,45 @@
 
         .setup-option.chosen {
             animation: setupPunch 0.22s ease both;
+        }
+
+        .setup-option.locked-premium {
+            border-color: rgba(190, 255, 0, 0.42);
+            border-left-color: rgba(190, 255, 0, 0.72);
+            background:
+                linear-gradient(90deg, rgba(190, 255, 0, 0.08), transparent 48%),
+                #161616;
+        }
+
+        .setup-option.locked-premium::after {
+            align-items: center;
+            background:
+                radial-gradient(circle at 82% 18%, rgba(255, 159, 28, 0.18), transparent 28%),
+                rgba(5, 5, 5, 0.26);
+            color: #baff00;
+            content: "PREMIUM";
+            display: flex;
+            font-size: clamp(32px, 8vw, 58px);
+            font-weight: 950;
+            inset: 0;
+            justify-content: center;
+            letter-spacing: 2px;
+            line-height: 1;
+            pointer-events: none;
+            position: absolute;
+            text-shadow: 0 0 18px rgba(190, 255, 0, 0.3), 0 3px 0 #000;
+            text-transform: uppercase;
+            z-index: 3;
+        }
+
+        .setup-option.locked-premium .setup-option-content {
+            filter: blur(1.9px);
+            opacity: 0.58;
+        }
+
+        .setup-option.locked-premium:hover .setup-option-content {
+            filter: blur(1.2px);
+            opacity: 0.68;
         }
 
         @keyframes setupPunch {
@@ -1881,6 +1933,12 @@
 
         .duration-card {
             --duration-color: var(--accent-primary);
+            background:
+                radial-gradient(circle at 92% 20%, color-mix(in srgb, var(--duration-color) 20%, transparent), transparent 28%),
+                linear-gradient(90deg, color-mix(in srgb, var(--duration-color) 9%, transparent), transparent 50%),
+                #181818;
+            min-height: 132px;
+            padding: 20px 20px 18px;
         }
 
         .duration-card::before {
@@ -1893,6 +1951,79 @@
 
         .duration-card:hover {
             border-color: var(--duration-color);
+            background:
+                radial-gradient(circle at 92% 20%, color-mix(in srgb, var(--duration-color) 28%, transparent), transparent 30%),
+                linear-gradient(90deg, color-mix(in srgb, var(--duration-color) 13%, transparent), transparent 54%),
+                #202020;
+            box-shadow: 0 0 28px color-mix(in srgb, var(--duration-color) 14%, transparent);
+        }
+
+        .duration-card .training-card-title {
+            font-size: clamp(28px, 5vw, 38px);
+            margin-bottom: 8px;
+        }
+
+        .duration-card .training-card-desc {
+            max-width: 520px;
+        }
+
+        .duration-card.duration-locked::after {
+            align-items: center;
+            background:
+                radial-gradient(circle at 82% 18%, rgba(255, 159, 28, 0.18), transparent 28%),
+                rgba(5, 5, 5, 0.26);
+            color: #baff00;
+            content: "PREMIUM";
+            display: flex;
+            font-size: clamp(30px, 7vw, 54px);
+            font-weight: 950;
+            inset: 0;
+            justify-content: center;
+            letter-spacing: 2px;
+            line-height: 1;
+            pointer-events: none;
+            position: absolute;
+            text-shadow: 0 0 18px rgba(190, 255, 0, 0.3), 0 3px 0 #000;
+            text-transform: uppercase;
+            z-index: 4;
+        }
+
+        .duration-card.duration-locked > * {
+            filter: blur(1.8px);
+            opacity: 0.62;
+        }
+
+        .duration-card.duration-locked:hover > * {
+            filter: blur(1.1px);
+            opacity: 0.72;
+        }
+
+        .duration-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin-top: 14px;
+        }
+
+        .duration-stat {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.075);
+            color: #f2f2f2;
+            font-size: 11px;
+            font-weight: 950;
+            letter-spacing: 0.55px;
+            padding: 6px 8px;
+            text-transform: uppercase;
+        }
+
+        .duration-stat.highlight {
+            border-color: color-mix(in srgb, var(--duration-color) 52%, transparent);
+            color: var(--duration-color);
+        }
+
+        .duration-flow {
+            --duration-color: #8dff6a;
         }
 
         .duration-quick {
@@ -1909,6 +2040,30 @@
 
         .duration-full {
             --duration-color: #ff7a2f;
+        }
+
+        .duration-highlights {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: -10px 0 18px;
+        }
+
+        .duration-highlight {
+            border: 1px solid rgba(43, 255, 74, 0.22);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.055);
+            color: #e8e8e8;
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: 0.55px;
+            padding: 8px 10px;
+            text-transform: uppercase;
+        }
+
+        .duration-highlight strong {
+            color: var(--accent-primary);
+            font-weight: 950;
         }
 
         .training-card-head {
@@ -2827,7 +2982,7 @@
             }
 
             .controls {
-                padding: 0 16px calc(24px + env(safe-area-inset-bottom));
+                padding: 12px 16px calc(16px + env(safe-area-inset-bottom));
             }
         }
 
@@ -2905,6 +3060,11 @@
                 padding: 10px 14px 10px 6px;
                 justify-content: center;
                 gap: 10px;
+                position: static;
+                inset: auto;
+                z-index: auto;
+                background: transparent;
+                pointer-events: auto;
             }
 
             .btn {
@@ -3265,8 +3425,8 @@
                         <span class="mode-pill">Instructions</span>
                     </div>
                 </button>
-                <button class="mode-premium-ad" onclick="openPremiumModal('Unlock 52 guided fight workouts, Task Spar cues and harder camp sessions.')">
-                    <img class="premium-ad-image" src="Unlock 50+ workouts with premium AD.png" alt="Unlock 52 workouts with Premium">
+                <button class="mode-premium-ad" onclick="openPremiumModal('Unlock 58 guided fight workouts, Task Spar cues and harder camp sessions.')">
+                    <img class="premium-ad-image" src="Unlock 50+ workouts with premium AD.png" alt="Unlock 58 workouts with Premium">
                 </button>
             </div>
         </div>
@@ -3299,26 +3459,61 @@
                 <button class="training-back" onclick="trainingBack()">BACK</button>
             </div>
             <div class="training-step" id="trainingDurationStep">
+                <div class="duration-highlights" aria-label="Training library summary">
+                    <span class="duration-highlight"><strong>71</strong> total plans</span>
+                    <span class="duration-highlight"><strong>58</strong> Pro workouts</span>
+                    <span class="duration-highlight">20-90 min sessions</span>
+                </div>
                 <div class="training-grid">
+                    <button class="training-card duration-card duration-flow duration-locked" data-premium-duration onclick="selectTrainingDuration(20)">
+                        <div class="training-card-title">20 min</div>
+                        <div class="training-card-desc">Quick flow, sharp technique and short sweat sessions when time is tight.</div>
+                        <div class="training-meta">Flow work</div>
+                        <div class="duration-stats">
+                            <span class="duration-stat highlight">8 workouts</span>
+                            <span class="duration-stat">Pro</span>
+                            <span class="duration-stat">Flow</span>
+                        </div>
+                    </button>
                     <button class="training-card duration-card duration-quick" onclick="selectTrainingDuration(30)">
                         <div class="training-card-title">30 min</div>
-                        <div class="training-card-desc">Short technical session with focused drills and simple combos.</div>
+                        <div class="training-card-desc">Compact training blocks for skill work, bag rounds or hard intervals.</div>
                         <div class="training-meta">Quick work</div>
+                        <div class="duration-stats">
+                            <span class="duration-stat highlight">16 workouts</span>
+                            <span class="duration-stat">Technique</span>
+                            <span class="duration-stat">Bag</span>
+                        </div>
                     </button>
-                    <button class="training-card duration-card duration-recommended" onclick="selectTrainingDuration(45)">
+                    <button class="training-card duration-card duration-recommended duration-locked" data-premium-duration onclick="selectTrainingDuration(45)">
                         <div class="training-card-title">45 min</div>
-                        <div class="training-card-desc">Full bag workout with warmup, 8 rounds, finisher and stretch.</div>
+                        <div class="training-card-desc">The sweet spot: proper warmup, focused rounds and a clean finish.</div>
                         <div class="training-meta">Recommended</div>
+                        <div class="duration-stats">
+                            <span class="duration-stat highlight">16 workouts</span>
+                            <span class="duration-stat">Pro</span>
+                            <span class="duration-stat">Balanced</span>
+                        </div>
                     </button>
-                    <button class="training-card duration-card duration-deep" onclick="selectTrainingDuration(60)">
+                    <button class="training-card duration-card duration-deep duration-locked" data-premium-duration onclick="selectTrainingDuration(60)">
                         <div class="training-card-title">1 hour</div>
-                        <div class="training-card-desc">Longer session with more volume, conditioning and technical blocks.</div>
+                        <div class="training-card-desc">Deeper sessions for volume, defense, power or full technical work.</div>
                         <div class="training-meta">Deep work</div>
+                        <div class="duration-stats">
+                            <span class="duration-stat highlight">16 workouts</span>
+                            <span class="duration-stat">Pro</span>
+                            <span class="duration-stat">Volume</span>
+                        </div>
                     </button>
                     <button class="training-card duration-card duration-full" onclick="selectTrainingDuration(90)">
                         <div class="training-card-title">90 min</div>
-                        <div class="training-card-desc">Complete gym-style training with extended skill and conditioning work.</div>
+                        <div class="training-card-desc">Fight camp style work with long rounds, conditioning and recovery blocks.</div>
                         <div class="training-meta">Full session</div>
+                        <div class="duration-stats">
+                            <span class="duration-stat highlight">15 workouts</span>
+                            <span class="duration-stat">Camp</span>
+                            <span class="duration-stat">Hard</span>
+                        </div>
                     </button>
                 </div>
             </div>
@@ -3351,14 +3546,14 @@
             <div class="premium-hero">
                 <div class="premium-kicker"><svg class="icon icon-sm"><use href="#icon-flame"></use></svg>FightWise Pro</div>
                 <div class="premium-title">Train like you mean it</div>
-                <div class="premium-copy" id="premiumMessage">Unlock 52 guided fight workouts, Task Spar prompts and harder camp sessions.</div>
+                <div class="premium-copy" id="premiumMessage">Unlock 58 guided fight workouts, Task Spar prompts and harder camp sessions.</div>
                 <div class="premium-offer-line">
                     <span class="premium-price">4.99€</span>
                     <span class="premium-old-price">10.00€</span>
                     <span class="premium-once">Launch offer</span>
                 </div>
                 <div class="premium-list">
-                    <div><svg class="icon icon-sm"><use href="#icon-check"></use></svg>52 guided workouts ready to start</div>
+                    <div><svg class="icon icon-sm"><use href="#icon-check"></use></svg>58 guided workouts ready to start</div>
                     <div><svg class="icon icon-sm"><use href="#icon-check"></use></svg>Bag, shadowbox, K1, Muay Thai and MMA plans</div>
                     <div><svg class="icon icon-sm"><use href="#icon-check"></use></svg>Task Spar cues between rounds</div>
                 </div>
@@ -3720,6 +3915,7 @@
         let appMode = null;
         let trainingPlanTitle = '';
         const PREMIUM_KEY = 'strikeflow_premium_unlocked';
+        const PREMIUM_DURATION_MINUTES = [20, 45, 60];
 
         // State
         let timerState = {
@@ -4400,6 +4596,50 @@
         ];
 
         const TRAINING_WORKOUTS = {
+            20: [
+                {
+                    id: 'short-flow',
+                    title: 'Short flow',
+                    type: 'Shadowbox training',
+                    subtitle: 'A quick technical flow for movement, rhythm and relaxed striking.',
+                    structure: '3 x 4 min flow rounds',
+                    intensity: 2,
+                    intensityLabel: 'Light',
+                    minutes: 20,
+                    stats: [['20', 'Minutes'], ['3', 'Flow rounds'], ['Light', 'Intensity']],
+                    sections: [
+                        { title: 'Warmup - 4 min', items: ['Joint mobility, easy bounce and loose shadowboxing.'] },
+                        { title: 'Flow rounds - 3 x 4 min', rounds: [
+                            ['Round 1 - Feet and jab', 'Move calmly. Jab, double jab and exit on an angle.'],
+                            ['Round 2 - Defense flow', 'Slip, roll, block, check and answer with one clean strike.'],
+                            ['Round 3 - Smooth freestyle', 'Mix punches, kicks and teeps at 60 percent speed.']
+                        ] },
+                        { title: 'Cooldown - 4 min', items: ['Slow breathing and stretch hips, calves and shoulders.'] }
+                    ]
+                },
+                {
+                    id: 'quick-bag-touch',
+                    title: 'Bag touch',
+                    type: 'Bag workout',
+                    subtitle: 'A fast bag session for clean contact without a long setup.',
+                    structure: '5 x 2 min bag rounds',
+                    intensity: 3,
+                    intensityLabel: 'Medium',
+                    minutes: 20,
+                    stats: [['20', 'Minutes'], ['5', 'Bag rounds'], ['Medium', 'Intensity']],
+                    sections: [
+                        { title: 'Warmup - 3 min', items: ['Easy bag touches, shoulder rolls and light kicks.'] },
+                        { title: 'Bag rounds - 5 x 2 min', rounds: [
+                            ['Round 1 - Straight shots', 'Jab-cross, reset guard, move.'],
+                            ['Round 2 - Low kick finish', 'Every combo ends with a low kick.'],
+                            ['Round 3 - Body work', 'Body hooks, body cross and upstairs finish.'],
+                            ['Round 4 - Knees', '5 knees, exit with 1-2, repeat.'],
+                            ['Round 5 - Clean pace', 'Work hard but keep every strike balanced.']
+                        ] },
+                        { title: 'Cooldown - 4 min', items: ['Walk, breathe and stretch.'] }
+                    ]
+                }
+            ],
             30: [
                 {
                     id: 'quick-technique',
@@ -4662,6 +4902,143 @@
         };
 
         const PREMIUM_TRAINING_WORKOUTS = {
+            20: [
+                {
+                    id: 'pro-morning-flow',
+                    title: 'Morning flow',
+                    type: 'Shadowbox training',
+                    subtitle: 'Low-impact flow to wake up your stance, guard and breathing.',
+                    structure: '4 x 3 min easy flow rounds',
+                    intensity: 1,
+                    intensityLabel: 'Easy',
+                    minutes: 20,
+                    premium: true,
+                    stats: [['20', 'Minutes'], ['4', 'Flow rounds'], ['Easy', 'Intensity']],
+                    sections: [
+                        { title: 'Mobility - 4 min', items: ['Ankles, hips, shoulders and spine.'] },
+                        { title: 'Easy flow - 4 x 3 min', rounds: [
+                            ['Round 1 - Stance wakeup', 'Step, pivot and reset without rushing.'],
+                            ['Round 2 - Loose hands', 'Jab, cross, hook with relaxed shoulders.'],
+                            ['Round 3 - Long weapons', 'Teep, body kick and long guard exits.'],
+                            ['Round 4 - Calm freestyle', 'Everything smooth. No power needed.']
+                        ] },
+                        { title: 'Stretch - 4 min', items: ['Breathe down and stretch hips, calves and shoulders.'] }
+                    ]
+                },
+                {
+                    id: 'pro-jab-sniper',
+                    title: 'Jab sniper',
+                    type: 'Shadowbox training',
+                    subtitle: 'Short jab-focused session for range, timing and exits.',
+                    structure: '5 x 2 min jab rounds',
+                    intensity: 2,
+                    intensityLabel: 'Light',
+                    minutes: 20,
+                    premium: true,
+                    stats: [['20', 'Minutes'], ['5', 'Jab rounds'], ['Light', 'Intensity']],
+                    sections: [
+                        { title: 'Warmup - 3 min', items: ['Loose bounce and long relaxed jabs.'] },
+                        { title: 'Jab rounds - 5 x 2 min', rounds: [
+                            ['Round 1 - Single jab', 'Touch and move. Never stand still after the jab.'],
+                            ['Round 2 - Double jab', 'Double jab high, double jab body, exit.'],
+                            ['Round 3 - Jab feints', 'Feint, jab. Feint body, jab head.'],
+                            ['Round 4 - Jab counters', 'Slip, jab. Block, jab. Pull, jab-cross.'],
+                            ['Round 5 - Jab freestyle', 'Everything starts with the lead hand.']
+                        ] },
+                        { title: 'Cooldown - 4 min', items: ['Shoulders, neck and slow breathing.'] }
+                    ]
+                },
+                {
+                    id: 'pro-low-kick-quickie',
+                    title: 'Low kick quickie',
+                    type: 'Bag workout',
+                    subtitle: 'Fast low kick bag session for clean setups and balance.',
+                    structure: '5 x 2 min low kick rounds',
+                    intensity: 4,
+                    intensityLabel: 'Hard',
+                    minutes: 20,
+                    premium: true,
+                    stats: [['20', 'Minutes'], ['5', 'Kick rounds'], ['Hard', 'Intensity']],
+                    sections: [
+                        { title: 'Warmup - 3 min', items: ['Hip mobility, checks and easy low kicks.'] },
+                        { title: 'Low kick rounds - 5 x 2 min', rounds: [
+                            ['Round 1 - Jab low kick', 'Jab-low kick, double jab-low kick.'],
+                            ['Round 2 - Cross low kick', 'Cross-hook-low kick and reset.'],
+                            ['Round 3 - Check return', 'Check, return low kick, move.'],
+                            ['Round 4 - Body to low', 'Body shot, head shot, low kick.'],
+                            ['Round 5 - Pressure finish', 'Every combination ends with a kick.']
+                        ] },
+                        { title: 'Cooldown - 4 min', items: ['Calves, hips and breathing.'] }
+                    ]
+                },
+                {
+                    id: 'pro-pocket-defense',
+                    title: 'Pocket defense',
+                    type: 'Shadowbox training',
+                    subtitle: 'Quick boxing defense session for slips, rolls and exits.',
+                    structure: '4 x 3 min defense rounds',
+                    intensity: 3,
+                    intensityLabel: 'Medium',
+                    minutes: 20,
+                    premium: true,
+                    stats: [['20', 'Minutes'], ['4', 'Defense rounds'], ['Medium', 'Intensity']],
+                    sections: [
+                        { title: 'Warmup - 4 min', items: ['Head movement, guard positions and light footwork.'] },
+                        { title: 'Defense rounds - 4 x 3 min', rounds: [
+                            ['Round 1 - Slips', 'Slip outside, cross. Slip inside, hook.'],
+                            ['Round 2 - Rolls', 'Roll under, hook. Roll under, pivot out.'],
+                            ['Round 3 - Blocks', 'High block, body block and one clean counter.'],
+                            ['Round 4 - Exit flow', 'Defend, answer, leave the pocket.']
+                        ] },
+                        { title: 'Cooldown - 4 min', items: ['Neck, shoulders and relaxed breathing.'] }
+                    ]
+                },
+                {
+                    id: 'pro-clinch-spark',
+                    title: 'Clinch spark',
+                    type: 'Bag workout',
+                    subtitle: 'Short clinch and knee burst when you only have twenty minutes.',
+                    structure: '8 x 60 s clinch intervals',
+                    intensity: 5,
+                    intensityLabel: 'Very hard',
+                    minutes: 20,
+                    premium: true,
+                    stats: [['20', 'Minutes'], ['8', 'Intervals'], ['Max', 'Intensity']],
+                    sections: [
+                        { title: 'Warmup - 4 min', items: ['Neck, shoulders, hip mobility and easy knees.'] },
+                        { title: 'Clinch intervals - 8 x 60 s', rounds: [
+                            ['Intervals 1-2 - Straight knees', 'Hold posture and knee continuously.'],
+                            ['Intervals 3-4 - Exit knees', '5 knees, exit with 1-2, re-enter.'],
+                            ['Intervals 5-6 - Turns', 'Knee, turn bag, knee again.'],
+                            ['Intervals 7-8 - Hard finish', 'Fight pace knees with clean stance.']
+                        ] },
+                        { title: 'Cooldown - 4 min', items: ['Walk, breathe and stretch hips.'] }
+                    ]
+                },
+                {
+                    id: 'pro-speed-switch',
+                    title: 'Speed switch',
+                    type: 'Shadowbox training',
+                    subtitle: 'Quick stance-switching flow for rhythm and angles.',
+                    structure: '5 x 2 min switch rounds',
+                    intensity: 3,
+                    intensityLabel: 'Medium',
+                    minutes: 20,
+                    premium: true,
+                    stats: [['20', 'Minutes'], ['5', 'Switch rounds'], ['Medium', 'Intensity']],
+                    sections: [
+                        { title: 'Warmup - 3 min', items: ['Stance switches, calf mobility and easy jabs.'] },
+                        { title: 'Switch rounds - 5 x 2 min', rounds: [
+                            ['Round 1 - Switch after jab', 'Jab, switch, jab, exit.'],
+                            ['Round 2 - Switch cross', 'Switch, rear cross, angle out.'],
+                            ['Round 3 - Switch kick', 'Switch kick, reset stance.'],
+                            ['Round 4 - Defense switch', 'Slip, switch, counter.'],
+                            ['Round 5 - Smooth flow', 'Switch only when balance is clean.']
+                        ] },
+                        { title: 'Cooldown - 4 min', items: ['Calves, hips and breathing.'] }
+                    ]
+                }
+            ],
             30: [
                 {
                     id: 'pro-boxing-sharpener',
@@ -5448,7 +5825,7 @@
             }
         }
 
-        function openPremiumModal(message = 'Unlock 52 guided fight workouts, Task Spar cues and harder camp sessions.') {
+        function openPremiumModal(message = 'Unlock 58 guided fight workouts, Task Spar cues and harder camp sessions.') {
             const premiumMessage = document.getElementById('premiumMessage');
             if (premiumMessage) premiumMessage.textContent = message;
             document.getElementById('premiumModal').classList.add('show');
@@ -5463,9 +5840,17 @@
                 localStorage.setItem(PREMIUM_KEY, 'true');
             } catch (e) {}
             closePremiumModal();
+            updateDurationLocks();
             renderTrainingOptions(selectedTrainingDuration);
             updateSettingsUI();
             renderSparringSetup();
+        }
+
+        function updateDurationLocks() {
+            const unlocked = isPremiumUnlocked();
+            document.querySelectorAll('[data-premium-duration]').forEach(card => {
+                card.classList.toggle('duration-locked', !unlocked);
+            });
         }
 
         function showModeChoice() {
@@ -5510,9 +5895,11 @@
                 const selected = sparringDraft[step.key] === option.value;
                 const locked = option.premium && !isPremiumUnlocked();
                 return `
-                    <button class="setup-option ${selected ? 'selected' : ''}" onclick="selectSetupOption('${step.key}', ${JSON.stringify(option.value).replace(/"/g, '&quot;')}, this, ${option.premium ? 'true' : 'false'})">
-                        <div class="setup-option-title">${option.label}${locked ? ' · PRO' : ''}</div>
-                        <div class="setup-option-desc">${option.desc}</div>
+                    <button class="setup-option ${selected ? 'selected' : ''} ${locked ? 'locked-premium' : ''}" onclick="selectSetupOption('${step.key}', ${JSON.stringify(option.value).replace(/"/g, '&quot;')}, this, ${option.premium ? 'true' : 'false'})">
+                        <div class="setup-option-content">
+                            <div class="setup-option-title">${option.label}</div>
+                            <div class="setup-option-desc">${option.desc}</div>
+                        </div>
                     </button>
                 `;
             }).join('') + renderSetupCustom(step);
@@ -5701,12 +6088,17 @@
         function showTrainingDurationStep() {
             selectedTrainingDuration = null;
             expandedTrainingWorkoutId = null;
+            updateDurationLocks();
             document.getElementById('trainingTitle').textContent = 'Choose duration';
             document.getElementById('trainingSubtitle').textContent = 'Pick how long you want to train, then choose a guided workout with drills, combos and instructions.';
             setTrainingStep('trainingDurationStep');
         }
 
         function selectTrainingDuration(minutes) {
+            if (PREMIUM_DURATION_MINUTES.includes(minutes) && !isPremiumUnlocked()) {
+                openPremiumModal(`${minutes} min guided workouts are included in FightWise Pro. Unlock Pro to train with this duration.`);
+                return;
+            }
             selectedTrainingDuration = minutes;
             expandedTrainingWorkoutId = null;
             const workouts = TRAINING_WORKOUTS[minutes] || [];
@@ -5833,7 +6225,7 @@
             if (workout.premium && !isPremiumUnlocked()) {
                 return `
                     <div class="training-detail-inner">
-                        <div class="premium-copy">${workout.title} is ready in Pro. Unlock it with 52 guided fight workouts.</div>
+                        <div class="premium-copy">${workout.title} is ready in Pro. Unlock it with 58 guided fight workouts.</div>
                         <div class="premium-list">
                             <div><svg class="icon icon-sm"><use href="#icon-check"></use></svg>${workout.structure}</div>
                             <div><svg class="icon icon-sm"><use href="#icon-check"></use></svg>${workout.intensityLabel} intensity</div>
@@ -5929,7 +6321,7 @@
             const workout = findTrainingWorkout(minutes, workoutId);
             if (!workout) return;
             if (workout.premium && !isPremiumUnlocked()) {
-                openPremiumModal(`Unlock ${workout.title} and 52 total guided fight workouts.`);
+                openPremiumModal(`Unlock ${workout.title} and 58 total guided fight workouts.`);
                 return;
             }
 
@@ -6379,9 +6771,11 @@
         document.addEventListener('touchmove', e => {
             // Allow native scrolling inside overlay panels.
             if (
+                e.target.closest('.mode-choice, .training-section, .sparring-setup, .modal-content, .workout-preview-body, .premium-panel') ||
                 settingsModal.classList.contains('show') ||
                 workoutPreview.classList.contains('show') ||
                 premiumModal.classList.contains('show') ||
+                !modeChoice.classList.contains('hidden') ||
                 !trainingSection.classList.contains('hidden') ||
                 !sparringSetup.classList.contains('hidden')
             ) return;
