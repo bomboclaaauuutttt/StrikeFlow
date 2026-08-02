@@ -1510,16 +1510,44 @@
         }
 
         .training-card.locked {
-            border-color: rgba(43, 255, 74, 0.34);
-            padding: 16px;
+            border-color: rgba(190, 255, 0, 0.42);
+            padding: 18px 18px 16px;
             background:
-                linear-gradient(90deg, rgba(43, 255, 74, 0.1), transparent 42%),
+                linear-gradient(90deg, rgba(190, 255, 0, 0.09), transparent 46%),
                 #161616;
             position: relative;
         }
 
         .training-card.locked::after {
-            display: none;
+            align-items: center;
+            background:
+                radial-gradient(circle at 82% 18%, rgba(255, 159, 28, 0.2), transparent 28%),
+                rgba(5, 5, 5, 0.34);
+            color: #baff00;
+            content: "PREMIUM";
+            display: flex;
+            font-size: clamp(34px, 8vw, 62px);
+            font-weight: 950;
+            inset: 0;
+            justify-content: center;
+            letter-spacing: 2px;
+            line-height: 1;
+            pointer-events: none;
+            position: absolute;
+            text-shadow: 0 0 18px rgba(190, 255, 0, 0.3), 0 3px 0 #000;
+            text-transform: uppercase;
+            z-index: 4;
+        }
+
+        .training-card.locked .training-card-head {
+            filter: blur(2.2px);
+            opacity: 0.56;
+            transform: scale(0.99);
+        }
+
+        .training-card.locked:hover .training-card-head {
+            filter: blur(1.4px);
+            opacity: 0.68;
         }
 
         .premium-lock {
@@ -1537,6 +1565,7 @@
             text-align: center;
             text-transform: uppercase;
             white-space: nowrap;
+            z-index: 5;
         }
 
         .premium-lock::before {
@@ -1544,10 +1573,10 @@
         }
 
         .premium-teaser {
+            display: none;
             align-items: center;
             border: 1px solid rgba(255, 159, 28, 0.44);
             border-radius: 8px;
-            display: flex;
             gap: 12px;
             justify-content: space-between;
             margin-top: 14px;
@@ -1581,38 +1610,6 @@
             color: #ff9f1c;
             filter: drop-shadow(0 0 10px rgba(255, 95, 45, 0.85));
             animation: premiumFire 0.58s ease-in-out infinite alternate;
-        }
-
-        .premium-bundle {
-            border-color: rgba(174, 255, 0, 0.48);
-            border-left-color: #b8ff00;
-            background: #111;
-            padding: 0;
-        }
-
-        .premium-bundle::before {
-            display: none;
-        }
-
-        .premium-bundle-preview {
-            padding: 10px 12px 12px;
-            display: grid;
-            gap: 7px;
-            max-height: 116px;
-            overflow: hidden;
-            position: relative;
-            z-index: 1;
-        }
-
-        .premium-bundle-preview::after {
-            content: "";
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            height: 32px;
-            background: linear-gradient(180deg, transparent, #111);
-            pointer-events: none;
         }
 
         .premium-preview-item {
@@ -1994,55 +1991,169 @@
         }
 
         .premium-panel {
-            width: min(92vw, 460px);
-            border: 1px solid rgba(43, 255, 74, 0.42);
-            border-left: 6px solid var(--accent-primary);
+            width: min(92vw, 520px);
+            border: 1px solid rgba(190, 255, 0, 0.58);
             border-radius: 8px;
-            background: #171717;
-            padding: 24px;
+            background:
+                radial-gradient(circle at 86% 10%, rgba(255, 159, 28, 0.2), transparent 28%),
+                radial-gradient(circle at 12% 0%, rgba(43, 255, 74, 0.14), transparent 30%),
+                #111;
+            box-shadow: 0 0 44px rgba(255, 159, 28, 0.12), 0 0 0 1px rgba(43, 255, 74, 0.08);
+            overflow: hidden;
+            padding: 0;
+            position: relative;
             animation: fadeScaleIn 0.22s ease both;
         }
 
+        .premium-panel::before {
+            content: "";
+            position: absolute;
+            inset: auto -12% -22% -12%;
+            height: 42%;
+            background:
+                radial-gradient(circle at 24% 80%, rgba(255, 48, 28, 0.46), transparent 28%),
+                radial-gradient(circle at 48% 72%, rgba(255, 159, 28, 0.52), transparent 32%),
+                radial-gradient(circle at 72% 86%, rgba(255, 209, 102, 0.34), transparent 28%);
+            filter: blur(18px);
+            opacity: 0.55;
+            pointer-events: none;
+            animation: premiumBackFire 0.95s ease-in-out infinite alternate;
+        }
+
+        .premium-hero {
+            padding: 24px 24px 18px;
+            position: relative;
+            z-index: 1;
+        }
+
         .premium-kicker {
+            align-items: center;
             color: var(--accent-primary);
+            display: inline-flex;
             font-size: 12px;
             font-weight: 950;
+            gap: 8px;
             letter-spacing: 1.4px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             text-transform: uppercase;
+        }
+
+        .premium-kicker .icon {
+            color: #ffd166;
+            filter: drop-shadow(0 0 8px rgba(255, 159, 28, 0.45));
         }
 
         .premium-title {
             color: #fff;
-            font-size: clamp(28px, 6vw, 44px);
+            font-size: clamp(32px, 7vw, 56px);
             font-weight: 950;
-            line-height: 0.98;
-            margin-bottom: 12px;
+            line-height: 0.9;
+            margin-bottom: 10px;
             text-transform: uppercase;
         }
 
         .premium-copy {
             color: #cfcfcf;
-            font-size: 15px;
-            font-weight: 650;
+            font-size: 16px;
+            font-weight: 800;
             line-height: 1.45;
-            margin-bottom: 18px;
+            margin-bottom: 16px;
+        }
+
+        .premium-offer-line {
+            align-items: baseline;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .premium-price {
+            color: #ff2f43;
+            font-size: 34px;
+            font-weight: 950;
+            letter-spacing: 0;
+        }
+
+        .premium-old-price {
+            color: #7f7f7f;
+            font-size: 18px;
+            font-weight: 900;
+            text-decoration: line-through;
+        }
+
+        .premium-once {
+            color: #ffd166;
+            font-size: 12px;
+            font-weight: 950;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
         .premium-list {
             display: grid;
             gap: 8px;
-            margin-bottom: 18px;
+            margin-bottom: 0;
         }
 
         .premium-list div {
+            align-items: center;
             border-radius: 8px;
-            background: #222;
+            background: rgba(255, 255, 255, 0.075);
             color: #f0f0f0;
+            display: flex;
             font-size: 13px;
-            font-weight: 850;
+            font-weight: 950;
+            gap: 9px;
             padding: 10px 12px;
             text-transform: uppercase;
+        }
+
+        .premium-list .icon {
+            color: var(--accent-primary);
+            flex: 0 0 auto;
+        }
+
+        .premium-actions {
+            display: grid;
+            gap: 10px;
+            padding: 0 24px 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .premium-unlock-btn {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .premium-unlock-btn::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(110deg, transparent 0 36%, rgba(255, 255, 255, 0.32) 48%, transparent 60% 100%);
+            opacity: 0;
+            transform: translateX(-90%);
+            animation: premiumButtonShine 2.8s ease-in-out infinite;
+        }
+
+        .premium-dismiss {
+            width: 100%;
+            margin-top: 0;
+        }
+
+        @keyframes premiumButtonShine {
+            0%, 52% {
+                opacity: 0;
+                transform: translateX(-90%);
+            }
+            64% {
+                opacity: 0.7;
+            }
+            84%, 100% {
+                opacity: 0;
+                transform: translateX(90%);
+            }
         }
 
         .workout-preview-panel {
@@ -3154,8 +3265,8 @@
                         <span class="mode-pill">Instructions</span>
                     </div>
                 </button>
-                <button class="mode-premium-ad" onclick="openPremiumModal('Unlock 50+ premium workouts, Task Spar and the full fight library.')">
-                    <img class="premium-ad-image" src="Unlock 50+ workouts with premium AD.png" alt="Unlock 50+ workouts with Premium">
+                <button class="mode-premium-ad" onclick="openPremiumModal('Unlock 52 guided fight workouts, Task Spar cues and harder camp sessions.')">
+                    <img class="premium-ad-image" src="Unlock 50+ workouts with premium AD.png" alt="Unlock 52 workouts with Premium">
                 </button>
             </div>
         </div>
@@ -3237,16 +3348,25 @@
 
     <div class="premium-modal" id="premiumModal">
         <div class="premium-panel">
-            <div class="premium-kicker">FightWise Pro</div>
-            <div class="premium-title">Unlock the full fight library</div>
-            <div class="premium-copy" id="premiumMessage">Premium unlocks advanced training plans and Task Spar mode.</div>
-            <div class="premium-list">
-                <div>Premium guided workouts</div>
-                <div>Task Spar mode</div>
-                <div>Fight camp and conditioning plans</div>
+            <div class="premium-hero">
+                <div class="premium-kicker"><svg class="icon icon-sm"><use href="#icon-flame"></use></svg>FightWise Pro</div>
+                <div class="premium-title">Train like you mean it</div>
+                <div class="premium-copy" id="premiumMessage">Unlock 52 guided fight workouts, Task Spar prompts and harder camp sessions.</div>
+                <div class="premium-offer-line">
+                    <span class="premium-price">4.99€</span>
+                    <span class="premium-old-price">10.00€</span>
+                    <span class="premium-once">Launch offer</span>
+                </div>
+                <div class="premium-list">
+                    <div><svg class="icon icon-sm"><use href="#icon-check"></use></svg>52 guided workouts ready to start</div>
+                    <div><svg class="icon icon-sm"><use href="#icon-check"></use></svg>Bag, shadowbox, K1, Muay Thai and MMA plans</div>
+                    <div><svg class="icon icon-sm"><use href="#icon-check"></use></svg>Task Spar cues between rounds</div>
+                </div>
             </div>
-            <button class="save-btn" onclick="simulatePremiumUnlock()">UNLOCK PRO</button>
-            <button class="secondary-btn" style="width:100%; margin-top:10px;" onclick="closePremiumModal()">NOT NOW</button>
+            <div class="premium-actions">
+                <button class="save-btn premium-unlock-btn" onclick="simulatePremiumUnlock()">UNLOCK PRO</button>
+                <button class="secondary-btn premium-dismiss" onclick="closePremiumModal()">NOT NOW</button>
+            </div>
         </div>
     </div>
 
@@ -5328,7 +5448,7 @@
             }
         }
 
-        function openPremiumModal(message = 'Premium unlocks advanced training plans and Task Spar mode.') {
+        function openPremiumModal(message = 'Unlock 52 guided fight workouts, Task Spar cues and harder camp sessions.') {
             const premiumMessage = document.getElementById('premiumMessage');
             if (premiumMessage) premiumMessage.textContent = message;
             document.getElementById('premiumModal').classList.add('show');
@@ -5713,11 +5833,11 @@
             if (workout.premium && !isPremiumUnlocked()) {
                 return `
                     <div class="training-detail-inner">
-                        <div class="premium-copy">This guided workout is included in FightWise Pro.</div>
+                        <div class="premium-copy">${workout.title} is ready in Pro. Unlock it with 52 guided fight workouts.</div>
                         <div class="premium-list">
-                            <div>Advanced guided plan</div>
-                            <div>${workout.structure}</div>
-                            <div>${workout.intensityLabel} intensity</div>
+                            <div><svg class="icon icon-sm"><use href="#icon-check"></use></svg>${workout.structure}</div>
+                            <div><svg class="icon icon-sm"><use href="#icon-check"></use></svg>${workout.intensityLabel} intensity</div>
+                            <div><svg class="icon icon-sm"><use href="#icon-check"></use></svg>Guided steps while the timer runs</div>
                         </div>
                         <button class="workout-start" onclick="event.stopPropagation(); openPremiumModal('Unlock Pro to start ${workout.title}.')">Unlock Pro</button>
                     </div>
@@ -5769,23 +5889,11 @@
 
         function renderTrainingOptions(minutes) {
             const workouts = TRAINING_WORKOUTS[minutes] || [];
-            const premiumLocked = !isPremiumUnlocked();
-            const visibleWorkouts = premiumLocked ? workouts.filter(workout => !workout.premium) : workouts;
-            const premiumWorkouts = workouts.filter(workout => workout.premium);
-            const workoutCards = visibleWorkouts.map(workout => {
+            const workoutCards = workouts.map(workout => {
                 const locked = workout.premium && !isPremiumUnlocked();
                 const intensityBars = Array.from({ length: 5 }, (_, index) =>
                     `<span class="intensity-bar ${index < workout.intensity ? 'active' : ''}"></span>`
                 ).join('');
-                const lockedTeaser = locked ? `
-                    <div class="premium-teaser">
-                        <div>
-                            <div class="premium-teaser-text">Unlock ${PREMIUM_WORKOUT_COUNT}+ workouts with Premium</div>
-                            <div class="premium-teaser-sub">Includes this plan, Task Spar and the full fight library.</div>
-                        </div>
-                        <svg class="icon premium-fire" aria-hidden="true"><use href="#icon-flame"></use></svg>
-                    </div>
-                ` : '';
                 return `
                     <div class="training-card ${locked ? 'locked' : ''}" role="button" tabindex="0" onclick="openWorkoutPreview(${minutes}, '${workout.id}')">
                         <div class="training-card-head">
@@ -5810,39 +5918,18 @@
                                 ${locked ? '<span class="icon-row"><svg class="icon icon-sm"><use href="#icon-lock"></use></svg>Locked</span>' : '<svg class="icon icon-md"><use href="#icon-arrow-right"></use></svg>'}
                             </div>
                         </div>
-                        ${lockedTeaser}
                     </div>
                 `;
             }).join('');
 
-            const premiumBundle = premiumLocked && premiumWorkouts.length ? renderPremiumBundleCard(minutes, premiumWorkouts) : '';
-            document.getElementById('trainingOptionsGrid').innerHTML = workoutCards + premiumBundle;
-        }
-
-        function renderPremiumBundleCard(minutes, workouts) {
-            const peekItems = workouts.slice(0, 4).map(workout => `
-                <div class="premium-preview-item">
-                    <div>
-                        <div class="premium-preview-title">${workout.title}</div>
-                        <div class="premium-preview-meta">${workout.structure}</div>
-                    </div>
-                    <div class="premium-preview-lock"><span class="icon-row"><svg class="icon icon-sm"><use href="#icon-lock"></use></svg>Locked</span></div>
-                </div>
-            `).join('');
-
-            return `
-                <div class="training-card premium-bundle" role="button" tabindex="0" onclick="openPremiumModal('Unlock 50+ premium workouts, Task Spar and the full fight library.')">
-                    <img class="premium-ad-image" src="Unlock 50+ workouts with premium AD.png" alt="Unlock 50+ workouts with Premium">
-                    <div class="premium-bundle-preview">${peekItems}</div>
-                </div>
-            `;
+            document.getElementById('trainingOptionsGrid').innerHTML = workoutCards;
         }
 
         function openWorkoutPreview(minutes, workoutId) {
             const workout = findTrainingWorkout(minutes, workoutId);
             if (!workout) return;
             if (workout.premium && !isPremiumUnlocked()) {
-                openPremiumModal(`Unlock FightWise Pro to use ${workout.title} and the full premium training library.`);
+                openPremiumModal(`Unlock ${workout.title} and 52 total guided fight workouts.`);
                 return;
             }
 
