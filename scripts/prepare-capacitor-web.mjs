@@ -9,6 +9,7 @@ const files = [
   'privacy-policy.html',
   'FightWise logo.png',
   'FightWise text.png',
+  'Fightwise app icon.png',
   'Unlock 50+ workouts with premium AD.png'
 ];
 

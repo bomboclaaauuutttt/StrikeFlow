@@ -1,10 +1,11 @@
-const CACHE = 'fightwise-v19';
+const CACHE = 'fightwise-v20';
 const ASSETS = [
   './index.html',
   './privacy-policy.html',
   './manifest.json',
   './FightWise logo.png',
   './FightWise text.png',
+  './Fightwise app icon.png',
   './click-soundeffect.mp3',
   './Unlock 50+ workouts with premium AD.png'
 ];

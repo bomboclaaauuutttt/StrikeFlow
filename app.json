@@ -4,7 +4,7 @@
     "slug": "fightwise",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./Fightwise app icon.png",
     "userInterfaceStyle": "dark",
     "splash": {
       "image": "./assets/splash.png",
@@ -26,7 +26,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./Fightwise app icon.png",
         "backgroundColor": "#000000"
       },
       "package": "com.fightwise.app",
@@ -35,7 +35,7 @@
       ]
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./Fightwise app icon.png"
     },
     "plugins": [
       [
