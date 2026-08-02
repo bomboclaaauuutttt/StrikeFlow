@@ -4126,11 +4126,7 @@
                     </div>
                 </button>
                 <button class="mode-premium-ad" id="modePremiumAd" onclick="openPremiumModal('Get FightWise Pro for testing: unlock 58 guided workouts, Task Spar cues and custom workouts.')">
-                    <div class="premium-coming-card">
-                        <div class="premium-coming-kicker">Premium</div>
-                        <div class="premium-coming-title">Get Premium</div>
-                        <div class="premium-coming-copy">Test 58 guided workouts, Task Spar cues and premium fight camp plans.</div>
-                    </div>
+                    <img class="premium-ad-image" src="Unlock 50+ workouts with premium AD.png" alt="Unlock 50+ workouts with Premium">
                 </button>
             </div>
         </div>
@@ -6771,7 +6767,7 @@
         function updatePremiumVisibility() {
             const modePremiumAd = document.getElementById('modePremiumAd');
             if (modePremiumAd) {
-                modePremiumAd.classList.remove('hidden');
+                modePremiumAd.classList.toggle('hidden', isPremiumUnlocked());
             }
         }
 

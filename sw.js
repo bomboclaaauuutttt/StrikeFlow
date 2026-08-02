@@ -1,4 +1,4 @@
-const CACHE = 'fightwise-v37';
+const CACHE = 'fightwise-v38';
 const ASSETS = [
   './index.html',
   './privacy-policy.html',
