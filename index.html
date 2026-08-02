@@ -4946,15 +4946,26 @@
             ]);
         }
 
+        function playVoiceAttentionTone() {
+            playToneEffect([
+                { frequency: 880, duration: 0.16, delay: 0, gain: 0.62, type: 'square' },
+                { frequency: 1320, duration: 0.2, delay: 0.08, gain: 0.5, type: 'triangle' }
+            ]);
+        }
+
         function speakCue(text, options = {}) {
             if (!settings.roundVoiceEnabled) return;
             if (!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') return;
             try {
+                if (options.attentionTone !== false) {
+                    playVoiceAttentionTone();
+                }
+
                 const utterance = new SpeechSynthesisUtterance(text);
                 utterance.lang = 'en-US';
-                utterance.rate = options.rate || 0.92;
-                utterance.pitch = options.pitch || 0.9;
-                utterance.volume = options.volume || 1;
+                utterance.rate = options.rate || 0.86;
+                utterance.pitch = options.pitch || 1;
+                utterance.volume = Math.min(1, options.volume || 1);
 
                 window.speechSynthesis.cancel();
                 window.speechSynthesis.speak(utterance);
@@ -6760,7 +6771,7 @@
         function updatePremiumVisibility() {
             const modePremiumAd = document.getElementById('modePremiumAd');
             if (modePremiumAd) {
-                modePremiumAd.classList.toggle('hidden', isPremiumUnlocked());
+                modePremiumAd.classList.remove('hidden');
             }
         }
 
