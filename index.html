@@ -4928,6 +4928,14 @@
             ]);
         }
 
+        function playTutorialWelcomeChime() {
+            playToneEffect([
+                { frequency: 520, duration: 0.18, delay: 0, gain: 0.28, type: 'triangle' },
+                { frequency: 780, duration: 0.22, delay: 0.08, gain: 0.32, type: 'sine' },
+                { frequency: 1040, duration: 0.34, delay: 0.2, gain: 0.26, type: 'triangle' }
+            ]);
+        }
+
         function playWorkoutCompleteFanfare() {
             playToneEffect([
                 { frequency: 392, duration: 0.28, delay: 0, gain: 0.42, type: 'triangle' },
@@ -8008,6 +8016,7 @@
         function checkTutorial() {
             showModeChoice();
             document.getElementById('tutWelcome').style.display = 'flex';
+            setTimeout(playTutorialWelcomeChime, 80);
         }
 
         function resetTutorial() {
@@ -8016,6 +8025,7 @@
             setTimeout(() => {
                 showModeChoice();
                 document.getElementById('tutWelcome').style.display = 'flex';
+                playTutorialWelcomeChime();
             }, 180);
         }
 
