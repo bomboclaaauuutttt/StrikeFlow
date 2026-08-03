@@ -1427,7 +1427,7 @@
                 radial-gradient(circle at 82% 18%, rgba(255, 159, 28, 0.18), transparent 28%),
                 rgba(5, 5, 5, 0.26);
             color: #baff00;
-            content: "PREMIUM";
+            content: "COMING SOON";
             display: flex;
             font-size: clamp(32px, 8vw, 58px);
             font-weight: 950;
@@ -1865,7 +1865,7 @@
                 radial-gradient(circle at 82% 18%, rgba(255, 159, 28, 0.2), transparent 28%),
                 rgba(5, 5, 5, 0.34);
             color: #baff00;
-            content: "PREMIUM";
+            content: "COMING SOON";
             display: flex;
             font-size: clamp(34px, 8vw, 62px);
             font-weight: 950;
@@ -2262,7 +2262,7 @@
                 radial-gradient(circle at 82% 18%, rgba(255, 159, 28, 0.18), transparent 28%),
                 rgba(5, 5, 5, 0.26);
             color: #baff00;
-            content: "PREMIUM";
+            content: "COMING SOON";
             display: flex;
             font-size: clamp(30px, 7vw, 54px);
             font-weight: 950;
@@ -3028,8 +3028,8 @@
 
         .settings-inline-panel {
             display: none;
-            gap: 8px;
-            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 0;
             padding: 14px 0 16px;
             border-bottom: 1px solid var(--section-border);
             animation: fadeScaleIn 0.18s ease both;
@@ -3039,13 +3039,27 @@
             display: flex;
         }
 
+        .settings-inline-panel .diff-btn {
+            width: 100%;
+            border: 0;
+            border-bottom: 1px solid var(--section-border);
+            border-radius: 0;
+            background: transparent;
+            justify-content: flex-start;
+            padding: 14px 2px;
+            text-align: left;
+        }
+
+        .settings-inline-panel .diff-btn.active {
+            color: var(--accent-primary);
+        }
+
         .settings-inline-note {
             color: #9f9f9f;
-            flex-basis: 100%;
             font-size: 12px;
             font-weight: 700;
             line-height: 1.4;
-            margin-top: 2px;
+            margin-top: 12px;
         }
 
         .settings-back-btn {
@@ -4193,9 +4207,6 @@
                         <span class="mode-pill">Instructions</span>
                     </div>
                 </button>
-                <button class="mode-premium-ad" id="modePremiumAd" onclick="openPremiumModal()">
-                    <img class="premium-ad-image" src="Unlock 50+ workouts with premium AD.png" alt="Unlock 50+ workouts with Premium">
-                </button>
             </div>
         </div>
     </div>
@@ -4484,15 +4495,6 @@
                             <button class="diff-btn" id="language-de" onclick="setLanguage('de')">DEUTSCH</button>
                             <div class="settings-inline-note" id="languageDesc">English is the default language.</div>
                         </div>
-                        <button class="settings-tab" id="nav-theme" onclick="toggleSettingsGroup('theme')">THEME</button>
-                        <div class="settings-inline-panel" id="settingsInline-theme">
-                            <button class="diff-btn" id="theme-classic" onclick="setTheme('classic')">CLASSIC</button>
-                            <button class="diff-btn" id="theme-ocean" onclick="setTheme('ocean')">OCEAN</button>
-                            <button class="diff-btn" id="theme-sunset" onclick="setTheme('sunset')">SUNSET</button>
-                            <button class="diff-btn" id="theme-noir" onclick="setTheme('noir')">NOIR</button>
-                            <button class="diff-btn" id="theme-neon" onclick="setTheme('neon')">NEON</button>
-                            <div class="settings-inline-note" id="themeDesc">Classic arena contrast</div>
-                        </div>
                         <button class="settings-tab settings-action" onclick="resetTutorial()">SHOW TUTORIAL AGAIN</button>
                     </div>
                 </div>
@@ -4751,13 +4753,13 @@
 
         let selectedPreset = 'muaythai';
         const PRE_ROUND_READ_SECONDS = 5;
-        const THEME_KEY = 'strikeflow_theme';
         const LANGUAGE_KEY = 'fightwise_language';
         let activeSettingsTab = 'main';
         let openSettingsGroup = null;
         let appMode = null;
         let trainingPlanTitle = '';
         const PREMIUM_KEY = 'strikeflow_premium_unlocked';
+        const PREMIUM_BILLING_ENABLED = false;
         const PREMIUM_DURATION_MINUTES = [20, 45, 60];
 
         // State
@@ -4799,15 +4801,471 @@
         };
 
         try {
-            const savedTheme = localStorage.getItem(THEME_KEY);
-            if (savedTheme && ['classic', 'ocean', 'sunset', 'noir', 'neon'].includes(savedTheme)) {
-                settings.theme = savedTheme;
-            }
+            localStorage.removeItem('strikeflow_theme');
             const savedLanguage = localStorage.getItem(LANGUAGE_KEY);
             if (savedLanguage && ['en', 'fi', 'de'].includes(savedLanguage)) {
                 settings.language = savedLanguage;
             }
         } catch (e) {}
+
+        const UI_TRANSLATIONS = {
+            fi: {
+                'ROUND': 'ERÄ',
+                'BREAK': 'TAUKO',
+                'READY': 'VALMIS',
+                'Tap start': 'Paina start',
+                'MODE': 'TILA',
+                'SKIP BREAK': 'OHITA TAUKO',
+                'START': 'ALOITA',
+                'STOP': 'PYSÄYTÄ',
+                'RESET': 'NOLLAA',
+                'CONTINUE': 'JATKA',
+                'SKIP STEP': 'OHITA VAIHE',
+                'Fight Timer & Guided Workouts': 'Otteluajastin ja ohjatut treenit',
+                'Train. Fight. Improve.': 'Treenaa. Ottele. Kehity.',
+                'Choose your session and get to work.': 'Valitse sessio ja aloita työ.',
+                'Fight rounds': 'Otteluerät',
+                'Sparring': 'Sparri',
+                'Rounds, bells and breaks.': 'Erät, kellot ja tauot.',
+                'Open timer': 'Avaa ajastin',
+                'Live rounds': 'Live-erät',
+                'Breaks': 'Tauot',
+                'Bell cues': 'Kelloäänet',
+                'Guided work': 'Ohjattu treeni',
+                'Training': 'Treeni',
+                'Workouts, combos and instructions.': 'Treenit, kombot ja ohjeet.',
+                'Choose plan': 'Valitse ohjelma',
+                'Combos': 'Kombot',
+                'Drills': 'Harjoitteet',
+                'Instructions': 'Ohjeet',
+                'Sparring setup': 'Sparrin asetukset',
+                'Round time': 'Erän aika',
+                'How long should each round be?': 'Kuinka pitkä yksi erä on?',
+                'Custom round time': 'Oma erän aika',
+                'Use 1:30, 1.30min, 90s or 2min.': 'Käytä esim. 1:30, 1.30min, 90s tai 2min.',
+                'Fast technical rounds.': 'Nopeat tekniset erät.',
+                'Standard K1 / Muay Thai round.': 'Normaali K1 / Muay Thai -erä.',
+                'MMA-style longer rounds.': 'MMA-tyyliset pidemmät erät.',
+                'Break time': 'Tauon aika',
+                'How much rest between rounds?': 'Kuinka pitkä tauko erien välissä?',
+                'Custom break time': 'Oma tauon aika',
+                'Use seconds or minutes, for example 45s, 1:15 or 1.30min.': 'Käytä sekunteja tai minuutteja, esim. 45s, 1:15 tai 1.30min.',
+                'Hard pace, short recovery.': 'Kova tahti, lyhyt palautus.',
+                'Classic fight rest.': 'Klassinen ottelutauko.',
+                'More time to reset.': 'Lisää aikaa palautua.',
+                'Rounds': 'Erät',
+                'How many rounds are you doing?': 'Kuinka monta erää teet?',
+                'Custom rounds': 'Omat erät',
+                'Choose any amount from 1 to 99 rounds.': 'Valitse mikä tahansa määrä 1-99 erää.',
+                'Sharp and focused.': 'Terävä ja keskittynyt.',
+                'Championship rhythm.': 'Mestaruusrytmi.',
+                'Conditioning grind.': 'Kuntorääkki.',
+                'Task Spar': 'Task Spar',
+                'Do you want random tasks between rounds?': 'Haluatko satunnaisia tehtäviä erien väliin?',
+                'Off': 'Pois',
+                'On': 'Päällä',
+                'Clean timer only.': 'Pelkkä siisti ajastin.',
+                'Premium: get combinations and objectives each round.': 'Premium: kombot ja tavoitteet joka erään.',
+                'Back': 'Takaisin',
+                'Next': 'Seuraava',
+                'Choose duration': 'Valitse kesto',
+                'Pick how long you want to train, then choose a guided workout with drills, combos and instructions.': 'Valitse treenin kesto ja sen jälkeen ohjattu treeni harjoitteilla, komboilla ja ohjeilla.',
+                'BACK': 'TAKAISIN',
+                'total plans': 'treeniä yhteensä',
+                'Pro workouts': 'Pro-treeniä',
+                '20-90 min sessions': '20-90 min sessiot',
+                'Quick flow, sharp technique and short sweat sessions when time is tight.': 'Nopea flow, terävä tekniikka ja lyhyet hikisessiot kiireeseen.',
+                'Compact training blocks for skill work, bag rounds or hard intervals.': 'Tiiviit treeniblokit tekniikkaan, säkkieriin tai koviin intervalleihin.',
+                'The sweet spot: proper warmup, focused rounds and a clean finish.': 'Paras välimuoto: kunnollinen lämmittely, fokusoituja eriä ja siisti lopetus.',
+                'Deeper sessions for volume, defense, power or full technical work.': 'Pidemmät sessiot volyymiin, puolustukseen, voimaan tai tekniikkaan.',
+                'Fight camp style work with long rounds, conditioning and recovery blocks.': 'Fight camp -tyylinen treeni pitkillä erillä, kunnolla ja palautuksella.',
+                'Build your own guided workout with timed steps and instructions.': 'Rakenna oma ohjattu treeni ajastetuilla vaiheilla ja ohjeilla.',
+                'Flow work': 'Flow-treeni',
+                'Quick work': 'Nopea treeni',
+                'Recommended': 'Suositeltu',
+                'Deep work': 'Syvä treeni',
+                'Full session': 'Täysi sessio',
+                'Your plan': 'Oma ohjelma',
+                'workouts': 'treeniä',
+                'Technique': 'Tekniikka',
+                'Bag': 'Säkki',
+                'Pro': 'Pro',
+                'Flow': 'Flow',
+                'Balanced': 'Tasapainoinen',
+                'Volume': 'Volyymi',
+                'Camp': 'Leiri',
+                'Hard': 'Kova',
+                'Create': 'Luo',
+                'Steps': 'Vaiheet',
+                'Guided': 'Ohjattu',
+                'Sort by': 'Järjestä',
+                'Default': 'Oletus',
+                'Hardest': 'Kovimmat',
+                'Easiest': 'Kevyimmät',
+                'Shadowbox': 'Varjonyrkkeily',
+                'Workout name': 'Treenin nimi',
+                'My workout': 'Oma treeni',
+                'Add step': 'Lisää vaihe',
+                'Start workout': 'Aloita treeni',
+                'Workout': 'Treeni',
+                'Close workout preview': 'Sulje treenin esikatselu',
+                'FightWise Pro': 'FightWise Pro',
+                'Coming soon': 'Tulossa pian',
+                'FightWise Premium is coming soon with 50+ guided workouts, Task Spar cues and custom workout tools.': 'FightWise Premium on tulossa pian: yli 50 ohjattua treeniä, Task Spar -vihjeet ja omat treenityökalut.',
+                'Soon': 'Pian',
+                'Premium launch is being prepared': 'Premium-julkaisua valmistellaan',
+                '58 guided workouts ready to start': '58 ohjattua treeniä valmiina',
+                'Bag, shadowbox, K1, Muay Thai and MMA plans': 'Säkki-, varjonyrkkeily-, K1-, Muay Thai- ja MMA-ohjelmat',
+                'Task Spar cues between rounds': 'Task Spar -vihjeet erien väliin',
+                'COMING SOON': 'TULOSSA PIAN',
+                'NOT NOW': 'EI NYT',
+                'WELCOME TO FIGHTWISE': 'TERVETULOA FIGHTWISEEN',
+                'Want a quick tour before you start?': 'Haluatko nopean esittelyn ennen aloittamista?',
+                'See the main features step by step.': 'Näe tärkeimmät ominaisuudet vaihe vaiheelta.',
+                'YES, SHOW ME': 'KYLLÄ, NÄYTÄ',
+                'SKIP': 'OHITA',
+                'STEP': 'VAIHE',
+                'NEXT': 'SEURAAVA',
+                'DONE': 'VALMIS',
+                'GET READY!': 'VALMISTAUDU!',
+                'SESSION COMPLETE!': 'SESSIO VALMIS!',
+                'WORKOUT COMPLETE!': 'TREENI VALMIS!',
+                'Great workout!': 'Hyvä treeni!',
+                'Strong work. You finished the plan.': 'Vahvaa työtä. Sait ohjelman valmiiksi.',
+                'Rounds completed': 'Erät tehty',
+                'Active time': 'Aktiivinen aika',
+                'Break time': 'Taukoaika',
+                'Skipped breaks': 'Ohitetut tauot',
+                'Completion': 'Valmius',
+                'START NEW SESSION': 'ALOITA UUSI SESSIO',
+                'SETTINGS': 'ASETUKSET',
+                'LANGUAGE': 'KIELI',
+                'ENGLISH': 'ENGLANTI',
+                'SUOMI': 'SUOMI',
+                'DEUTSCH': 'SAKSA',
+                'English is the default language.': 'Englanti on oletuskieli.',
+                'Finnish selected. Voice cues use Finnish.': 'Suomi on valittu. Puhekuulutukset käyttävät suomen kieltä.',
+                'German selected. Voice cues use German.': 'Saksa on valittu. Puhekuulutukset käyttävät saksan kieltä.',
+                'SHOW TUTORIAL AGAIN': 'NÄYTÄ TUTORIAALI UUDELLEEN',
+                'PRIVACY POLICY': 'TIETOSUOJAKÄYTÄNTÖ',
+                'Required for Play Store and App Store submissions.': 'Vaaditaan Play Store- ja App Store -julkaisuihin.',
+                'SAVE & CLOSE': 'TALLENNA JA SULJE',
+                'Premium is not available yet. Coming soon.': 'Premium ei ole vielä saatavilla. Tulossa pian.',
+                'Premium is not available yet. Google Play Billing is coming soon.': 'Premium ei ole vielä saatavilla. Google Play Billing on tulossa pian.',
+                'FightWise Premium is coming soon. Premium workouts, Task Spar cues and custom workout tools will unlock after Google Play Billing is ready.': 'FightWise Premium on tulossa pian. Premium-treenit, Task Spar -vihjeet ja omat treenityökalut avautuvat, kun Google Play Billing on valmis.',
+                'Premium feature - unlock Pro to use random round objectives': 'Premium-ominaisuus - Pro avaa satunnaiset erätavoitteet',
+                'Disabled - timer only mode': 'Pois päältä - pelkkä ajastin',
+                'Random tasks will appear each round': 'Satunnaiset tehtävät näkyvät joka erässä',
+                'Enabled': 'Päällä',
+                'Disabled': 'Pois',
+                'Open settings': 'Avaa asetukset',
+                'Previous tutorial step': 'Edellinen tutorial-vaihe',
+                'FightWise - Fight Timer': 'FightWise - Otteluajastin',
+                'Unlock 50+ workouts with Premium': 'Avaa 50+ treeniä Premiumilla',
+                'Start sparring': 'Aloita sparri',
+                'Custom': 'Oma',
+                'Custom workout': 'Oma treeni',
+                'Create timed steps. FightWise will guide you through each part.': 'Luo ajastettuja vaiheita. FightWise ohjaa sinut jokaisen osan läpi.',
+                'Step name': 'Vaiheen nimi',
+                'Minutes': 'Minuutit',
+                'New step': 'Uusi vaihe',
+                'Add your instructions here.': 'Lisää ohjeet tähän.',
+                'Main work': 'Päätreeni',
+                'Easy movement, mobility and light shadowboxing.': 'Kevyt liike, liikkuvuus ja rauhallinen varjonyrkkeily.',
+                'Work your chosen combinations with clean technique.': 'Työstä valittuja komboja puhtaalla tekniikalla.',
+                'Breathe, stretch and let your heart rate come down.': 'Hengitä, venyttele ja laske sykettä.',
+                'Choose a workout. Tap a card to preview the full plan before starting.': 'Valitse treeni. Avaa koko ohjelma painamalla korttia ennen aloitusta.',
+                'Get Premium': 'Hanki Premium',
+                'Guided steps while the timer runs': 'Ohjatut vaiheet ajastimen aikana',
+                'Start guided workout': 'Aloita ohjattu treeni',
+                'Pro unlocked': 'Pro avattu',
+                'Locked': 'Lukittu',
+                'FightWise Pro activated': 'FightWise Pro aktivoitu',
+                'Pro unlocked': 'Pro avattu',
+                'Your full fight library is open. Premium sessions are now marked so they feel earned.': 'Koko treenikirjasto on auki. Premium-sessiot on merkitty, jotta ne tuntuvat ansaituilta.',
+                '58 guided workouts unlocked': '58 ohjattua treeniä avattu',
+                'Task Spar cues unlocked': 'Task Spar -vihjeet avattu',
+                'Premium fight camps unlocked': 'Premium fight campit avattu',
+                'Champion access': 'Mestarin pääsy',
+                'Premium is coming soon with more guided workouts, Task Spar cues and custom workout tools.': 'Premium on tulossa pian: lisää ohjattuja treenejä, Task Spar -vihjeitä ja omat treenityökalut.',
+                'Start here. FightWise gives you a clean fight timer, guided workouts and training structure in one place.': 'Aloita tästä. FightWise antaa siistin otteluajastimen, ohjatut treenit ja treenirakenteen yhdessä paikassa.',
+                'Pick Sparring when you want rounds. Pick Training when you want instructions, combos and complete workout plans.': 'Valitse Sparri kun haluat erät. Valitse Treeni kun haluat ohjeet, kombot ja kokonaiset treeniohjelmat.',
+                'Use Sparring for live rounds. You choose round time, breaks, round count and optional Task Spar.': 'Käytä sparria live-eriin. Valitset erän ajan, tauot, erien määrän ja valinnaisen Task Sparin.',
+                'Use Training for guided workouts. The app tells you what to do step by step while the timer runs.': 'Käytä treeniä ohjattuihin harjoituksiin. Appi kertoo vaihe vaiheelta mitä teet ajastimen käydessä.'
+            },
+            de: {
+                'ROUND': 'RUNDE',
+                'BREAK': 'PAUSE',
+                'READY': 'BEREIT',
+                'Tap start': 'Start druecken',
+                'MODE': 'MODUS',
+                'SKIP BREAK': 'PAUSE UEBERSPRINGEN',
+                'START': 'START',
+                'STOP': 'STOPP',
+                'RESET': 'ZURUECKSETZEN',
+                'CONTINUE': 'WEITER',
+                'SKIP STEP': 'SCHRITT UEBERSPRINGEN',
+                'Fight Timer & Guided Workouts': 'Kampftimer und gefuehrte Workouts',
+                'Train. Fight. Improve.': 'Trainiere. Kaempfe. Werde besser.',
+                'Choose your session and get to work.': 'Waehle deine Session und leg los.',
+                'Fight rounds': 'Kampfrunden',
+                'Sparring': 'Sparring',
+                'Rounds, bells and breaks.': 'Runden, Glocken und Pausen.',
+                'Open timer': 'Timer oeffnen',
+                'Live rounds': 'Live-Runden',
+                'Breaks': 'Pausen',
+                'Bell cues': 'Glockensignale',
+                'Guided work': 'Gefuehrtes Training',
+                'Training': 'Training',
+                'Workouts, combos and instructions.': 'Workouts, Kombinationen und Anweisungen.',
+                'Choose plan': 'Plan waehlen',
+                'Combos': 'Kombos',
+                'Drills': 'Drills',
+                'Instructions': 'Anweisungen',
+                'Sparring setup': 'Sparring-Setup',
+                'Round time': 'Rundenzeit',
+                'How long should each round be?': 'Wie lang soll jede Runde sein?',
+                'Custom round time': 'Eigene Rundenzeit',
+                'Use 1:30, 1.30min, 90s or 2min.': 'Nutze z. B. 1:30, 1.30min, 90s oder 2min.',
+                'Fast technical rounds.': 'Schnelle technische Runden.',
+                'Standard K1 / Muay Thai round.': 'Standard K1 / Muay Thai Runde.',
+                'MMA-style longer rounds.': 'Laengere Runden im MMA-Stil.',
+                'Break time': 'Pausenzeit',
+                'How much rest between rounds?': 'Wie viel Pause zwischen den Runden?',
+                'Custom break time': 'Eigene Pausenzeit',
+                'Use seconds or minutes, for example 45s, 1:15 or 1.30min.': 'Nutze Sekunden oder Minuten, z. B. 45s, 1:15 oder 1.30min.',
+                'Hard pace, short recovery.': 'Hohes Tempo, kurze Erholung.',
+                'Classic fight rest.': 'Klassische Kampfpause.',
+                'More time to reset.': 'Mehr Zeit zum Erholen.',
+                'Rounds': 'Runden',
+                'How many rounds are you doing?': 'Wie viele Runden machst du?',
+                'Custom rounds': 'Eigene Rundenzahl',
+                'Choose any amount from 1 to 99 rounds.': 'Waehle eine Zahl von 1 bis 99 Runden.',
+                'Sharp and focused.': 'Scharf und fokussiert.',
+                'Championship rhythm.': 'Meisterschaftsrhythmus.',
+                'Conditioning grind.': 'Konditionsarbeit.',
+                'Task Spar': 'Task Spar',
+                'Do you want random tasks between rounds?': 'Moechtest du zufaellige Aufgaben zwischen den Runden?',
+                'Off': 'Aus',
+                'On': 'An',
+                'Clean timer only.': 'Nur sauberer Timer.',
+                'Premium: get combinations and objectives each round.': 'Premium: Kombinationen und Ziele fuer jede Runde.',
+                'Back': 'Zurueck',
+                'Next': 'Weiter',
+                'Choose duration': 'Dauer waehlen',
+                'Pick how long you want to train, then choose a guided workout with drills, combos and instructions.': 'Waehle deine Trainingsdauer und danach ein gefuehrtes Workout mit Drills, Kombinationen und Anweisungen.',
+                'BACK': 'ZURUECK',
+                'total plans': 'Plaene gesamt',
+                'Pro workouts': 'Pro-Workouts',
+                '20-90 min sessions': '20-90 Min Sessions',
+                'Quick flow, sharp technique and short sweat sessions when time is tight.': 'Schneller Flow, saubere Technik und kurze Einheiten, wenn wenig Zeit ist.',
+                'Compact training blocks for skill work, bag rounds or hard intervals.': 'Kompakte Trainingsbloecke fuer Technik, Sandsackrunden oder harte Intervalle.',
+                'The sweet spot: proper warmup, focused rounds and a clean finish.': 'Der Sweet Spot: gutes Warmup, fokussierte Runden und sauberer Abschluss.',
+                'Deeper sessions for volume, defense, power or full technical work.': 'Laengere Sessions fuer Volumen, Defense, Power oder Technikarbeit.',
+                'Fight camp style work with long rounds, conditioning and recovery blocks.': 'Fight-Camp-Training mit langen Runden, Kondition und Erholung.',
+                'Build your own guided workout with timed steps and instructions.': 'Erstelle dein eigenes gefuehrtes Workout mit Zeitabschnitten und Anweisungen.',
+                'Flow work': 'Flow-Arbeit',
+                'Quick work': 'Kurze Einheit',
+                'Recommended': 'Empfohlen',
+                'Deep work': 'Tiefe Einheit',
+                'Full session': 'Volle Session',
+                'Your plan': 'Dein Plan',
+                'workouts': 'Workouts',
+                'Technique': 'Technik',
+                'Bag': 'Sandsack',
+                'Pro': 'Pro',
+                'Flow': 'Flow',
+                'Balanced': 'Ausgeglichen',
+                'Volume': 'Volumen',
+                'Camp': 'Camp',
+                'Hard': 'Hart',
+                'Create': 'Erstellen',
+                'Steps': 'Schritte',
+                'Guided': 'Gefuehrt',
+                'Sort by': 'Sortieren',
+                'Default': 'Standard',
+                'Hardest': 'Haerteste',
+                'Easiest': 'Leichteste',
+                'Shadowbox': 'Schattenboxen',
+                'Workout name': 'Workout-Name',
+                'My workout': 'Mein Workout',
+                'Add step': 'Schritt hinzufuegen',
+                'Start workout': 'Workout starten',
+                'Workout': 'Workout',
+                'Close workout preview': 'Workout-Vorschau schliessen',
+                'FightWise Pro': 'FightWise Pro',
+                'Coming soon': 'Kommt bald',
+                'FightWise Premium is coming soon with 50+ guided workouts, Task Spar cues and custom workout tools.': 'FightWise Premium kommt bald mit 50+ gefuehrten Workouts, Task-Spar-Hinweisen und eigenen Workout-Tools.',
+                'Soon': 'Bald',
+                'Premium launch is being prepared': 'Der Premium-Launch wird vorbereitet',
+                '58 guided workouts ready to start': '58 gefuehrte Workouts startbereit',
+                'Bag, shadowbox, K1, Muay Thai and MMA plans': 'Sandsack-, Schattenbox-, K1-, Muay-Thai- und MMA-Plaene',
+                'Task Spar cues between rounds': 'Task-Spar-Hinweise zwischen den Runden',
+                'COMING SOON': 'KOMMT BALD',
+                'NOT NOW': 'NICHT JETZT',
+                'WELCOME TO FIGHTWISE': 'WILLKOMMEN BEI FIGHTWISE',
+                'Want a quick tour before you start?': 'Moechtest du vor dem Start eine kurze Tour?',
+                'See the main features step by step.': 'Sieh die wichtigsten Funktionen Schritt fuer Schritt.',
+                'YES, SHOW ME': 'JA, ZEIGEN',
+                'SKIP': 'UEBERSPRINGEN',
+                'STEP': 'SCHRITT',
+                'NEXT': 'WEITER',
+                'DONE': 'FERTIG',
+                'GET READY!': 'BEREIT MACHEN!',
+                'SESSION COMPLETE!': 'SESSION ABGESCHLOSSEN!',
+                'WORKOUT COMPLETE!': 'WORKOUT ABGESCHLOSSEN!',
+                'Great workout!': 'Starkes Workout!',
+                'Strong work. You finished the plan.': 'Starke Arbeit. Du hast den Plan beendet.',
+                'Rounds completed': 'Runden abgeschlossen',
+                'Active time': 'Aktive Zeit',
+                'Break time': 'Pausenzeit',
+                'Skipped breaks': 'Uebersprungene Pausen',
+                'Completion': 'Abschluss',
+                'START NEW SESSION': 'NEUE SESSION STARTEN',
+                'SETTINGS': 'EINSTELLUNGEN',
+                'LANGUAGE': 'SPRACHE',
+                'ENGLISH': 'ENGLISCH',
+                'SUOMI': 'FINNISCH',
+                'DEUTSCH': 'DEUTSCH',
+                'English is the default language.': 'Englisch ist die Standardsprache.',
+                'Finnish selected. Voice cues use Finnish.': 'Finnisch ist ausgewaehlt. Sprachhinweise nutzen Finnisch.',
+                'German selected. Voice cues use German.': 'Deutsch ist ausgewaehlt. Sprachhinweise nutzen Deutsch.',
+                'SHOW TUTORIAL AGAIN': 'TUTORIAL ERNEUT ANZEIGEN',
+                'PRIVACY POLICY': 'DATENSCHUTZ',
+                'Required for Play Store and App Store submissions.': 'Erforderlich fuer Play Store- und App Store-Einreichungen.',
+                'SAVE & CLOSE': 'SPEICHERN UND SCHLIESSEN',
+                'Premium is not available yet. Coming soon.': 'Premium ist noch nicht verfuegbar. Kommt bald.',
+                'Premium is not available yet. Google Play Billing is coming soon.': 'Premium ist noch nicht verfuegbar. Google Play Billing kommt bald.',
+                'FightWise Premium is coming soon. Premium workouts, Task Spar cues and custom workout tools will unlock after Google Play Billing is ready.': 'FightWise Premium kommt bald. Premium-Workouts, Task-Spar-Hinweise und eigene Workout-Tools werden nach Google Play Billing freigeschaltet.',
+                'Premium feature - unlock Pro to use random round objectives': 'Premium-Funktion - Pro schaltet zufaellige Rundenziele frei',
+                'Disabled - timer only mode': 'Deaktiviert - nur Timer',
+                'Random tasks will appear each round': 'Zufaellige Aufgaben erscheinen in jeder Runde',
+                'Enabled': 'Aktiviert',
+                'Disabled': 'Deaktiviert',
+                'Open settings': 'Einstellungen oeffnen',
+                'Previous tutorial step': 'Vorheriger Tutorial-Schritt',
+                'FightWise - Fight Timer': 'FightWise - Kampftimer',
+                'Unlock 50+ workouts with Premium': '50+ Workouts mit Premium freischalten',
+                'Start sparring': 'Sparring starten',
+                'Custom': 'Eigen',
+                'Custom workout': 'Eigenes Workout',
+                'Create timed steps. FightWise will guide you through each part.': 'Erstelle Zeitabschnitte. FightWise fuehrt dich durch jeden Teil.',
+                'Step name': 'Schrittname',
+                'Minutes': 'Minuten',
+                'New step': 'Neuer Schritt',
+                'Add your instructions here.': 'Fuege hier deine Anweisungen hinzu.',
+                'Main work': 'Hauptteil',
+                'Easy movement, mobility and light shadowboxing.': 'Leichte Bewegung, Mobilitaet und lockeres Schattenboxen.',
+                'Work your chosen combinations with clean technique.': 'Arbeite deine Kombinationen mit sauberer Technik.',
+                'Breathe, stretch and let your heart rate come down.': 'Atme, dehne dich und senke deinen Puls.',
+                'Choose a workout. Tap a card to preview the full plan before starting.': 'Waehle ein Workout. Tippe eine Karte an, um den Plan vor dem Start zu sehen.',
+                'Get Premium': 'Premium holen',
+                'Guided steps while the timer runs': 'Gefuehrte Schritte waehrend der Timer laeuft',
+                'Start guided workout': 'Gefuehrtes Workout starten',
+                'Pro unlocked': 'Pro freigeschaltet',
+                'Locked': 'Gesperrt',
+                'FightWise Pro activated': 'FightWise Pro aktiviert',
+                'Your full fight library is open. Premium sessions are now marked so they feel earned.': 'Deine komplette Kampfbibliothek ist offen. Premium-Sessions sind markiert und fuehlen sich verdient an.',
+                '58 guided workouts unlocked': '58 gefuehrte Workouts freigeschaltet',
+                'Task Spar cues unlocked': 'Task-Spar-Hinweise freigeschaltet',
+                'Premium fight camps unlocked': 'Premium Fight Camps freigeschaltet',
+                'Champion access': 'Champion-Zugang',
+                'Premium is coming soon with more guided workouts, Task Spar cues and custom workout tools.': 'Premium kommt bald mit mehr gefuehrten Workouts, Task-Spar-Hinweisen und eigenen Workout-Tools.',
+                'Start here. FightWise gives you a clean fight timer, guided workouts and training structure in one place.': 'Starte hier. FightWise gibt dir einen klaren Kampftimer, gefuehrte Workouts und Trainingsstruktur an einem Ort.',
+                'Pick Sparring when you want rounds. Pick Training when you want instructions, combos and complete workout plans.': 'Waehle Sparring fuer Runden. Waehle Training fuer Anweisungen, Kombinationen und komplette Plaene.',
+                'Use Sparring for live rounds. You choose round time, breaks, round count and optional Task Spar.': 'Nutze Sparring fuer Live-Runden. Du waehlst Rundenzeit, Pausen, Rundenzahl und optional Task Spar.',
+                'Use Training for guided workouts. The app tells you what to do step by step while the timer runs.': 'Nutze Training fuer gefuehrte Workouts. Die App sagt dir Schritt fuer Schritt, was zu tun ist.'
+            }
+        };
+
+        function t(text) {
+            if (!text || settings.language === 'en') return text;
+            const dictionary = UI_TRANSLATIONS[settings.language] || {};
+            const trimmed = String(text).trim();
+            let translated = dictionary[trimmed];
+            if (!translated) translated = translateCommonText(trimmed, dictionary);
+            const leading = String(text).match(/^\s*/)?.[0] || '';
+            const trailing = String(text).match(/\s*$/)?.[0] || '';
+            return leading + translated + trailing;
+        }
+
+        function translateCommonText(text, dictionary) {
+            let out = text
+                .replace(/\bROUND (\d+)\/(\d+)/g, (_, a, b) => `${dictionary.ROUND || 'ROUND'} ${a}/${b}`)
+                .replace(/\bSTEP (\d+)\/(\d+)/g, (_, a, b) => `${dictionary.STEP || 'STEP'} ${a}/${b}`)
+                .replace(/\b(\d+) workouts\b/gi, (_, n) => `${n} ${dictionary.workouts || 'workouts'}`)
+                .replace(/\b(\d+) rounds\b/gi, (_, n) => `${n} ${dictionary.Rounds || 'Rounds'}`)
+                .replace(/\b(\d+) min\b/gi, (_, n) => settings.language === 'fi' ? `${n} min` : `${n} Min`)
+                .replace(/\bWarmup\b/gi, settings.language === 'fi' ? 'Lämmittely' : 'Warmup')
+                .replace(/\bCooldown\b/gi, settings.language === 'fi' ? 'Loppuverryttely' : 'Cooldown')
+                .replace(/\bRound\b/g, settings.language === 'fi' ? 'Erä' : 'Runde')
+                .replace(/\bRounds\b/g, settings.language === 'fi' ? 'Erät' : 'Runden')
+                .replace(/\bMinutes\b/g, settings.language === 'fi' ? 'Minuuttia' : 'Minuten')
+                .replace(/\bIntensity\b/g, settings.language === 'fi' ? 'Intensiteetti' : 'Intensitaet')
+                .replace(/\bLight\b/g, settings.language === 'fi' ? 'Kevyt' : 'Leicht')
+                .replace(/\bMedium\b/g, settings.language === 'fi' ? 'Keskitaso' : 'Mittel')
+                .replace(/\bVery hard\b/gi, settings.language === 'fi' ? 'Todella kova' : 'Sehr hart')
+                .replace(/\bHard\b/g, settings.language === 'fi' ? 'Kova' : 'Hart')
+                .replace(/\bBag workout\b/gi, settings.language === 'fi' ? 'Säkkitreeni' : 'Sandsacktraining')
+                .replace(/\bShadowbox training\b/gi, settings.language === 'fi' ? 'Varjonyrkkeilytreeni' : 'Schattenboxtraining')
+                .replace(/\bLocked\b/gi, settings.language === 'fi' ? 'Lukittu' : 'Gesperrt')
+                .replace(/\bPremium\b/g, 'Premium');
+            return dictionary[out] || out;
+        }
+
+        function translateDocument(root = document.body) {
+            if (!root) return;
+            document.title = t('FightWise - Fight Timer');
+            const skipTags = new Set(['SCRIPT', 'STYLE', 'SVG', 'PATH', 'CANVAS']);
+            const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+                acceptNode(node) {
+                    if (!node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+                    if (node.parentElement && skipTags.has(node.parentElement.tagName)) return NodeFilter.FILTER_REJECT;
+                    return NodeFilter.FILTER_ACCEPT;
+                }
+            });
+            const nodes = [];
+            while (walker.nextNode()) nodes.push(walker.currentNode);
+            nodes.forEach(node => {
+                if (!node._i18nOriginalText) node._i18nOriginalText = node.nodeValue;
+                const nextText = t(node._i18nOriginalText);
+                if (node.nodeValue !== nextText) node.nodeValue = nextText;
+            });
+
+            root.querySelectorAll?.('[placeholder], [aria-label], [alt], [title], input[value]').forEach(el => {
+                ['placeholder', 'aria-label', 'alt', 'title'].forEach(attr => {
+                    if (!el.hasAttribute(attr)) return;
+                    const originalAttr = `data-i18n-original-${attr}`;
+                    if (!el.hasAttribute(originalAttr)) el.setAttribute(originalAttr, el.getAttribute(attr));
+                    el.setAttribute(attr, t(el.getAttribute(originalAttr)));
+                });
+                if (el.matches('input[value]')) {
+                    if (!el.dataset.i18nOriginalValue) el.dataset.i18nOriginalValue = el.value;
+                    if (!document.activeElement || document.activeElement !== el) el.value = t(el.dataset.i18nOriginalValue);
+                }
+            });
+        }
+
+        const translationObserver = new MutationObserver(mutations => {
+            mutations.forEach(mutation => {
+                if (mutation.type === 'characterData') {
+                    const node = mutation.target;
+                    if (node.nodeValue.trim()) {
+                        if (!node._i18nOriginalText || settings.language === 'en') node._i18nOriginalText = node.nodeValue;
+                        const nextText = t(node._i18nOriginalText);
+                        if (node.nodeValue !== nextText) node.nodeValue = nextText;
+                    }
+                }
+                mutation.addedNodes.forEach(node => {
+                    if (node.nodeType === Node.ELEMENT_NODE) translateDocument(node);
+                    if (node.nodeType === Node.TEXT_NODE && node.nodeValue.trim()) {
+                        if (!node._i18nOriginalText) node._i18nOriginalText = node.nodeValue;
+                        const nextText = t(node._i18nOriginalText);
+                        if (node.nodeValue !== nextText) node.nodeValue = nextText;
+                    }
+                });
+            });
+        });
 
         async function requestWakeLock() {
             if (!('wakeLock' in navigator)) return;
@@ -6803,6 +7261,7 @@
             .reduce((total, workouts) => total + workouts.length, 0);
 
         function isPremiumUnlocked() {
+            if (!PREMIUM_BILLING_ENABLED) return false;
             try {
                 return localStorage.getItem(PREMIUM_KEY) === 'true';
             } catch (e) {
@@ -6819,7 +7278,7 @@
         function openPremiumModal() {
             const premiumMessage = document.getElementById('premiumMessage');
             if (premiumMessage) {
-                premiumMessage.textContent = 'FightWise Premium is coming soon with 50+ guided workouts, Task Spar cues and custom workout tools.';
+                premiumMessage.textContent = 'FightWise Premium is coming soon. Premium workouts, Task Spar cues and custom workout tools will unlock after Google Play Billing is ready.';
             }
             document.getElementById('premiumModal').classList.add('show');
         }
@@ -6829,23 +7288,14 @@
         }
 
         function simulatePremiumUnlock() {
-            try {
-                localStorage.setItem(PREMIUM_KEY, 'true');
-            } catch (e) {}
-            closePremiumModal();
-            updatePremiumVisibility();
-            updateDurationLocks();
-            renderTrainingOptions(selectedTrainingDuration);
-            updateSettingsUI();
-            renderSparringSetup();
-            showPremiumUnlockCelebration();
+            showPremiumComingSoon();
         }
 
         function showPremiumComingSoon() {
             playPremiumChime();
             const premiumMessage = document.getElementById('premiumMessage');
             if (premiumMessage) {
-                premiumMessage.textContent = 'Premium is not available yet. Coming soon.';
+                premiumMessage.textContent = 'Premium is not available yet. Google Play Billing is coming soon.';
             }
             if (navigator.vibrate) navigator.vibrate(35);
         }
@@ -6872,7 +7322,7 @@
         function updatePremiumVisibility() {
             const modePremiumAd = document.getElementById('modePremiumAd');
             if (modePremiumAd) {
-                modePremiumAd.classList.toggle('hidden', isPremiumUnlocked());
+                modePremiumAd.classList.remove('hidden');
             }
         }
 
@@ -6965,7 +7415,7 @@
 
         function selectSetupOption(key, value, element = null, premium = false) {
             if (premium && !isPremiumUnlocked()) {
-                openPremiumModal('Get Premium to test Task Spar combinations and round objectives.');
+                openPremiumModal();
                 return;
             }
             sparringDraft[key] = value;
@@ -7119,7 +7569,7 @@
 
         function openCustomWorkoutBuilder() {
             if (!isPremiumUnlocked()) {
-                openPremiumModal('Get Premium to test custom workouts.');
+                openPremiumModal();
                 return;
             }
             selectedTrainingDuration = null;
@@ -7229,7 +7679,7 @@
 
         function selectTrainingDuration(minutes) {
             if (PREMIUM_DURATION_MINUTES.includes(minutes) && !isPremiumUnlocked()) {
-                openPremiumModal(`Get Premium to test ${minutes} min guided workouts.`);
+                openPremiumModal();
                 return;
             }
             selectedTrainingDuration = minutes;
@@ -7436,13 +7886,13 @@
             if (workout.premium && !isPremiumUnlocked()) {
                 return `
                     <div class="training-detail-inner">
-                        <div class="premium-copy">Get Premium to test ${workout.title} with the full guided workout library.</div>
+                        <div class="premium-copy">Coming soon: ${workout.title} will unlock when FightWise Premium launches.</div>
                         <div class="premium-list">
                             <div><svg class="icon icon-sm"><use href="#icon-check"></use></svg>${workout.structure}</div>
                             <div><svg class="icon icon-sm"><use href="#icon-check"></use></svg>${workout.intensityLabel} intensity</div>
                             <div><svg class="icon icon-sm"><use href="#icon-check"></use></svg>Guided steps while the timer runs</div>
                         </div>
-                        <button class="workout-start" onclick="event.stopPropagation(); openPremiumModal('Get Premium to test ${workout.title}.')">Get Premium</button>
+                        <button class="workout-start" onclick="event.stopPropagation(); openPremiumModal()">Coming soon</button>
                     </div>
                 `;
             }
@@ -7535,7 +7985,7 @@
             const workout = findTrainingWorkout(minutes, workoutId);
             if (!workout) return;
             if (workout.premium && !isPremiumUnlocked()) {
-                openPremiumModal(`Get Premium to test ${workout.title} and the full guided workout library.`);
+                openPremiumModal();
                 return;
             }
 
@@ -7566,7 +8016,7 @@
         function startTrainingPlan(durationSeconds, title, sourceMinutes = null, workoutId = null, customWorkout = null) {
             const requestedWorkout = sourceMinutes && workoutId ? findTrainingWorkout(sourceMinutes, workoutId) : null;
             if (requestedWorkout && requestedWorkout.premium && !isPremiumUnlocked()) {
-                openPremiumModal(`Get Premium to test ${requestedWorkout.title}.`);
+                openPremiumModal();
                 return;
             }
 
@@ -7621,7 +8071,7 @@
                 if (pane) pane.classList.toggle('active', activeSettingsTab === tab);
             });
 
-            ['language', 'theme'].forEach(tab => {
+            ['language'].forEach(tab => {
                 const navBtn = document.getElementById('nav-' + tab);
                 const inlinePanel = document.getElementById('settingsInline-' + tab);
                 if (navBtn) {
@@ -7676,8 +8126,8 @@
 
             const languageDescriptions = {
                 en: 'English is the default language.',
-                fi: 'Suomi on valittu. Puhekuulutukset käyttävät suomen kieltä.',
-                de: 'Deutsch ist ausgewählt. Voice cues use German.'
+                fi: 'Finnish selected. Voice cues use Finnish.',
+                de: 'German selected. Voice cues use German.'
             };
             ['en', 'fi', 'de'].forEach(lang => {
                 const btn = document.getElementById('language-' + lang);
@@ -7761,7 +8211,7 @@
             if (!isPremiumUnlocked()) {
                 settings.taskSparEnabled = false;
                 updateSettingsUI();
-                openPremiumModal('Get Premium to test Task Spar combinations and objectives each round.');
+                openPremiumModal();
                 return;
             }
             settings.taskSparEnabled = !settings.taskSparEnabled;
@@ -7769,6 +8219,7 @@
         }
 
         function applyTheme() {
+            settings.theme = 'classic';
             const themes = ['classic', 'ocean', 'sunset', 'noir', 'neon'];
             document.body.classList.remove(...themes.map(t => 'theme-' + t));
             document.body.classList.add('theme-' + settings.theme);
@@ -7785,8 +8236,7 @@
         }
 
         function setTheme(theme) {
-            settings.theme = theme;
-            try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
+            settings.theme = 'classic';
             updateSettingsUI();
         }
 
@@ -7795,6 +8245,8 @@
             settings.language = language;
             try { localStorage.setItem(LANGUAGE_KEY, language); } catch (e) {}
             updateSettingsUI();
+            updateUI();
+            translateDocument();
         }
 
         function toggleRoundSounds() {
@@ -8170,11 +8622,6 @@
                 text: 'Use Training for guided workouts. The app tells you what to do step by step while the timer runs.'
             },
             {
-                selector: '#modePremiumAd',
-                title: 'FIGHTWISE PRO',
-                text: 'Premium is coming soon with more guided workouts, Task Spar cues and custom workout tools.'
-            },
-            {
                 selector: '.mode-actions',
                 title: 'CHOOSE YOUR WORK',
                 text: 'Pick Sparring when you want rounds. Pick Training when you want instructions, combos and complete workout plans.'
@@ -8414,6 +8861,8 @@
         applyTheme();
         updatePremiumVisibility();
         updateDurationLocks();
+        translationObserver.observe(document.body, { childList: true, subtree: true, characterData: true });
+        translateDocument();
 
         // Show tutorial on first launch only. It can be replayed from settings.
         setTimeout(checkTutorial, 120);
