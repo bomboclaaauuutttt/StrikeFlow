@@ -863,6 +863,29 @@
             pointer-events: none;
         }
 
+        .mode-settings-btn {
+            position: fixed;
+            top: calc(18px + env(safe-area-inset-top));
+            right: 18px;
+            z-index: 9510;
+            width: 44px;
+            height: 44px;
+            border: 1px solid rgba(255, 255, 255, 0.26);
+            border-radius: 8px;
+            background: rgba(20, 20, 20, 0.84);
+            color: #fff;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+        }
+
+        .mode-settings-btn:hover {
+            background: #202020;
+            border-color: var(--accent-primary);
+            transform: translateY(-1px);
+        }
+
         .mode-logo {
             display: block;
             width: min(31vw, 142px);
@@ -2922,7 +2945,7 @@
             right: 0;
             bottom: 0;
             background: rgba(0, 0, 0, 0.5);
-            z-index: 2000;
+            z-index: 13000;
             justify-content: center;
             align-items: center;
             opacity: 0;
@@ -2958,33 +2981,71 @@
         .settings-nav {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 0;
+            border-top: 1px solid var(--section-border);
         }
 
         .settings-tab {
             width: 100%;
-            padding: 14px;
-            border-radius: 12px;
-            border: 2px solid var(--btn-surface-border);
-            background: var(--btn-surface);
+            padding: 17px 2px;
+            border: 0;
+            border-bottom: 1px solid var(--section-border);
+            border-radius: 0;
+            background: transparent;
             color: white;
             font-size: 15px;
-            font-weight: 700;
+            font-weight: 900;
             letter-spacing: 1px;
             cursor: pointer;
             transition: all 0.2s ease;
             text-align: left;
+            text-transform: uppercase;
         }
 
         .settings-tab.active {
-            border-color: var(--accent-primary);
-            background: var(--preset-active-bg);
-            color: var(--preset-active-text);
+            color: var(--accent-primary);
         }
 
         .settings-tab:hover {
-            border-color: var(--accent-primary);
-            transform: translateY(-1px);
+            color: var(--accent-primary);
+            transform: translateX(3px);
+        }
+
+        .settings-tab::after {
+            content: ">";
+            float: right;
+            color: var(--accent-primary);
+            font-weight: 950;
+        }
+
+        .settings-tab.settings-action::after {
+            content: "";
+        }
+
+        .settings-tab.expanded::after {
+            content: "v";
+        }
+
+        .settings-inline-panel {
+            display: none;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding: 14px 0 16px;
+            border-bottom: 1px solid var(--section-border);
+            animation: fadeScaleIn 0.18s ease both;
+        }
+
+        .settings-inline-panel.open {
+            display: flex;
+        }
+
+        .settings-inline-note {
+            color: #9f9f9f;
+            flex-basis: 100%;
+            font-size: 12px;
+            font-weight: 700;
+            line-height: 1.4;
+            margin-top: 2px;
         }
 
         .settings-back-btn {
@@ -3015,16 +3076,17 @@
 
         .modal-title {
             font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 30px;
+            font-weight: 950;
+            margin-bottom: 22px;
             letter-spacing: 2px;
-            border-bottom: 2px solid var(--section-border);
-            padding-bottom: 15px;
+            border-bottom: 1px solid var(--section-border);
+            padding-bottom: 16px;
+            text-transform: uppercase;
         }
 
         .settings-section {
-            margin-bottom: 30px;
-            padding-bottom: 20px;
+            margin-bottom: 24px;
+            padding-bottom: 18px;
             border-bottom: 1px solid var(--section-border);
         }
 
@@ -4037,6 +4099,9 @@
         <symbol id="icon-filter" viewBox="0 0 24 24">
             <path d="M3 5h18"></path><path d="M6 12h12"></path><path d="M10 19h4"></path>
         </symbol>
+        <symbol id="icon-gear" viewBox="0 0 24 24">
+            <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"></path><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.03 1.56V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1.03-1.56 1.7 1.7 0 0 0-1.88.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.56-1.03H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.6 8.94a1.7 1.7 0 0 0-.34-1.88l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.88.34H9a1.7 1.7 0 0 0 1-1.56V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.88-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.88V9c.3.62.92 1 1.6 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1Z"></path>
+        </symbol>
     </svg>
     <div class="app">
         <div class="bg-layer bg-idle"  id="bgIdle"></div>
@@ -4086,6 +4151,9 @@
     <!-- Daily Mode Choice -->
     <div class="mode-choice" id="modeChoice">
         <div class="mode-bg-logo" aria-hidden="true"></div>
+        <button class="mode-settings-btn" onclick="openSettings()" aria-label="Open settings">
+            <svg class="icon icon-md"><use href="#icon-gear"></use></svg>
+        </button>
         <div class="mode-panel">
             <div class="mode-logo-stack" aria-label="FightWise">
                 <img class="mode-logo" src="FightWise logo.png" alt="">
@@ -4125,7 +4193,7 @@
                         <span class="mode-pill">Instructions</span>
                     </div>
                 </button>
-                <button class="mode-premium-ad" id="modePremiumAd" onclick="openPremiumModal('Get FightWise Pro for testing: unlock 58 guided workouts, Task Spar cues and custom workouts.')">
+                <button class="mode-premium-ad" id="modePremiumAd" onclick="openPremiumModal()">
                     <img class="premium-ad-image" src="Unlock 50+ workouts with premium AD.png" alt="Unlock 50+ workouts with Premium">
                 </button>
             </div>
@@ -4285,11 +4353,11 @@
         <div class="premium-panel">
             <div class="premium-hero">
                 <div class="premium-kicker"><svg class="icon icon-sm"><use href="#icon-flame"></use></svg>FightWise Pro</div>
-                <div class="premium-title">Get Premium</div>
-                <div class="premium-copy" id="premiumMessage">Get FightWise Pro for testing: unlock 58 guided workouts, Task Spar prompts and harder camp sessions.</div>
+                <div class="premium-title">Coming soon</div>
+                <div class="premium-copy" id="premiumMessage">FightWise Premium is coming soon with 50+ guided workouts, Task Spar cues and custom workout tools.</div>
                 <div class="premium-offer-line">
-                    <span class="premium-price">Test</span>
-                    <span class="premium-once">Temporary unlock</span>
+                    <span class="premium-price">Soon</span>
+                    <span class="premium-once">Premium launch is being prepared</span>
                 </div>
                 <div class="premium-list">
                     <div><svg class="icon icon-sm"><use href="#icon-check"></use></svg>58 guided workouts ready to start</div>
@@ -4298,7 +4366,7 @@
                 </div>
             </div>
             <div class="premium-actions">
-                <button class="save-btn premium-unlock-btn" onclick="simulatePremiumUnlock()">GET PREMIUM</button>
+                <button class="save-btn premium-unlock-btn" onclick="showPremiumComingSoon()">COMING SOON</button>
                 <button class="secondary-btn premium-dismiss" onclick="closePremiumModal()">NOT NOW</button>
             </div>
         </div>
@@ -4408,12 +4476,24 @@
 
             <div class="settings-pane" id="settingsPane-main">
                 <div class="settings-section">
-                    <div class="section-title">SETTINGS</div>
                     <div class="settings-nav">
-                        <button class="settings-tab" id="nav-timing" onclick="setSettingsTab('timing')">ROUND TIME</button>
-                        <button class="settings-tab" id="nav-task" onclick="setSettingsTab('task')">TASK SPAR</button>
-                        <button class="settings-tab" id="nav-sound" onclick="setSettingsTab('sound')">SOUND EFFECTS</button>
-                        <button class="settings-tab" id="nav-theme" onclick="setSettingsTab('theme')">THEME</button>
+                        <button class="settings-tab" id="nav-language" onclick="toggleSettingsGroup('language')">LANGUAGE</button>
+                        <div class="settings-inline-panel" id="settingsInline-language">
+                            <button class="diff-btn" id="language-en" onclick="setLanguage('en')">ENGLISH</button>
+                            <button class="diff-btn" id="language-fi" onclick="setLanguage('fi')">SUOMI</button>
+                            <button class="diff-btn" id="language-de" onclick="setLanguage('de')">DEUTSCH</button>
+                            <div class="settings-inline-note" id="languageDesc">English is the default language.</div>
+                        </div>
+                        <button class="settings-tab" id="nav-theme" onclick="toggleSettingsGroup('theme')">THEME</button>
+                        <div class="settings-inline-panel" id="settingsInline-theme">
+                            <button class="diff-btn" id="theme-classic" onclick="setTheme('classic')">CLASSIC</button>
+                            <button class="diff-btn" id="theme-ocean" onclick="setTheme('ocean')">OCEAN</button>
+                            <button class="diff-btn" id="theme-sunset" onclick="setTheme('sunset')">SUNSET</button>
+                            <button class="diff-btn" id="theme-noir" onclick="setTheme('noir')">NOIR</button>
+                            <button class="diff-btn" id="theme-neon" onclick="setTheme('neon')">NEON</button>
+                            <div class="settings-inline-note" id="themeDesc">Classic arena contrast</div>
+                        </div>
+                        <button class="settings-tab settings-action" onclick="resetTutorial()">SHOW TUTORIAL AGAIN</button>
                     </div>
                 </div>
 
@@ -4423,7 +4503,6 @@
                 </div>
 
                 <div class="settings-pane-footer">
-                    <button class="secondary-btn" onclick="resetTutorial()">SHOW TUTORIAL AGAIN</button>
                     <button class="save-btn" onclick="closeSettings()">SAVE & CLOSE</button>
                 </div>
             </div>
@@ -4561,23 +4640,6 @@
                 <button class="save-btn" onclick="closeSettings()">SAVE & CLOSE</button>
             </div>
 
-            <div class="settings-pane" id="settingsPane-theme">
-                <button class="secondary-btn settings-back-btn" onclick="setSettingsTab('main')"><span class="icon-row"><svg class="icon icon-sm"><use href="#icon-arrow-left"></use></svg>BACK</span></button>
-                <div class="settings-section">
-                    <div class="section-title">DESIGN THEME</div>
-                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                        <button class="diff-btn" id="theme-classic" onclick="setTheme('classic')">CLASSIC</button>
-                        <button class="diff-btn" id="theme-ocean" onclick="setTheme('ocean')">OCEAN</button>
-                        <button class="diff-btn" id="theme-sunset" onclick="setTheme('sunset')">SUNSET</button>
-                        <button class="diff-btn" id="theme-noir" onclick="setTheme('noir')">NOIR</button>
-                        <button class="diff-btn" id="theme-neon" onclick="setTheme('neon')">NEON</button>
-                    </div>
-                    <div class="task-description" id="themeDesc">Classic arena contrast</div>
-                </div>
-
-                <button class="save-btn" onclick="closeSettings()">SAVE & CLOSE</button>
-            </div>
-
         </div>
     </div>
 
@@ -4683,13 +4745,16 @@
             roundVoiceEnabled: true,
             uiClickSoundsEnabled: true,
             warningVoiceEnabled: true,
-            vibrationEnabled: true
+            vibrationEnabled: true,
+            language: 'en'
         };
 
         let selectedPreset = 'muaythai';
         const PRE_ROUND_READ_SECONDS = 5;
         const THEME_KEY = 'strikeflow_theme';
+        const LANGUAGE_KEY = 'fightwise_language';
         let activeSettingsTab = 'main';
+        let openSettingsGroup = null;
         let appMode = null;
         let trainingPlanTitle = '';
         const PREMIUM_KEY = 'strikeflow_premium_unlocked';
@@ -4737,6 +4802,10 @@
             const savedTheme = localStorage.getItem(THEME_KEY);
             if (savedTheme && ['classic', 'ocean', 'sunset', 'noir', 'neon'].includes(savedTheme)) {
                 settings.theme = savedTheme;
+            }
+            const savedLanguage = localStorage.getItem(LANGUAGE_KEY);
+            if (savedLanguage && ['en', 'fi', 'de'].includes(savedLanguage)) {
+                settings.language = savedLanguage;
             }
         } catch (e) {}
 
@@ -4949,6 +5018,40 @@
             ]);
         }
 
+        function getVoiceLanguage() {
+            return {
+                en: 'en-US',
+                fi: 'fi-FI',
+                de: 'de-DE'
+            }[settings.language] || 'en-US';
+        }
+
+        function localizeCueText(text) {
+            const cueMap = {
+                fi: {
+                    'Round started': 'Erä alkaa',
+                    'Training started': 'Treeni alkaa',
+                    'Break': 'Tauko',
+                    'Session complete': 'Treeni valmis',
+                    '10 seconds': '10 sekuntia'
+                },
+                de: {
+                    'Round started': 'Runde startet',
+                    'Training started': 'Training startet',
+                    'Break': 'Pause',
+                    'Session complete': 'Training abgeschlossen',
+                    '10 seconds': '10 Sekunden'
+                }
+            };
+            if (text.startsWith('Next. ') && settings.language === 'fi') {
+                return text.replace('Next. ', 'Seuraavaksi. ');
+            }
+            if (text.startsWith('Next. ') && settings.language === 'de') {
+                return text.replace('Next. ', 'Als naechstes. ');
+            }
+            return cueMap[settings.language]?.[text] || text;
+        }
+
         function speakCue(text, options = {}) {
             if (!settings.roundVoiceEnabled) return;
             if (!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') return;
@@ -4957,8 +5060,8 @@
                     playVoiceAttentionTone();
                 }
 
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'en-US';
+                const utterance = new SpeechSynthesisUtterance(localizeCueText(text));
+                utterance.lang = getVoiceLanguage();
                 utterance.rate = options.rate || 0.86;
                 utterance.pitch = options.pitch || 1;
                 utterance.volume = Math.min(1, options.volume || 1);
@@ -6713,9 +6816,11 @@
             } catch (e) {}
         }
 
-        function openPremiumModal(message = 'Get FightWise Pro for testing: unlock 58 guided workouts, Task Spar cues and custom workouts.') {
+        function openPremiumModal() {
             const premiumMessage = document.getElementById('premiumMessage');
-            if (premiumMessage) premiumMessage.textContent = message;
+            if (premiumMessage) {
+                premiumMessage.textContent = 'FightWise Premium is coming soon with 50+ guided workouts, Task Spar cues and custom workout tools.';
+            }
             document.getElementById('premiumModal').classList.add('show');
         }
 
@@ -6740,7 +6845,7 @@
             playPremiumChime();
             const premiumMessage = document.getElementById('premiumMessage');
             if (premiumMessage) {
-                premiumMessage.textContent = 'Tap Get Premium to unlock Pro instantly for testing.';
+                premiumMessage.textContent = 'Premium is not available yet. Coming soon.';
             }
             if (navigator.vibrate) navigator.vibrate(35);
         }
@@ -7491,6 +7596,7 @@
         function closeSettings() {
             document.getElementById('settingsModal').classList.remove('show');
             activeSettingsTab = 'main';
+            openSettingsGroup = null;
             updateSettingsUI();
             resetTimer();
         }
@@ -7500,19 +7606,29 @@
             updateSettingsUI();
         }
 
+        function toggleSettingsGroup(group) {
+            openSettingsGroup = openSettingsGroup === group ? null : group;
+            updateSettingsUI();
+        }
+
         function updateSettingsUI() {
             document.getElementById('roundTimeDisplay').textContent = formatTime(settings.roundTime);
             document.getElementById('breakTimeDisplay').textContent = formatTime(settings.breakTime);
             document.getElementById('roundsDisplay').textContent = settings.numberOfRounds;
 
-            ['main', 'timing', 'task', 'sound', 'theme'].forEach(tab => {
+            ['main', 'timing', 'task', 'sound'].forEach(tab => {
                 const pane = document.getElementById('settingsPane-' + tab);
                 if (pane) pane.classList.toggle('active', activeSettingsTab === tab);
             });
 
-            ['timing', 'task', 'sound', 'theme'].forEach(tab => {
+            ['language', 'theme'].forEach(tab => {
                 const navBtn = document.getElementById('nav-' + tab);
-                if (navBtn) navBtn.classList.toggle('active', activeSettingsTab === tab);
+                const inlinePanel = document.getElementById('settingsInline-' + tab);
+                if (navBtn) {
+                    navBtn.classList.toggle('active', openSettingsGroup === tab);
+                    navBtn.classList.toggle('expanded', openSettingsGroup === tab);
+                }
+                if (inlinePanel) inlinePanel.classList.toggle('open', openSettingsGroup === tab);
             });
             
             const toggle = document.getElementById('taskSparToggle');
@@ -7557,6 +7673,19 @@
             if (themeDesc) themeDesc.textContent = themeNames[settings.theme] || themeNames.classic;
 
             applyTheme();
+
+            const languageDescriptions = {
+                en: 'English is the default language.',
+                fi: 'Suomi on valittu. Puhekuulutukset käyttävät suomen kieltä.',
+                de: 'Deutsch ist ausgewählt. Voice cues use German.'
+            };
+            ['en', 'fi', 'de'].forEach(lang => {
+                const btn = document.getElementById('language-' + lang);
+                if (btn) btn.classList.toggle('active', settings.language === lang);
+            });
+            const languageDesc = document.getElementById('languageDesc');
+            if (languageDesc) languageDesc.textContent = languageDescriptions[settings.language] || languageDescriptions.en;
+            document.documentElement.lang = settings.language;
 
             ['classic', 'bell', 'digital', 'soft', 'sharp'].forEach(s => {
                 const btn = document.getElementById('start-sound-' + s);
@@ -7661,6 +7790,13 @@
             updateSettingsUI();
         }
 
+        function setLanguage(language) {
+            if (!['en', 'fi', 'de'].includes(language)) return;
+            settings.language = language;
+            try { localStorage.setItem(LANGUAGE_KEY, language); } catch (e) {}
+            updateSettingsUI();
+        }
+
         function toggleRoundSounds() {
             settings.roundSoundsEnabled = !settings.roundSoundsEnabled;
             updateSettingsUI();
@@ -7749,8 +7885,8 @@
             if (!settings.warningVoiceEnabled && !settings.vibrationEnabled) return;
             try {
                 if (settings.warningVoiceEnabled && 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined') {
-                    const utterance = new SpeechSynthesisUtterance('10 seconds');
-                    utterance.lang = 'en-US';
+                    const utterance = new SpeechSynthesisUtterance(localizeCueText('10 seconds'));
+                    utterance.lang = getVoiceLanguage();
                     utterance.rate = 1;
                     utterance.pitch = 1;
                     utterance.volume = 1;
@@ -8036,7 +8172,7 @@
             {
                 selector: '#modePremiumAd',
                 title: 'FIGHTWISE PRO',
-                text: 'For testing, tap Get Premium to unlock premium workouts, Task Spar cues and custom workouts instantly.'
+                text: 'Premium is coming soon with more guided workouts, Task Spar cues and custom workout tools.'
             },
             {
                 selector: '.mode-actions',
@@ -8046,6 +8182,9 @@
         ];
 
         function checkTutorial() {
+            try {
+                if (localStorage.getItem(TUT_KEY) === 'true') return;
+            } catch (e) {}
             showModeChoice();
             document.getElementById('tutWelcome').style.display = 'flex';
             setTimeout(playTutorialWelcomeChime, 80);
@@ -8062,6 +8201,7 @@
         }
 
         function skipTutorial() {
+            try { localStorage.setItem(TUT_KEY, 'true'); } catch (e) {}
             document.getElementById('tutWelcome').style.display = 'none';
             closeTutorialStep();
         }
@@ -8253,6 +8393,7 @@
         }
 
         function closeTutorialStep() {
+            try { localStorage.setItem(TUT_KEY, 'true'); } catch (e) {}
             tutActive = false;
             if (tutAnimFrame) { cancelAnimationFrame(tutAnimFrame); tutAnimFrame = null; }
             document.getElementById('tutTooltip').style.display = 'none';
@@ -8274,7 +8415,7 @@
         updatePremiumVisibility();
         updateDurationLocks();
 
-        // Show tutorial on load. In test mode this appears every refresh.
+        // Show tutorial on first launch only. It can be replayed from settings.
         setTimeout(checkTutorial, 120);
 
         // Register service worker for PWA/offline support
