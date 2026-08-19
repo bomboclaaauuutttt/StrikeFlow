@@ -496,7 +496,7 @@
             border-left: 5px solid var(--accent-primary);
             border-radius: 8px;
             background: #181818;
-            padding: 16px 16px 14px;
+            padding: 16px;
             box-shadow: 0 18px 42px rgba(0, 0, 0, 0.24);
         }
 
@@ -512,12 +512,40 @@
             text-transform: uppercase;
         }
 
+        .guide-section {
+            display: grid;
+            gap: 4px;
+        }
+
+        .guide-section + .guide-section {
+            margin-top: 12px;
+            padding-top: 11px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .guide-section-label {
+            color: var(--accent-primary);
+            font-size: 11px;
+            font-weight: 950;
+            letter-spacing: 1.1px;
+            line-height: 1;
+            text-transform: uppercase;
+        }
+
         .guide-title {
             color: #fff;
             font-size: clamp(18px, 3vmin, 28px);
             font-weight: 950;
             letter-spacing: 0.5px;
-            margin-bottom: 7px;
+            line-height: 1.08;
+            text-transform: uppercase;
+        }
+
+        .guide-round-label {
+            color: #cfcfcf;
+            font-size: 13px;
+            font-weight: 950;
+            letter-spacing: 0.8px;
             text-transform: uppercase;
         }
 
@@ -529,13 +557,11 @@
         }
 
         .guide-next {
-            margin-top: 12px;
-            padding-top: 10px;
-            border-top: 1px solid rgba(255, 255, 255, 0.12);
-            color: #9f9f9f;
-            font-size: 12px;
-            font-weight: 850;
-            letter-spacing: 0.4px;
+            color: #f2f2f2;
+            font-size: 13px;
+            font-weight: 900;
+            letter-spacing: 0.3px;
+            line-height: 1.25;
         }
 
         @keyframes guideFadeUp {
@@ -2232,6 +2258,49 @@
             background: #202020;
         }
 
+        .training-favorite-btn {
+            align-items: center;
+            background: rgba(0, 0, 0, 0.44);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 999px;
+            color: rgba(255, 255, 255, 0.72);
+            cursor: pointer;
+            display: inline-flex;
+            height: 38px;
+            justify-content: center;
+            padding: 0;
+            position: absolute;
+            right: 12px;
+            top: 12px;
+            transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
+            width: 38px;
+            z-index: 7;
+        }
+
+        .training-favorite-btn .icon {
+            fill: transparent;
+            height: 18px;
+            stroke-width: 2.4;
+            width: 18px;
+        }
+
+        .training-favorite-btn:hover {
+            background: rgba(43, 255, 74, 0.12);
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+            transform: scale(1.06);
+        }
+
+        .training-favorite-btn.active {
+            background: rgba(43, 255, 74, 0.18);
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+
+        .training-favorite-btn.active .icon {
+            fill: currentColor;
+        }
+
         .duration-card {
             --duration-color: var(--accent-primary);
             background:
@@ -2372,6 +2441,7 @@
             justify-content: space-between;
             gap: 16px;
             align-items: flex-start;
+            padding-right: 44px;
         }
 
         .training-card-chevron {
@@ -5031,6 +5101,7 @@
         let appMode = null;
         let trainingPlanTitle = '';
         const PREMIUM_KEY = 'strikeflow_premium_unlocked';
+        const FAVORITE_WORKOUTS_KEY = 'fightwise_favorite_workouts';
         const PREMIUM_BILLING_ENABLED = false;
         const PREMIUM_DURATION_MINUTES = [20, 45, 60];
 
@@ -5104,6 +5175,11 @@
                 'Bell cues': 'Kelloäänet',
                 'Guided work': 'Ohjattu treeni',
                 'Training': 'Treeni',
+                'Current drill': 'Nykyinen harjoite',
+                'Focus': 'Fokus',
+                'Next up': 'Seuraavaksi',
+                'Add favorite': 'Lisää suosikki',
+                'Remove favorite': 'Poista suosikki',
                 'Workouts, combos and instructions.': 'Treenit, kombot ja ohjeet.',
                 'Combos': 'Kombot',
                 'Drills': 'Harjoitteet',
@@ -5286,6 +5362,11 @@
                 'Bell cues': 'Glockensignale',
                 'Guided work': 'Gefuehrtes Training',
                 'Training': 'Training',
+                'Current drill': 'Aktuelle Uebung',
+                'Focus': 'Fokus',
+                'Next up': 'Als Naechstes',
+                'Add favorite': 'Favorit hinzufuegen',
+                'Remove favorite': 'Favorit entfernen',
                 'Workouts, combos and instructions.': 'Workouts, Kombinationen und Anweisungen.',
                 'Combos': 'Kombos',
                 'Drills': 'Drills',
@@ -5854,7 +5935,7 @@
                 phaseHint.textContent = 'Resume when ready';
             } else if (appMode === 'training') {
                 timerStatus.textContent = timerState.isRunning ? 'TRAINING' : 'READY';
-                phaseHint.textContent = guideStep ? guideStep.title : 'Tap start';
+                phaseHint.textContent = guideStep ? formatGuideInlineTitle(guideStep.title) : 'Tap start';
             } else if (hasSessionStarted && timerState.isRound) {
                 timerStatus.textContent = 'ROUND';
                 phaseHint.textContent = `Work now · ${timerState.currentRound}/${settings.numberOfRounds}`;
@@ -6248,6 +6329,7 @@
         let selectedTrainingDuration = null;
         let expandedTrainingWorkoutId = null;
         let selectedTrainingSort = 'default';
+        let favoriteWorkoutIds = loadFavoriteWorkoutIds();
         let activeTrainingWorkout = null;
         let trainingTimeline = [];
         let currentGuideIndex = -1;
@@ -7990,36 +8072,70 @@
             });
         }
 
+        function loadFavoriteWorkoutIds() {
+            try {
+                const saved = JSON.parse(localStorage.getItem(FAVORITE_WORKOUTS_KEY) || '[]');
+                return new Set(Array.isArray(saved) ? saved.filter(id => typeof id === 'string') : []);
+            } catch (e) {
+                return new Set();
+            }
+        }
+
+        function saveFavoriteWorkoutIds() {
+            try {
+                localStorage.setItem(FAVORITE_WORKOUTS_KEY, JSON.stringify([...favoriteWorkoutIds]));
+            } catch (e) {}
+        }
+
+        function isFavoriteWorkout(workoutId) {
+            return favoriteWorkoutIds.has(workoutId);
+        }
+
+        function toggleTrainingFavorite(event, workoutId) {
+            event.stopPropagation();
+            event.preventDefault();
+
+            if (favoriteWorkoutIds.has(workoutId)) {
+                favoriteWorkoutIds.delete(workoutId);
+            } else {
+                favoriteWorkoutIds.add(workoutId);
+            }
+
+            saveFavoriteWorkoutIds();
+            if (selectedTrainingDuration) renderTrainingOptions(selectedTrainingDuration);
+        }
+
         function getSortedTrainingWorkouts(workouts) {
             const indexedWorkouts = workouts.map((workout, index) => ({ workout, index }));
             const byDefault = (a, b) => a.index - b.index;
+            const byFavorite = (a, b) => Number(isFavoriteWorkout(b.workout.id)) - Number(isFavoriteWorkout(a.workout.id));
 
             switch (selectedTrainingSort) {
                 case 'hardest':
-                    indexedWorkouts.sort((a, b) => (b.workout.intensity - a.workout.intensity) || byDefault(a, b));
+                    indexedWorkouts.sort((a, b) => byFavorite(a, b) || (b.workout.intensity - a.workout.intensity) || byDefault(a, b));
                     break;
                 case 'easiest':
-                    indexedWorkouts.sort((a, b) => (a.workout.intensity - b.workout.intensity) || byDefault(a, b));
+                    indexedWorkouts.sort((a, b) => byFavorite(a, b) || (a.workout.intensity - b.workout.intensity) || byDefault(a, b));
                     break;
                 case 'bag':
                     indexedWorkouts.sort((a, b) => {
                         const aBag = a.workout.type.toLowerCase().includes('bag') ? 0 : 1;
                         const bBag = b.workout.type.toLowerCase().includes('bag') ? 0 : 1;
-                        return (aBag - bBag) || byDefault(a, b);
+                        return byFavorite(a, b) || (aBag - bBag) || byDefault(a, b);
                     });
                     break;
                 case 'shadowbox':
                     indexedWorkouts.sort((a, b) => {
                         const aShadow = a.workout.type.toLowerCase().includes('shadowbox') ? 0 : 1;
                         const bShadow = b.workout.type.toLowerCase().includes('shadowbox') ? 0 : 1;
-                        return (aShadow - bShadow) || byDefault(a, b);
+                        return byFavorite(a, b) || (aShadow - bShadow) || byDefault(a, b);
                     });
                     break;
                 case 'pro':
-                    indexedWorkouts.sort((a, b) => Number(b.workout.premium) - Number(a.workout.premium) || byDefault(a, b));
+                    indexedWorkouts.sort((a, b) => byFavorite(a, b) || Number(b.workout.premium) - Number(a.workout.premium) || byDefault(a, b));
                     break;
                 default:
-                    indexedWorkouts.sort(byDefault);
+                    indexedWorkouts.sort((a, b) => byFavorite(a, b) || byDefault(a, b));
                     break;
             }
 
@@ -8103,6 +8219,37 @@
             }) || trainingTimeline[trainingTimeline.length - 1];
         }
 
+        function splitGuideTitle(title) {
+            const match = String(title || '').match(/^(Rounds?\s+\d+(?:-\d+)?)\s+-\s+(.+)$/i);
+            if (!match) return { roundLabel: '', title };
+            return {
+                roundLabel: match[1],
+                title: match[2]
+            };
+        }
+
+        function formatGuideInlineTitle(title) {
+            const parts = splitGuideTitle(title);
+            return parts.roundLabel ? `${parts.title} · ${parts.roundLabel}` : title;
+        }
+
+        function renderGuideTitle(title) {
+            const parts = splitGuideTitle(title);
+            if (!parts.roundLabel) return `
+                <div class="guide-section">
+                    <div class="guide-section-label">Current drill</div>
+                    <div class="guide-title">${parts.title}</div>
+                </div>
+            `;
+            return `
+                <div class="guide-section">
+                    <div class="guide-section-label">Current drill</div>
+                    <div class="guide-round-label">${parts.roundLabel}</div>
+                    <div class="guide-title">${parts.title}</div>
+                </div>
+            `;
+        }
+
         function renderTrainingGuide() {
             const step = getCurrentGuideStep();
             if (!step) return '';
@@ -8111,7 +8258,7 @@
             const next = trainingTimeline[index + 1];
             const elapsed = Math.max(0, settings.roundTime - timerState.timeLeft);
             const remaining = Math.max(0, step.end - elapsed);
-            const nextText = next ? `Next: ${next.title}` : 'Next: Finish strong';
+            const nextText = next ? formatGuideInlineTitle(next.title) : 'Finish strong';
             const hasStarted = !!sessionStats.startedAt || timerState.timeLeft < settings.roundTime;
             const isWaterBreak = hasStarted && !timerState.isRunning;
             const guideTitle = isWaterBreak ? 'Water break' : step.title;
@@ -8132,9 +8279,15 @@
                         <span>${guideLabel}</span>
                         <span>${formatTime(remaining)}</span>
                     </div>
-                    <div class="guide-title">${guideTitle}</div>
-                    <div class="guide-note">${guideNote}</div>
-                    <div class="guide-next">${nextText}</div>
+                    ${renderGuideTitle(guideTitle)}
+                    <div class="guide-section">
+                        <div class="guide-section-label">Focus</div>
+                        <div class="guide-note">${guideNote}</div>
+                    </div>
+                    <div class="guide-section">
+                        <div class="guide-section-label">Next up</div>
+                        <div class="guide-next">${nextText}</div>
+                    </div>
                 </div>
             `;
         }
@@ -8204,11 +8357,16 @@
             const workoutCards = workouts.map(workout => {
                 const locked = workout.premium && !premiumUnlocked;
                 const unlockedPremium = workout.premium && premiumUnlocked;
+                const favorite = isFavoriteWorkout(workout.id);
+                const favoriteLabel = favorite ? 'Remove favorite' : 'Add favorite';
                 const intensityBars = Array.from({ length: 5 }, (_, index) =>
                     `<span class="intensity-bar ${index < workout.intensity ? 'active' : ''}"></span>`
                 ).join('');
                 return `
                     <div class="training-card ${locked ? 'locked' : ''} ${unlockedPremium ? 'premium-unlocked' : ''}" role="button" tabindex="0" onclick="openWorkoutPreview(${minutes}, '${workout.id}')">
+                        <button class="training-favorite-btn ${favorite ? 'active' : ''}" onclick="toggleTrainingFavorite(event, '${workout.id}')" aria-label="${favoriteLabel}" title="${favoriteLabel}">
+                            <svg class="icon" aria-hidden="true"><use href="#icon-star"></use></svg>
+                        </button>
                         <div class="training-card-head">
                             <div>
                                 <div class="training-card-title">${workout.title}</div>
