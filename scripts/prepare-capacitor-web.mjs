@@ -10,7 +10,9 @@ const files = [
   'FightWise logo.png',
   'FightWise text.png',
   'Fightwise app icon.png',
-  'Unlock 50+ workouts with premium AD.png'
+  'Unlock 50+ workouts with premium AD.png',
+  'Sparring photo.png',
+  'Training photo.png'
 ];
 
 const renamedFiles = [

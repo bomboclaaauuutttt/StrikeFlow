@@ -1514,6 +1514,23 @@
             gap: 10px;
         }
 
+        .setup-custom.active .setup-custom-title {
+            color: var(--accent-primary);
+            font-size: 13px;
+            letter-spacing: 1.4px;
+            margin-bottom: 10px;
+        }
+
+        .setup-custom-help {
+            color: #a8a8a8;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            line-height: 1.35;
+            margin-top: 9px;
+            text-transform: none;
+        }
+
         .setup-custom-input {
             flex: 1;
             min-width: 0;
@@ -1603,6 +1620,11 @@
             will-change: transform;
         }
 
+        .mode-card > * {
+            position: relative;
+            z-index: 2;
+        }
+
         .mode-card.spar-card {
             animation: modeCardNudge 4.8s ease-in-out infinite;
         }
@@ -1612,7 +1634,6 @@
             animation-delay: 2.4s;
         }
 
-        .mode-card::before,
         .training-card::before {
             content: "";
             position: absolute;
@@ -1621,12 +1642,35 @@
             background: var(--accent-primary);
         }
 
+        .mode-card::before,
+        .mode-card::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .mode-card::before {
+            z-index: 0;
+            background-position: center;
+            background-size: cover;
+            transform: scale(1.01);
+            transition: transform 0.28s ease, filter 0.28s ease;
+        }
+
+        .mode-card::after {
+            z-index: 1;
+            background:
+                linear-gradient(90deg, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.56) 48%, rgba(0, 0, 0, 0.24) 100%),
+                linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.58) 100%);
+        }
+
         .mode-card.spar-card::before {
-            background: #f2f2f2;
+            background-image: url("Sparring photo.png");
         }
 
         .mode-card.training-card-entry::before {
-            background: var(--accent-primary);
+            background-image: url("Training photo.png");
         }
 
         .mode-card:hover,
@@ -1634,8 +1678,16 @@
             animation-play-state: paused;
             transform: translateY(-2px);
             border-color: var(--accent-primary);
-            background: #242424;
             box-shadow: none;
+        }
+
+        .training-card:hover {
+            background: #242424;
+        }
+
+        .mode-card:hover::before {
+            filter: contrast(1.08) saturate(1.08);
+            transform: scale(1.05);
         }
 
         .mode-card:active,
@@ -1716,52 +1768,11 @@
             white-space: nowrap;
         }
 
-        .mode-card-cta {
-            align-self: center;
-            flex: 0 0 auto;
-            border: 1px solid var(--accent-primary);
-            border-radius: 6px;
-            color: var(--accent-primary);
-            font-size: 12px;
-            font-weight: 950;
-            letter-spacing: 1px;
-            line-height: 1;
-            margin-top: 0;
-            padding: 11px 13px;
-            text-transform: uppercase;
-            transition: transform 0.18s ease, color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
-        }
-
-        .mode-card:hover .mode-card-cta {
-            border-color: var(--accent-primary);
-            background: var(--accent-primary);
-            color: #000;
-            transform: translateX(2px);
-        }
-
         .mode-card-desc,
         .training-card-desc {
             color: #bdbdbd;
             font-size: 14px;
             line-height: 1.42;
-        }
-
-        .mode-card-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 16px;
-        }
-
-        .mode-pill {
-            border-radius: 6px;
-            background: #343434;
-            color: #f2f2f2;
-            font-size: 12px;
-            font-weight: 800;
-            letter-spacing: 0.4px;
-            padding: 6px 9px;
-            text-transform: uppercase;
         }
 
         .training-header {
@@ -3638,6 +3649,282 @@
             100% { opacity: 0; transform: translate(var(--x), var(--y)) scale(1) rotate(var(--r)); }
         }
 
+        @media (min-width: 760px) {
+            .mode-choice,
+            .training-section,
+            .sparring-setup {
+                padding-left: clamp(32px, 5vw, 72px);
+                padding-right: clamp(32px, 5vw, 72px);
+            }
+
+            .mode-choice {
+                align-items: center;
+                padding-top: max(28px, calc(20px + env(safe-area-inset-top)));
+            }
+
+            .mode-choice .mode-bg-logo {
+                background:
+                    radial-gradient(circle at 34% 42%, rgba(43, 255, 74, 0.13), transparent 28%),
+                    url('FightWise logo.png') 18% 50% / min(54vw, 760px) auto no-repeat;
+                opacity: 0.13;
+            }
+
+            .mode-panel {
+                align-items: stretch;
+                display: grid;
+                grid-template-columns: minmax(260px, 0.78fr) minmax(380px, 1fr);
+                gap: clamp(26px, 5vw, 58px);
+                max-width: 1180px;
+                text-align: left;
+                width: min(94vw, 1180px);
+            }
+
+            .mode-logo-stack,
+            .mode-lockup,
+            .mode-title,
+            .mode-subtitle {
+                grid-column: 1;
+            }
+
+            .mode-logo-stack {
+                align-items: flex-start;
+                justify-content: flex-end;
+                margin-bottom: 10px;
+                min-height: 210px;
+            }
+
+            .mode-logo-stack::before {
+                inset: 8px -22px 22px -18px;
+            }
+
+            .mode-logo {
+                width: clamp(118px, 14vw, 190px);
+            }
+
+            .mode-logo-text {
+                width: clamp(240px, 28vw, 430px);
+            }
+
+            .mode-lockup {
+                justify-content: flex-start;
+                margin-bottom: 20px;
+            }
+
+            .mode-lockup::before {
+                width: 52px;
+            }
+
+            .mode-lockup::after {
+                display: none;
+            }
+
+            .mode-title {
+                font-size: clamp(48px, 6vw, 76px);
+                max-width: 520px;
+            }
+
+            .mode-subtitle {
+                font-size: clamp(16px, 1.7vw, 20px);
+                margin-bottom: 0;
+                max-width: 460px;
+            }
+
+            .mode-actions {
+                align-self: center;
+                gap: 18px;
+                grid-column: 2;
+                grid-row: 1 / span 4;
+                margin-top: 0;
+                width: 100%;
+            }
+
+            .mode-card {
+                min-height: 198px;
+                padding: clamp(26px, 3vw, 34px);
+            }
+
+            .mode-card .mode-card-title {
+                font-size: clamp(44px, 5vw, 68px);
+            }
+
+            .mode-card-desc {
+                font-size: 16px;
+            }
+
+            .training-panel {
+                max-width: 1180px;
+                width: min(94vw, 1180px);
+            }
+
+            .training-title {
+                font-size: clamp(50px, 6vw, 76px);
+            }
+
+            .training-subtitle {
+                font-size: clamp(16px, 1.7vw, 20px);
+                max-width: 760px;
+            }
+
+            .duration-highlights {
+                margin-top: 2px;
+            }
+
+            .training-grid {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 16px;
+            }
+
+            #trainingDurationStep .training-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .duration-card {
+                min-height: 188px;
+            }
+
+            .duration-card .training-card-title {
+                font-size: clamp(34px, 3.6vw, 48px);
+            }
+
+            .training-card {
+                min-height: 196px;
+                padding: 24px;
+            }
+
+            .training-card-title {
+                font-size: clamp(26px, 2.8vw, 36px);
+            }
+
+            .training-card-desc {
+                font-size: 15px;
+            }
+
+            .training-filter-bar {
+                margin-bottom: 18px;
+            }
+
+            .workout-preview-panel {
+                width: min(90vw, 980px);
+            }
+
+            .workout-overview {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .sparring-setup {
+                align-items: center;
+            }
+
+            .sparring-setup-panel {
+                max-width: 1120px;
+                width: min(92vw, 1120px);
+            }
+
+            .setup-title {
+                font-size: clamp(54px, 6vw, 86px);
+            }
+
+            .setup-subtitle {
+                font-size: clamp(16px, 1.8vw, 21px);
+            }
+
+            .setup-options {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 14px;
+            }
+
+            .setup-option {
+                min-height: 116px;
+                padding: 22px 24px;
+            }
+
+            .setup-option-title {
+                font-size: clamp(28px, 3vw, 40px);
+            }
+
+            .setup-footer {
+                margin-top: 16px;
+            }
+
+            .app-content {
+                display: grid;
+                grid-template-rows: auto 1fr auto;
+                overflow-y: auto;
+            }
+
+            .top-bar {
+                padding-left: clamp(32px, 4vw, 64px);
+                padding-right: clamp(32px, 4vw, 64px);
+            }
+
+            .timer-section {
+                align-items: center;
+                align-self: center;
+                display: grid;
+                gap: clamp(28px, 5vw, 72px);
+                grid-template-columns: minmax(310px, 0.95fr) minmax(340px, 1fr);
+                justify-content: center;
+                justify-self: center;
+                max-width: 1180px;
+                padding: 18px clamp(36px, 5vw, 72px) 118px;
+                width: 100%;
+            }
+
+            .phase-banner,
+            .task-display.training-guide {
+                max-width: 520px;
+                width: 100%;
+            }
+
+            .phase-banner {
+                grid-column: 1;
+                margin-bottom: 0;
+                min-height: 110px;
+                padding: 22px 24px;
+            }
+
+            .timer-status {
+                font-size: clamp(38px, 4vw, 58px);
+            }
+
+            .timer-ring-wrap {
+                grid-column: 2;
+                grid-row: 1 / span 2;
+                height: clamp(380px, 44vw, 600px);
+                margin: 0;
+                width: clamp(380px, 44vw, 600px);
+            }
+
+            .timer-display {
+                font-size: clamp(86px, 9vw, 144px);
+            }
+
+            .task-display.training-guide {
+                grid-column: 1;
+                margin-top: 0;
+            }
+
+            .guide-card {
+                padding: 20px;
+            }
+
+            .controls {
+                padding-left: clamp(36px, 5vw, 72px);
+                padding-right: clamp(36px, 5vw, 72px);
+            }
+        }
+
+        @media (min-width: 1120px) {
+            .training-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            #trainingDurationStep .training-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
         @media (max-width: 600px) {
             .top-bar {
                 padding-top: calc(30px + env(safe-area-inset-top));
@@ -3729,10 +4016,6 @@
 
             .training-header {
                 flex-direction: column;
-            }
-
-            .mode-card-cta {
-                align-self: center;
             }
 
             .workout-overview {
@@ -4184,12 +4467,6 @@
                             <div class="mode-card-title">Sparring</div>
                             <div class="mode-card-desc">Rounds, bells and breaks.</div>
                         </div>
-                        <div class="mode-card-cta">Open timer</div>
-                    </div>
-                    <div class="mode-card-meta">
-                        <span class="mode-pill">Live rounds</span>
-                        <span class="mode-pill">Breaks</span>
-                        <span class="mode-pill">Bell cues</span>
                     </div>
                 </button>
                 <button class="mode-card training-card-entry" onclick="openTrainingSection()">
@@ -4199,12 +4476,6 @@
                             <div class="mode-card-title">Training</div>
                             <div class="mode-card-desc">Workouts, combos and instructions.</div>
                         </div>
-                        <div class="mode-card-cta">Choose plan</div>
-                    </div>
-                    <div class="mode-card-meta">
-                        <span class="mode-pill">Combos</span>
-                        <span class="mode-pill">Drills</span>
-                        <span class="mode-pill">Instructions</span>
                     </div>
                 </button>
             </div>
@@ -4827,29 +5098,27 @@
                 'Fight rounds': 'Otteluerät',
                 'Sparring': 'Sparri',
                 'Rounds, bells and breaks.': 'Erät, kellot ja tauot.',
-                'Open timer': 'Avaa ajastin',
                 'Live rounds': 'Live-erät',
                 'Breaks': 'Tauot',
                 'Bell cues': 'Kelloäänet',
                 'Guided work': 'Ohjattu treeni',
                 'Training': 'Treeni',
                 'Workouts, combos and instructions.': 'Treenit, kombot ja ohjeet.',
-                'Choose plan': 'Valitse ohjelma',
                 'Combos': 'Kombot',
                 'Drills': 'Harjoitteet',
                 'Instructions': 'Ohjeet',
                 'Sparring setup': 'Sparrin asetukset',
                 'Round time': 'Erän aika',
                 'How long should each round be?': 'Kuinka pitkä yksi erä on?',
-                'Custom round time': 'Oma erän aika',
-                'Use 1:30, 1.30min, 90s or 2min.': 'Käytä esim. 1:30, 1.30min, 90s tai 2min.',
+                'Custom round time in seconds': 'Oma erän aika sekunteina',
+                'Enter seconds only. Example: 90 = 1 min 30 sec.': 'Syötä vain sekunteja. Esimerkki: 90 = 1 min 30 s.',
                 'Fast technical rounds.': 'Nopeat tekniset erät.',
                 'Standard K1 / Muay Thai round.': 'Normaali K1 / Muay Thai -erä.',
                 'MMA-style longer rounds.': 'MMA-tyyliset pidemmät erät.',
                 'Break time': 'Tauon aika',
                 'How much rest between rounds?': 'Kuinka pitkä tauko erien välissä?',
-                'Custom break time': 'Oma tauon aika',
-                'Use seconds or minutes, for example 45s, 1:15 or 1.30min.': 'Käytä sekunteja tai minuutteja, esim. 45s, 1:15 tai 1.30min.',
+                'Custom break time in seconds': 'Oma tauon aika sekunteina',
+                'Enter seconds only. Example: 45 = 45 sec.': 'Syötä vain sekunteja. Esimerkki: 45 = 45 s.',
                 'Hard pace, short recovery.': 'Kova tahti, lyhyt palautus.',
                 'Classic fight rest.': 'Klassinen ottelutauko.',
                 'More time to reset.': 'Lisää aikaa palautua.',
@@ -5011,29 +5280,27 @@
                 'Fight rounds': 'Kampfrunden',
                 'Sparring': 'Sparring',
                 'Rounds, bells and breaks.': 'Runden, Glocken und Pausen.',
-                'Open timer': 'Timer oeffnen',
                 'Live rounds': 'Live-Runden',
                 'Breaks': 'Pausen',
                 'Bell cues': 'Glockensignale',
                 'Guided work': 'Gefuehrtes Training',
                 'Training': 'Training',
                 'Workouts, combos and instructions.': 'Workouts, Kombinationen und Anweisungen.',
-                'Choose plan': 'Plan waehlen',
                 'Combos': 'Kombos',
                 'Drills': 'Drills',
                 'Instructions': 'Anweisungen',
                 'Sparring setup': 'Sparring-Setup',
                 'Round time': 'Rundenzeit',
                 'How long should each round be?': 'Wie lang soll jede Runde sein?',
-                'Custom round time': 'Eigene Rundenzeit',
-                'Use 1:30, 1.30min, 90s or 2min.': 'Nutze z. B. 1:30, 1.30min, 90s oder 2min.',
+                'Custom round time in seconds': 'Eigene Rundenzeit in Sekunden',
+                'Enter seconds only. Example: 90 = 1 min 30 sec.': 'Nur Sekunden eingeben. Beispiel: 90 = 1 Min. 30 Sek.',
                 'Fast technical rounds.': 'Schnelle technische Runden.',
                 'Standard K1 / Muay Thai round.': 'Standard K1 / Muay Thai Runde.',
                 'MMA-style longer rounds.': 'Laengere Runden im MMA-Stil.',
                 'Break time': 'Pausenzeit',
                 'How much rest between rounds?': 'Wie viel Pause zwischen den Runden?',
-                'Custom break time': 'Eigene Pausenzeit',
-                'Use seconds or minutes, for example 45s, 1:15 or 1.30min.': 'Nutze Sekunden oder Minuten, z. B. 45s, 1:15 oder 1.30min.',
+                'Custom break time in seconds': 'Eigene Pausenzeit in Sekunden',
+                'Enter seconds only. Example: 45 = 45 sec.': 'Nur Sekunden eingeben. Beispiel: 45 = 45 Sek.',
                 'Hard pace, short recovery.': 'Hohes Tempo, kurze Erholung.',
                 'Classic fight rest.': 'Klassische Kampfpause.',
                 'More time to reset.': 'Mehr Zeit zum Erholen.',
@@ -5998,7 +6265,7 @@
                 key: 'roundTime',
                 title: 'Round time',
                 subtitle: 'How long should each round be?',
-                custom: { type: 'time', label: 'Custom round time', placeholder: '1:30 or 90s', help: 'Use 1:30, 1.30min, 90s or 2min.' },
+                custom: { type: 'seconds', label: 'Custom round time in seconds', placeholder: '90', help: 'Enter seconds only. Example: 90 = 1 min 30 sec.' },
                 options: [
                     { label: '2 min', desc: 'Fast technical rounds.', value: 120 },
                     { label: '3 min', desc: 'Standard K1 / Muay Thai round.', value: 180 },
@@ -6009,7 +6276,7 @@
                 key: 'breakTime',
                 title: 'Break time',
                 subtitle: 'How much rest between rounds?',
-                custom: { type: 'time', label: 'Custom break time', placeholder: '45s or 1:15', help: 'Use seconds or minutes, for example 45s, 1:15 or 1.30min.' },
+                custom: { type: 'seconds', label: 'Custom break time in seconds', placeholder: '45', help: 'Enter seconds only. Example: 45 = 45 sec.' },
                 options: [
                     { label: '30 sec', desc: 'Hard pace, short recovery.', value: 30 },
                     { label: '1 min', desc: 'Classic fight rest.', value: 60 },
@@ -7390,9 +7657,11 @@
 
             return `
                 <div class="setup-custom active">
+                    <div class="setup-custom-title">${step.custom.label}</div>
                     <div class="setup-custom-row">
-                        <input class="setup-custom-input" id="setupCustomInput" type="text" inputmode="decimal" placeholder="${step.custom.placeholder}" onkeydown="handleSetupCustomKey(event)" onblur="applySetupCustomIfFilled()">
+                        <input class="setup-custom-input" id="setupCustomInput" type="number" inputmode="numeric" pattern="[0-9]*" min="${step.custom.type === 'rounds' ? '1' : '5'}" max="${step.custom.type === 'rounds' ? '99' : '1800'}" step="1" placeholder="${step.custom.placeholder}" aria-label="${step.custom.label}" onkeydown="handleSetupCustomKey(event)" onblur="applySetupCustomIfFilled()">
                     </div>
+                    <div class="setup-custom-help">${step.custom.help}</div>
                 </div>
             `;
         }
@@ -7433,30 +7702,15 @@
             }
         }
 
-        function parseSetupTimeInput(value) {
-            const raw = String(value || '').trim().toLowerCase().replace(',', '.').replace(/\s+/g, '');
-            if (!raw) return null;
-
-            const secondsOnly = raw.match(/^(\d+(?:\.\d+)?)s(?:ec|econds?)?$/);
-            if (secondsOnly) return Math.round(parseFloat(secondsOnly[1]));
-
-            const minuteSecond = raw.match(/^(\d+)(?::(\d{1,2})|\.(\d{2}))(?:m|min|mins|minute|minutes)?$/);
-            if (minuteSecond) {
-                const minutes = parseInt(minuteSecond[1], 10);
-                const seconds = parseInt(minuteSecond[2] || minuteSecond[3], 10);
-                if (seconds >= 60) return null;
-                return minutes * 60 + seconds;
-            }
-
-            const minutesOnly = raw.match(/^(\d+(?:\.\d+)?)(?:m|min|mins|minute|minutes)?$/);
-            if (minutesOnly) return Math.round(parseFloat(minutesOnly[1]) * 60);
-
-            return null;
+        function parseSetupSecondsInput(value) {
+            const raw = String(value || '').trim();
+            if (!/^\d+$/.test(raw)) return null;
+            return parseInt(raw, 10);
         }
 
         function parseSetupCustomValue(step, value) {
-            if (step.custom.type === 'time') {
-                const seconds = parseSetupTimeInput(value);
+            if (step.custom.type === 'seconds') {
+                const seconds = parseSetupSecondsInput(value);
                 return seconds && seconds >= 5 && seconds <= 1800 ? seconds : null;
             }
 
