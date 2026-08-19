@@ -1496,7 +1496,8 @@
         }
 
         .setup-custom:hover,
-        .setup-custom.active {
+        .setup-custom.active,
+        .setup-custom.selected {
             border-color: var(--accent-primary);
             border-left-color: var(--accent-primary);
             background: #202020;
@@ -7647,23 +7648,35 @@
 
         function renderSetupCustom(step) {
             if (!step.custom) return '';
+            const hasPresetSelected = step.options.some(option => option.value === sparringDraft[step.key]);
+            const hasCustomValue = !hasPresetSelected && sparringDraft[step.key] !== undefined;
+            const customValueLabel = formatSetupCustomValue(step, sparringDraft[step.key]);
+
             if (!setupCustomActive) {
                 return `
-                    <div class="setup-custom" role="button" tabindex="0" onclick="activateSetupCustom()" onkeydown="handleSetupCustomActivateKey(event)">
-                        <div class="setup-custom-title">Custom</div>
+                    <div class="setup-custom ${hasCustomValue ? 'selected' : ''}" role="button" tabindex="0" onclick="activateSetupCustom()" onkeydown="handleSetupCustomActivateKey(event)">
+                        <div class="setup-custom-title">${hasCustomValue ? `Custom: ${customValueLabel}` : 'Custom'}</div>
                     </div>
                 `;
             }
+
+            const inputValue = hasCustomValue ? ` value="${sparringDraft[step.key]}"` : '';
 
             return `
                 <div class="setup-custom active">
                     <div class="setup-custom-title">${step.custom.label}</div>
                     <div class="setup-custom-row">
-                        <input class="setup-custom-input" id="setupCustomInput" type="number" inputmode="numeric" pattern="[0-9]*" min="${step.custom.type === 'rounds' ? '1' : '5'}" max="${step.custom.type === 'rounds' ? '99' : '1800'}" step="1" placeholder="${step.custom.placeholder}" aria-label="${step.custom.label}" onkeydown="handleSetupCustomKey(event)" onblur="applySetupCustomIfFilled()">
+                        <input class="setup-custom-input" id="setupCustomInput" type="number" inputmode="numeric" pattern="[0-9]*" min="${step.custom.type === 'rounds' ? '1' : '5'}" max="${step.custom.type === 'rounds' ? '99' : '1800'}" step="1" placeholder="${step.custom.placeholder}" aria-label="${step.custom.label}"${inputValue} onkeydown="handleSetupCustomKey(event)" onblur="applySetupCustomIfFilled()">
                     </div>
                     <div class="setup-custom-help">${step.custom.help}</div>
                 </div>
             `;
+        }
+
+        function formatSetupCustomValue(step, value) {
+            if (step.custom.type === 'seconds') return `${value} sec`;
+            if (step.custom.type === 'rounds') return `${value} rounds`;
+            return value;
         }
 
         function activateSetupCustom() {
@@ -7688,18 +7701,8 @@
                 return;
             }
             sparringDraft[key] = value;
-            if (element) {
-                element.classList.add('selected', 'chosen');
-            }
-            if (setupStep < SPARRING_SETUP_STEPS.length - 1) {
-                setTimeout(() => {
-                    setupStep++;
-                    setupCustomActive = false;
-                    renderSparringSetup();
-                }, 210);
-            } else {
-                setTimeout(renderSparringSetup, 210);
-            }
+            setupCustomActive = false;
+            renderSparringSetup();
         }
 
         function parseSetupSecondsInput(value) {
