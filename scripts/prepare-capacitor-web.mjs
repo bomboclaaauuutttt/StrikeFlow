@@ -12,7 +12,9 @@ const files = [
   'Fightwise app icon.png',
   'Unlock 50+ workouts with premium AD.png',
   'Sparring photo.png',
-  'Training photo.png'
+  'Training photo.png',
+  'Round Bell START.mp3',
+  'Round Bell END.mp3'
 ];
 
 const renamedFiles = [

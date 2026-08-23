@@ -1,4 +1,4 @@
-const CACHE = 'fightwise-v50';
+const CACHE = 'fightwise-v51';
 const ASSETS = [
   './index.html',
   './privacy-policy.html',
@@ -9,7 +9,9 @@ const ASSETS = [
   './click-soundeffect.mp3',
   './Unlock 50+ workouts with premium AD.png',
   './Sparring photo.png',
-  './Training photo.png'
+  './Training photo.png',
+  './Round Bell START.mp3',
+  './Round Bell END.mp3'
 ];
 
 self.addEventListener('install', e => {
