@@ -6046,10 +6046,6 @@
             if (!settings.roundVoiceEnabled) return;
             if (!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') return;
             try {
-                if (options.attentionTone !== false) {
-                    playVoiceAttentionTone();
-                }
-
                 const utterance = new SpeechSynthesisUtterance(localizeCueText(text));
                 utterance.lang = getVoiceLanguage();
                 utterance.rate = options.rate || 0.86;
@@ -9102,13 +9098,15 @@
 
         document.addEventListener('pointerup', function(e) {
             if (!pendingUiClickTarget) return;
+            const clickTarget = pendingUiClickTarget;
             const endTarget = e.target.closest('button, [role="button"], .training-card');
             const movedX = Math.abs(e.clientX - pendingUiClickStartX);
             const movedY = Math.abs(e.clientY - pendingUiClickStartY);
             const isTap = movedX <= 10 && movedY <= 10;
-            const sameTarget = endTarget === pendingUiClickTarget || pendingUiClickTarget.contains(e.target);
+            const sameTarget = endTarget === clickTarget || clickTarget.contains(e.target);
             pendingUiClickTarget = null;
             if (!isTap || !sameTarget) return;
+            if (clickTarget.id === 'startBtn') return;
             playUiClick();
         }, { passive: true });
 
