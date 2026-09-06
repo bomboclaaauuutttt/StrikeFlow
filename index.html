@@ -5267,17 +5267,14 @@
         let lastTickMs = null;
         let lastWholeSecond = null;
         let audioCtx = null;
+        let audioUnlocked = false;
         const UI_CLICK_SOUND_SRC = 'click-soundeffect.mp3';
         const ROUND_START_SOUND_SRC = 'Round Bell START.mp3';
         const ROUND_END_SOUND_SRC = 'Round Bell END.mp3';
-        const uiClickAudioPool = Array.from({ length: 4 }, () => {
-            const audio = new Audio(UI_CLICK_SOUND_SRC);
-            audio.preload = 'auto';
-            audio.volume = 1;
-            return audio;
-        });
+        const uiClickAudioPool = createAudioPool(UI_CLICK_SOUND_SRC, 4);
         const roundStartAudioPool = createAudioPool(ROUND_START_SOUND_SRC, 3);
         const roundEndAudioPool = createAudioPool(ROUND_END_SOUND_SRC, 3);
+        const managedAudioPools = [uiClickAudioPool, roundStartAudioPool, roundEndAudioPool];
         let uiClickAudioIndex = 0;
         let roundStartAudioIndex = 0;
         let roundEndAudioIndex = 0;
@@ -5290,13 +5287,67 @@
             startedAt: null
         };
 
+        function createManagedAudio(src) {
+            const audio = new Audio(src);
+            audio.preload = 'auto';
+            audio.volume = 1;
+            audio.muted = false;
+            audio.playsInline = true;
+            audio.dataset.src = src;
+            audio.load();
+            return audio;
+        }
+
         function createAudioPool(src, size) {
-            return Array.from({ length: size }, () => {
-                const audio = new Audio(src);
-                audio.preload = 'auto';
-                audio.volume = 1;
-                return audio;
+            return Array.from({ length: size }, () => createManagedAudio(src));
+        }
+
+        function restorePrimedAudio(audio, muted, volume) {
+            try {
+                audio.pause();
+                audio.currentTime = 0;
+                audio.muted = muted;
+                audio.volume = volume;
+            } catch (e) {}
+        }
+
+        function primeAudioElement(audio) {
+            try {
+                const muted = audio.muted;
+                const volume = audio.volume;
+                audio.muted = true;
+                audio.volume = 0;
+                audio.currentTime = 0;
+                const playPromise = audio.play();
+                if (playPromise && typeof playPromise.then === 'function') {
+                    playPromise
+                        .then(() => restorePrimedAudio(audio, muted, volume))
+                        .catch(() => {
+                            audio.muted = muted;
+                            audio.volume = volume;
+                        });
+                } else {
+                    restorePrimedAudio(audio, muted, volume);
+                }
+            } catch (e) {}
+        }
+
+        function unlockAppAudio() {
+            ensureAudioReady();
+            if (audioUnlocked) return;
+            managedAudioPools.flat().forEach(audio => {
+                try { audio.load(); } catch (e) {}
+                primeAudioElement(audio);
             });
+            audioUnlocked = true;
+        }
+
+        function recreateAudioAt(pool, index) {
+            const src = pool[index]?.dataset?.src;
+            if (!src) return null;
+            const freshAudio = createManagedAudio(src);
+            pool[index] = freshAudio;
+            return freshAudio;
         }
 
         function playLoudAudioFromPool(pool, currentIndex) {
@@ -5304,19 +5355,34 @@
 
             try {
                 const audio = pool[currentIndex];
+                ensureAudioReady();
                 audio.pause();
                 audio.currentTime = 0;
                 audio.muted = false;
                 audio.volume = 1;
                 const playPromise = audio.play();
                 if (playPromise && typeof playPromise.catch === 'function') {
-                        playPromise.catch(() => {});
+                    playPromise.catch(() => {
+                        const freshAudio = recreateAudioAt(pool, currentIndex);
+                        if (!freshAudio) return;
+                        freshAudio.volume = 1;
+                        freshAudio.play().catch(() => {});
+                    });
                 }
                 return { played: true, nextIndex: (currentIndex + 1) % pool.length };
             } catch (e) {
+                const freshAudio = recreateAudioAt(pool, currentIndex);
+                if (freshAudio) {
+                    freshAudio.play().catch(() => {});
+                    return { played: true, nextIndex: (currentIndex + 1) % pool.length };
+                }
                 return { played: false, nextIndex: currentIndex };
             }
         }
+
+        ['pointerdown', 'touchstart', 'keydown'].forEach(eventName => {
+            document.addEventListener(eventName, unlockAppAudio, { passive: true, capture: true });
+        });
 
         try {
             localStorage.removeItem('strikeflow_theme');
@@ -5863,6 +5929,7 @@
 
         const progressRadius = Number(progressCircle.getAttribute('r'));
         const progressCircumference = 2 * Math.PI * progressRadius;
+        const ROUND_START_VOICE_DELAY_MS = 800;
         progressCircle.style.strokeDasharray = `${progressCircumference}`;
         progressCircle.style.strokeDashoffset = '0';
 
@@ -5911,13 +5978,24 @@
         function playUiClick() {
             if (!settings.uiClickSoundsEnabled) return;
             try {
-                const clickAudio = uiClickAudioPool[uiClickAudioIndex];
+                const currentIndex = uiClickAudioIndex;
+                const clickAudio = uiClickAudioPool[currentIndex];
                 uiClickAudioIndex = (uiClickAudioIndex + 1) % uiClickAudioPool.length;
+                ensureAudioReady();
                 clickAudio.currentTime = 0;
+                clickAudio.muted = false;
                 clickAudio.volume = 1;
                 const playPromise = clickAudio.play();
                 if (playPromise && typeof playPromise.catch === 'function') {
-                    playPromise.catch(() => playSyntheticUiClick(0.32));
+                    playPromise.catch(() => {
+                        const freshAudio = recreateAudioAt(uiClickAudioPool, currentIndex);
+                        if (freshAudio) {
+                            freshAudio.volume = 1;
+                            freshAudio.play().catch(() => playSyntheticUiClick(0.32));
+                        } else {
+                            playSyntheticUiClick(0.32);
+                        }
+                    });
                 }
             } catch (e) {
                 playSyntheticUiClick(0.32);
@@ -6050,11 +6128,18 @@
                 utterance.lang = getVoiceLanguage();
                 utterance.rate = options.rate || 0.86;
                 utterance.pitch = options.pitch || 1;
-                utterance.volume = Math.min(1, options.volume || 1);
+                utterance.volume = Math.max(0, Math.min(1, options.volume ?? 1));
 
                 window.speechSynthesis.cancel();
                 window.speechSynthesis.speak(utterance);
             } catch (e) {}
+        }
+
+        function speakRoundStartCue(text) {
+            setTimeout(() => {
+                if (!timerState.isRunning || !timerState.isRound || timerState.isFinished) return;
+                speakCue(text, { volume: 1 });
+            }, ROUND_START_VOICE_DELAY_MS);
         }
 
         // Format time as MM:SS
@@ -6340,18 +6425,18 @@
                 if (settings.taskSparEnabled) {
                     startPreRound(() => {
                         playRoundStart();
-                        speakCue('Round started');
                         timerState.isRound = true;
                         timerState.currentRound++;
                         timerState.timeLeft = settings.roundTime;
+                        speakRoundStartCue('Round started');
                         updateUI();
                     });
                 } else {
                     playRoundStart();
-                    speakCue('Round started');
                     timerState.isRound = true;
                     timerState.currentRound++;
                     timerState.timeLeft = settings.roundTime;
+                    speakRoundStartCue('Round started');
                 }
             }
             updateUI();
@@ -6424,11 +6509,11 @@
                     if (settings.taskSparEnabled) {
                         startPreRound(() => {
                             playRoundStart();
-                            speakCue(appMode === 'training' ? 'Training started' : 'Round started');
+                            speakRoundStartCue(appMode === 'training' ? 'Training started' : 'Round started');
                         });
                     } else {
                         playRoundStart();
-                        speakCue(appMode === 'training' ? 'Training started' : 'Round started');
+                        speakRoundStartCue(appMode === 'training' ? 'Training started' : 'Round started');
                     }
                 }
                 lastTickMs = performance.now();
@@ -8912,7 +8997,7 @@
 
             playUiClick();
             playRoundStart();
-            setTimeout(() => speakCue('Round started'), 650);
+            setTimeout(() => speakCue('Round started', { volume: 1 }), ROUND_START_VOICE_DELAY_MS);
             setTimeout(() => {
                 settings.uiClickSoundsEnabled = previous.uiClickSoundsEnabled;
                 settings.roundSoundsEnabled = previous.roundSoundsEnabled;
